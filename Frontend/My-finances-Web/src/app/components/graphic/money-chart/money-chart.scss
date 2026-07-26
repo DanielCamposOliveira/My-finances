@@ -1,0 +1,12 @@
+#chart-container {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+/* Força os textos do Highcharts para o tema claro */
+.highcharts-title, 
+.highcharts-subtitle, 
+.highcharts-axis-labels, 
+.highcharts-legend-item text {
+  fill: #333333 !important;
+}

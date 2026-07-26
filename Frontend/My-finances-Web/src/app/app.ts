@@ -1,9 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { MoneyChart } from "./components/graphic/money-chart/money-chart";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [RouterOutlet, MoneyChart],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
