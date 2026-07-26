@@ -1,5 +1,37 @@
 appsettings.json
+appsettings.Development.json
+Thumbs.db
+.env
+
+**/.gemini
+
+# Dependências
+**/node_modules
+**/packages
+
+
+# Arquivos compilados/Build
+**/dist
+**/tmp
+**/out-tsc
+**/bak
+
+
+# Cache do Angular CLI
+**/.angular
+
+
+# Configurações locais da IDE
+**/.vscode
+**/.idea
+**/.vs
 **/Properties
 **/bin
 **/obj
-**/.vs
+
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+/.pnpm-debug.log*
