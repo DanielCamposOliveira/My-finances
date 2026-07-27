@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as Highcharts from 'highcharts';
+import {ChartSeries} from '../../../service/service.data'
 
 @Component({
   selector: 'app-money-chart',
@@ -9,106 +10,120 @@ import * as Highcharts from 'highcharts';
   templateUrl: './money-chart.html',
   styleUrl: './money-chart.scss',
 })
-export class MoneyChart implements OnInit {
 
-  ngOnInit(): void {
-    setTimeout(() => {
-      Highcharts.chart('chart-container', {
-        chart: {
-          plotBorderColor: 'var(--highcharts-neutral-color-10, #e6e6e6)',
-          plotBorderWidth: 1,
-          plotBorderRadius: 5
-        },
+export class MoneyChart implements OnChanges {
 
+  @Input() categories: string[] = [];
+  @Input() series: ChartSeries[] = [];
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ((changes['categories'] || changes['series']) && this.series.length > 0) {
+      this.initChart();
+    }
+  }
+
+  private initChart(): void {
+  setTimeout(() => {
+    Highcharts.chart('chart-container', {
+
+      // Desativa o recurso acessibilidade. ele aumenta a complecidade
+      accessibility: {
+        enabled: false
+      },
+
+      chart: {
+        plotBorderColor: '#e6e6e6',
+        plotBorderWidth: 1,
+        plotBorderRadius: 5,
+        style: {
+          fontFamily: 'system-ui, -apple-system, sans-serif'
+        }
+      },
+
+      title: {
+        text: 'Histórico Financeiro',
+        align: 'left'
+      },
+
+
+
+      yAxis: {
+        gridLineColor: '#f0f0f0', // Linhas de grade suaves
         title: {
-          text: 'Evolução Financeira',
-          align: 'left'
+          text: ''
         },
+        labels: {
+        
+        }
+      },
 
-        subtitle: {
-          text: 'Saldo x Dívidas'
-        },
+      xAxis: {
+        categories: this.categories,
+        crosshair: true,
+        lineWidth: 0,
+        tickLength: 6,
+        tickColor: '#e6e6e6',
+        labels: {
+          style: { color: '#495057' }
+        }
+      },
 
-        yAxis: {
-          title: {
-            text: 'Valor (R$)'
-          }
-        },
+      legend: {
+        enabled: true,
+        itemStyle: { color: '#212529' }, // Cor do texto das legendas
+        itemHoverStyle: { color: '#000000' }
+      },
 
-        xAxis: {
-          categories: [
-            'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-            'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
-          ],
-          crosshair: true,
-          lineWidth: 0,
-          tickLength: 6,
-          tickColor: 'var(--highcharts-neutral-color-10, #e6e6e6)'
-        },
-
-        legend: {
-          enabled: true
-        },
-
-        plotOptions: {
-          series: {
-            marker: {
-              enabled: true
-            },
-            dataLabels: {
-              enabled: true,
-                format: 'R$ {y:,.2f}', // Formata como moeda (R$ 3.478,00)
-                style: {
-                  fontSize: '11px',
-                  fontWeight: 'bold'
-                }
+      plotOptions: {
+        series: {
+          marker: { enabled: true },
+          dataLabels: {
+            enabled: true,
+            format: 'R$ {y:,.2f}',
+            style: {
+              fontWeight: 'bold',
+              textOutline: 'none' // Remove o contorno preto em volta dos números
             }
           }
-        },
+        }
+      },
 
-        tooltip: {
-          shared: true,
-          formatter: function (this: any) {
-            const points = this.points || [];
-            const saldo = points.find((p: any) => p.series.name === 'Saldo')?.y || 0;
-            const dividas = points.find((p: any) => p.series.name === 'Dívidas')?.y || 0;
-            const restante = saldo - dividas;
+      tooltip: {
+        shared: true,
+        backgroundColor: '#ffffff', // Fundo branco do balãozinho
+        borderColor: '#e0e0e0',
+        borderRadius: 8,
+        style: { color: '#212529' },
+        formatter: function (this: any) {
+          const points = this.points || [];
+          const saldo = points.find((p: any) => p.series.name === 'Saldo')?.y || 0;
+          const dividas = points.find((p: any) => p.series.name === 'Dívidas')?.y || 0;
+          const restante = saldo - dividas;
 
-            const titulo = restante < 0 ? 'Déficit' : 'Crédito';
-            const cor = restante < 0 ? '#e74c3c' : '#2ecc71';
+          const titulo = restante < 0 ? 'Déficit' : 'Crédito';
+          const cor = restante < 0 ? '#e74c3c' : '#2ecc71';
 
-            return `
-              <b></b><br>
-              <hr style="margin: 4px 0;">
-          <b>${titulo}: <span style="color:${cor}">
-          R$ ${Highcharts.numberFormat(Math.abs(restante), 2, ',', '.')}
-          </span></b>
-            `;
-          }
-        },
+          return `
+            <b>${this.x}</b><br>
+            <hr style="margin: 4px 0; border: 0; border-top: 1px solid #eee;">
+            <b>${titulo}: <span style="color:${cor}">
+            R$ ${Highcharts.numberFormat(Math.abs(restante), 2, ',', '.')}
+            </span></b>
+          `;
+        }
+      },
 
-        series: [{
-          type: 'line',
-          name: 'Saldo',
-          color: '#0097FF',
-          data: [
-            3525, 3478, 3613, 3895,
-            3741, 3569, 3811, 3697,
-            3924, 3777, 3643, 3858
-          ]
-        }, {
-          type: 'line',
-          name: 'Dívidas',
-          color: '#E74C3C',
-         
-          data: [
-            2980, 3651, 2876, 4121,
-            3412, 3269, 3988, 3525,
-            3718, 4058, 3342, 4296
-          ]
-        }]
-      });
-    }, 0);
-  }
+      series: this.series.map(s => ({
+        type: 'line',
+        name: s.name,
+        color: s.color,
+        data: s.data
+      }))
+    });
+  }, 0);
+}
+
+
+
 
 }

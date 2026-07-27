@@ -1,0 +1,28 @@
+.dashboard-container {
+  // Limita a largura máxima para não esticar na tela toda
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  // Grid de Cards Responsivo
+  .cards-grid {
+    display: grid;
+    // Cria colunas adaptáveis (mínimo de 200px por card)
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+
+  // Seção do Gráfico
+  .chart-section {
+    width: 100%;
+   
+    border-radius: 12px;
+    padding: 16px;
+
+    box-sizing: border-box;
+  }
+}

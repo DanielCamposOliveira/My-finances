@@ -1,0 +1,22 @@
+<div class="dashboard-container" *ngIf="dashboardData">
+  
+  <!-- Seção Superior: Grid de Cards Dinâmico -->
+  <section class="cards-grid">
+    <app-money-card 
+      *ngFor="let card of dashboardData.cards"
+      [iconClass]="card.iconClass"
+      [TypeClass]="card.typeClass"
+      [title]="card.title" 
+      [balance]="formatCurrency(card.value)">
+    </app-money-card>
+  </section>
+
+  <!-- Seção Inferior: Gráfico com Dados Dinâmicos -->
+  <section class="chart-section">
+    <app-money-chart 
+      [categories]="dashboardData.chartCategories"
+      [series]="dashboardData.chartSeries">
+    </app-money-chart>
+  </section>
+
+</div>
