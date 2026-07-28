@@ -1,19 +1,16 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { MoneyChart } from "./components/graphic/money-chart/money-chart";
-import { MoneyCard } from "./components/card/money-card/money-card";
 import { Dashboard } from "./pages/dashboard/dashboard";
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MoneyChart, MoneyCard, Dashboard],
+  imports: [RouterOutlet,  Dashboard],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-
 
   iconClass : string ="ph ph-wallet";
   title: string ="Saldo acumulado";

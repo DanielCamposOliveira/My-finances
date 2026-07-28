@@ -29,11 +29,11 @@ export class ServiceData {
   getDashboardData(): Observable<DashboardData> {
     const mockData: DashboardData = {
       cards: [
-        { title: 'Saldo', value: 3500.00, iconClass: 'fa-solid fa-wallet', typeClass: 'salary' },
-        { title: 'Receber', value: 500, iconClass: 'fa-solid fa-coins', typeClass: 'extra-income' },
+        { title: 'Saldo', value: 3475, iconClass: 'fa-solid fa-wallet', typeClass: 'salary' },
+        { title: 'Receber', value: 80, iconClass: 'fa-solid fa-coins', typeClass: 'extra-income' },
         { title: 'Conta a Pagar', value: 3300.00, iconClass: 'fa-solid fa-hand-holding-dollar', typeClass: 'bills-to-pay' },
-        { title: 'Déficit', value: 450.00, iconClass: 'fa-solid fa-credit-card', typeClass: 'deficit' },
-        { title: 'Poupança', value: 400.00, iconClass: 'fa-solid fa-sack-dollar', typeClass: 'savings' }
+        { title: 'Déficit', value: 177.00, iconClass: 'fa-solid fa-credit-card', typeClass: 'deficit' },
+        { title: 'Poupança', value: 450.00, iconClass: 'fa-solid fa-sack-dollar', typeClass: 'savings' }
       ],
       chartCategories: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
       chartSeries: [
