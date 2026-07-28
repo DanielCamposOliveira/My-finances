@@ -66,6 +66,7 @@ namespace API_Data.src.Data
                        .UsingEntity(j => j.ToTable("LancamentoTags"));
             });
 
+
             // Mapeamento: Parcela
             modelBuilder.Entity<Parcela>(builder =>
             {
@@ -79,11 +80,51 @@ namespace API_Data.src.Data
                        .HasConversion<int>()
                        .IsRequired();
 
+                // Relacionamento Opcional com Lancamento (Compras/Receitas parceladas ou à vista)
                 builder.HasOne(p => p.Lancamento)
                        .WithMany(l => l.Parcelas)
                        .HasForeignKey(p => p.LancamentoId)
-                       .OnDelete(DeleteBehavior.Cascade);
+                       .IsRequired(false)
+                       .OnDelete(DeleteBehavior.Cascade); // Se apagar o Lançamento, apaga as parcelas dele
+
+                // Relacionamento Opcional com ContaFixa (Contas recorrentes/mensais)
+                builder.HasOne(p => p.ContaFixa)
+                       .WithMany(cf => cf.Parcelas)
+                       .HasForeignKey(p => p.ContaFixaId)
+                       .IsRequired(false)
+                       .OnDelete(DeleteBehavior.Cascade); // Se apagar a Conta Fixa, apaga as faturas dela
+
+                // Constraint de Banco (Check Constraint): Garante que OU tem LancamentoId OU tem ContaFixaId
+                builder.ToTable(t => t.HasCheckConstraint(
+                    "CK_Parcela_OrigemUnica",
+                    "(\"LancamentoId\" IS NOT NULL AND \"ContaFixaId\" IS NULL) OR (\"LancamentoId\" IS NULL AND \"ContaFixaId\" IS NOT NULL)"
+                ));
             });
+
+
+            // Mapeamento: ContaFixa
+            modelBuilder.Entity<ContaFixa>(builder =>
+            {
+                builder.HasKey(cf => cf.Id);
+
+                builder.Property(cf => cf.Descricao)
+                       .IsRequired()
+                       .HasMaxLength(200);
+
+                builder.Property(cf => cf.ValorBase)
+                       .HasPrecision(18, 2)
+                       .IsRequired();
+
+                builder.HasOne(cf => cf.Categoria)
+                       .WithMany()
+                       .HasForeignKey(cf => cf.CategoriaId)
+                       .OnDelete(DeleteBehavior.Restrict);
+
+                builder.HasMany(cf => cf.Tags)
+                       .WithMany()
+                       .UsingEntity(j => j.ToTable("ContaFixaTags"));
+            });
+
 
             // Carga inicial de Tags padrão (Seed Data)
             modelBuilder.Entity<Tag>().HasData(

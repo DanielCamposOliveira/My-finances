@@ -1,4 +1,5 @@
 using API_Data.src.Data;
+using API_Data.src.DTOs;
 using API_Data.src.Enum;
 using API_Data.src.Model;
 using API_Data.src.Repository;
@@ -20,6 +21,9 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connect
 // Registro de Serviços de Repositório e Regra de Negócio no Container de DI
 builder.Services.AddScoped<LancamentosRepository>();
 builder.Services.AddScoped<LancamentosService>();
+builder.Services.AddScoped<ContasFixasRepository>();
+builder.Services.AddScoped<ContasFixasService>();
+
 
 // serviços necessários para o Swagger funcionar
 builder.Services.AddEndpointsApiExplorer();
@@ -149,8 +153,31 @@ lancamentosGroup.MapGet("/", async (LancamentosService lancamentosService) =>
 
 
 
+var contasFixasGroup = app.MapGroup("/api/contas-fixas").WithTags("Contas Fixas");
 
+contasFixasGroup.MapPost("/", async (CriarContaFixaDto dto, ContasFixasService service) =>
+{
+    try
+    {
+        var resultado = await service.CriarContaFixaAsync(dto);
+        return Results.Created($"/api/contas-fixas/{resultado.Id}", resultado);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { mensagem = ex.Message });
+    }
+})
+.WithName("CriarContaFixa")
+.Produces<ContaFixaResponseDto>(StatusCodes.Status201Created)
+.Produces(StatusCodes.Status400BadRequest);
 
+contasFixasGroup.MapGet("/faturas/{ano:int}/{mes:int}", async (int ano, int mes, ContasFixasService service) =>
+{
+    var faturas = await service.ObterOuGerarFaturasDoMesAsync(ano, mes);
+    return Results.Ok(faturas);
+})
+.WithName("ObterFaturasDoMes")
+.Produces<List<FaturaMesResponseDto>>(StatusCodes.Status200OK);
 
 
 
