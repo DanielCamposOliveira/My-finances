@@ -1,3 +1,4 @@
+
 using API_Data.src.Data;
 using API_Data.src.DTOs;
 using API_Data.src.Enum;
@@ -49,8 +50,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
-app.MapGet("/", () => "Hello World!");
+#region  ROTAS: CATEGORIAS
 
 // ==========================================
 // ROTAS: CATEGORIAS
@@ -85,6 +85,10 @@ categoriasGroup.MapPost("/", async (CriarCategoriaDto dto, AppDbContext db) =>
 .WithName("CriarCategoria")
 .Produces<CategoriaResponseDto>(StatusCodes.Status201Created);
 
+#endregion
+
+
+#region ROTAS: TAGS
 
 // ==========================================
 // ROTAS: TAGS
@@ -114,6 +118,10 @@ tagsGroup.MapPost("/", async (CriarTagDto dto, AppDbContext db) =>
 .WithName("CriarTag")
 .Produces<TagResponseDto>(StatusCodes.Status201Created);
 
+#endregion
+
+
+#region Descricao
 
 // ==========================================
 // ROTAS: LANÇAMENTOS (Com regras de negócio)
@@ -144,46 +152,95 @@ lancamentosGroup.MapGet("/", async (LancamentosService lancamentosService) =>
 .WithName("ObterLancamentos")
 .Produces<List<LancamentoResponseDto>>(StatusCodes.Status200OK);
 
+#endregion
 
 
+#region Contas Fixas
 
 
+var contasFixasGroup = app.MapGroup("/api/v1/ContasFixas").WithTags("Contas Fixas");
 
-
-
-
-
-var contasFixasGroup = app.MapGroup("/api/contas-fixas").WithTags("Contas Fixas");
-
-contasFixasGroup.MapPost("/", async (CriarContaFixaDto dto, ContasFixasService service) =>
+// ==========================================
+// ROTAS:CRIA CONTA
+// ==========================================
+contasFixasGroup.MapPost("/create", async (CriarContaFixaDto dto, ContasFixasService service) =>
 {
     try
     {
-        var resultado = await service.CriarContaFixaAsync(dto);
-        return Results.Created($"/api/contas-fixas/{resultado.Id}", resultado);
+        var result = await service.CriarContaFixaAsync(dto);
+        return result;
     }
     catch (ArgumentException ex)
     {
         return Results.BadRequest(new { mensagem = ex.Message });
     }
 })
-.WithName("CriarContaFixa")
-.Produces<ContaFixaResponseDto>(StatusCodes.Status201Created)
-.Produces(StatusCodes.Status400BadRequest);
+.WithSummary("Cria Conta Fixa")
+.WithDescription("Cria Conta Fixa para todos os Meses")
+.Produces(StatusCodes.Status201Created)
+.Produces(StatusCodes.Status500InternalServerError);
 
-contasFixasGroup.MapGet("/faturas/{ano:int}/{mes:int}", async (int ano, int mes, ContasFixasService service) =>
+// ==========================================
+// ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
+// ==========================================
+contasFixasGroup.MapPatch("/status", async (ContaFixaUpdateDTO.ContaFixaUpdateStatusDTO dto, ContasFixasService service) =>
 {
-    var faturas = await service.ObterOuGerarFaturasDoMesAsync(ano, mes);
-    return Results.Ok(faturas);
+    var result = await service.UpdateStatusContaFixa(dto.Id_ContaFixa, dto.Status);
+    return Results.Ok(result);
 })
-.WithName("ObterFaturasDoMes")
+.WithSummary("Atualiza Status conta fixa")
+.WithDescription("Atualiza o status da conta fixa")
+.Produces(StatusCodes.Status404NotFound)
+.Produces(StatusCodes.Status500InternalServerError)
+.Produces(StatusCodes.Status200OK);
+
+
+// ==========================================
+// ROTAS:CRIA A PARCELA DA FATURAS DO MES
+// ==========================================
+contasFixasGroup.MapPost("/fatura/create", async (ContasFixasService service) =>
+{
+    var result = await service.GerarFaturasMesAsync();
+    return result;
+})
+.WithSummary("Add fatura")
+.WithDescription("Criar fatura do Mes Atual")
+.Produces(StatusCodes.Status201Created)
+.Produces(StatusCodes.Status200OK);
+
+
+// ==========================================
+// ROTAS: LISTA AS FATURAS EM ABERTO DO MES E AS ATRAZADAS
+// ==========================================
+contasFixasGroup.MapGet("/fatura/pending", async (ContasFixasService service) =>
+{
+    var result = await service.ListFaturaPendenteAsync();
+    return Results.Ok(result);
+})
+.WithSummary("Lista faturas")
+.WithDescription("Lista todas as faturas em ABERTO mes atual e ATRAZADAS ")
 .Produces<List<FaturaMesResponseDto>>(StatusCodes.Status200OK);
 
 
+// ==========================================
+// ROTAS: ATUALIZAR O STATUS DA FATURAS
+// ==========================================
+contasFixasGroup.MapPatch("/fatura/status", async (FaturaUpdateDTO.FaturaUpdateStatusDTO dto, ContasFixasService service) =>
+{
+    var result = await service.UpdateStatusParcela(dto.ParcelaId, dto.Status);
+    return Results.Ok(result);
+})
+.WithSummary("Atualiza Status faturas")
+.WithDescription("Atualiza o status da faturas")
+.Produces(StatusCodes.Status404NotFound)
+.Produces(StatusCodes.Status500InternalServerError)
+.Produces(StatusCodes.Status200OK);
 
 
 
 
+
+#endregion
 
 
 app.Run();

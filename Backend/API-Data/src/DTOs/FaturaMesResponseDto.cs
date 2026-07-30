@@ -11,4 +11,5 @@ namespace API_Data.src.DTOs
         DateTime? DataPagamento,
         StatusParcela Status
     );
+
 }

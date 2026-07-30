@@ -14,50 +14,56 @@ namespace API_Data.src.Services
         {
             _repository = repository;
         }
-        public async Task<ContaFixaResponseDto> CriarContaFixaAsync(CriarContaFixaDto dto)
+
+        // # Cria conta fixa
+        public async Task<IResult> CriarContaFixaAsync(CriarContaFixaDto Dados)
         {
-            // 1. Validação de existência da categoria
-            var categoriaExiste = await _repository.CategoriaExisteAsync(dto.CategoriaId);
+            // Verifica se existe a categoria
+            var categoriaExiste = await _repository.CheckCategoriasPorIdsAsync(Dados.CategoriaId);
+
             if (!categoriaExiste)
             {
                 throw new ArgumentException("A categoria informada não existe.");
             }
 
-            // 2. Busca das tags informadas
-            var tags = await _repository.ObterTagsPorIdsAsync(dto.TagIds);
+            // Busca das tags informadas
+            var ListTags = await _repository.ListaTagsPorIdsAsync(Dados.TagIds);
 
-            // 3. Mapeamento para a entidade do domínio
-            var contaFixa = new ContaFixa
+            // Mapeamento para a entidade do domínio
+            var ContaFixaModel = new ContaFixa
             {
-                Descricao = dto.Descricao,
-                ValorBase = dto.ValorBase,
-                DiaVencimento = dto.DiaVencimento,
-                CategoriaId = dto.CategoriaId,
+                Descricao = Dados.Descricao,
+                ValorBase = Dados.ValorBase,
+                DiaVencimento = Dados.DiaVencimento,
+                CategoriaId = Dados.CategoriaId,
                 Ativo = true,
-                Tags = tags
+                Tags = ListTags
             };
 
-            // 4. Persistência
-            await _repository.AdicionarContaFixaAsync(contaFixa);
+            // Salva no banco de dados
+            var retorno =  await _repository.CriarContaFixaAsync(ContaFixaModel);
 
-            var nomeCategoria = await _repository.ObterNomeCategoriaAsync(dto.CategoriaId);
+            if (retorno == null)
+            {
+                return Results.Problem(
+                    "Erro ao cadastrar a conta fixa.",
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
 
-            // 5. Retorno do DTO
-            return new ContaFixaResponseDto(
-                contaFixa.Id,
-                contaFixa.Descricao,
-                contaFixa.ValorBase,
-                contaFixa.DiaVencimento,
-                contaFixa.Ativo,
-                nomeCategoria ?? string.Empty,
-                tags.Select(t => t.Nome).ToList()
-            );
+            return Results.Created();
         }
 
-        public async Task<List<FaturaMesResponseDto>> ObterOuGerarFaturasDoMesAsync(int ano, int mes)
+
+        // ## Gera Parcelas do Mes Atual
+        public async Task<IResult> GerarFaturasMesAsync()
         {
-            var contasAtivas = await _repository.ObterContasFixasAtivasAsync();
-            var faturasGeradas = new List<FaturaMesResponseDto>();
+            bool created = false;
+
+            int ano = DateTime.Today.Year;
+            int mes = DateTime.Today.Month;
+
+            var contasAtivas = await _repository.ListaContasFixasAtivasAsync();
+            
 
             foreach (var conta in contasAtivas)
             {
@@ -79,20 +85,126 @@ namespace API_Data.src.Services
                     };
 
                     parcelaExistente = await _repository.CriarParcelaFixaAsync(novaParcela);
-                }
+                    if(parcelaExistente !=null)
+                    {
+                        created = true;
+                    }
+                    
+                }        
+            }
 
-                faturasGeradas.Add(new FaturaMesResponseDto(
-                    parcelaExistente.Id,
-                    conta.Id,
-                    conta.Descricao,
-                    parcelaExistente.ValorParcela,
-                    parcelaExistente.DataVencimento,
-                    parcelaExistente.DataPagamento,
-                    parcelaExistente.Status
-                ));
+            if (created == true)
+                return Results.Created();
+
+
+            return Results.Ok();
+        }
+
+
+
+        //## Obter faturas com Status Aberto(Mes recorent) ou Vencida(Ano recorrent) 
+        public async Task<List<FaturaMesResponseDto>> ListFaturaPendenteAsync()
+        {
+            var contasAtivas = await _repository.ListaContasFixasAsync();
+            var faturasGeradas = new List<FaturaMesResponseDto>();
+            int ano = DateTime.Today.Year;
+            int mes = DateTime.Today.Month;
+
+            foreach (var conta in contasAtivas)
+            {
+                // 1. Busca no banco se já existem parcelas abertas/atrasadas para essa conta (do mês atual ou anteriores)
+                var parcelasExistentes = await _repository.ListParcelasAbertasAtrasadasAsync(conta.Id, ano, mes);
+
+                // Monta o DTO
+                foreach (var parcela in parcelasExistentes)
+                {
+                    faturasGeradas.Add(new FaturaMesResponseDto(
+                        parcela.Id,
+                        conta.Id,
+                        conta.Descricao,
+                        parcela.ValorParcela,
+                        parcela.DataVencimento,
+                        parcela.DataPagamento,
+                        parcela.Status
+                    ));
+                }
             }
 
             return faturasGeradas;
         }
+
+
+
+        //## Atualiza o status da Fatura
+        public async Task<IResult> UpdateStatusParcela(int parcelaId, StatusParcela status)
+        {
+            // Busca a parcela
+            var parcela = await _repository.ObterParcelaPorIdAsync(parcelaId);
+
+            if (parcela == null)
+            { 
+                return Results.Problem(
+                "Parcela não encontrada !",
+                statusCode: StatusCodes.Status404NotFound
+                );
+            }
+
+            // Altera o status e registra o momento do pagamento
+            parcela.Status = status;
+            parcela.DataPagamento = DateTime.UtcNow;
+
+            //Grava no banco de dados
+            var retorno = await _repository.AtualizarStatusParcelaAsync(parcela);
+
+            if(!retorno)
+            {
+                return Results.Problem(
+                "Erro ao tentar atualizar o Status",
+                statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+
+            return Results.Created();
+        }
+
+
+        //## Atualiza o status da Fatura
+        public async Task<IResult> UpdateStatusContaFixa(int Id, bool status)
+        {
+            // Busca a parcela
+            var Conta = await _repository.ObterContaFixaPorIdAsync(Id);
+
+            if (Conta == null)
+            {
+                return Results.Problem(
+                "Parcela não encontrada !",
+                statusCode: StatusCodes.Status404NotFound
+                );
+            }
+
+            // Altera o status e registra o momento do pagamento
+            Conta.Ativo = status;
+
+
+            //Grava no banco de dados
+            var retorno = await _repository.AtualizarStatusContaFixaAsync(Conta);
+
+            if (!retorno)
+            {
+                return Results.Problem(
+                "Erro ao tentar atualizar o Status",
+                statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+
+            return Results.Created();
+        }
+
+
+
+
+
+
+
     }
 }

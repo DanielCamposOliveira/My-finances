@@ -12,6 +12,8 @@ namespace API_Data.src.Data
         public DbSet<Lancamento> Lancamentos => Set<Lancamento>();
         public DbSet<Parcela> Parcelas => Set<Parcela>();
 
+        public DbSet<ContaFixa> ContaFixa => Set<ContaFixa>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
