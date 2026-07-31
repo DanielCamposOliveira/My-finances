@@ -1,11 +1,9 @@
 
 using API_Data.src.Data;
 using API_Data.src.Endpoints;
-using API_Data.src.Model;
 using API_Data.src.Repository;
 using API_Data.src.Services;
 using Microsoft.EntityFrameworkCore;
-using static API_Data.src.DTOs.CategoriaDTO;
 using static API_Data.src.DTOs.LancamentoDto;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +22,8 @@ builder.Services.AddScoped<ContasFixasRepository>();
 builder.Services.AddScoped<ContasFixasService>();
 builder.Services.AddScoped<TagRepository>();
 builder.Services.AddScoped<TagService>();
+builder.Services.AddScoped<CategoriaRepository>();
+builder.Services.AddScoped<CategoriaService>();
 
 // serviços necessários para o Swagger funcionar
 builder.Services.AddEndpointsApiExplorer();
@@ -53,43 +53,10 @@ if (app.Environment.IsDevelopment())
 app.MapContasFixasEndpoints();
 app.MapParcelasEndpoints();
 app.MapTagEndpoints();
+app.MapCategoriaEndpoints();
 
-#region  ROTAS: CATEGORIAS
 
-// ==========================================
-// ROTAS: CATEGORIAS
-// ==========================================
-var categoriasGroup = app.MapGroup("/api/categorias").WithTags("Categorias");
 
-categoriasGroup.MapGet("/", async (AppDbContext db) =>
-{
-    var categorias = await db.Categorias
-        .Select(c => new CategoriaResponseDto(c.Id, c.Nome, c.Atribuicao))
-        .ToListAsync();
-
-    return Results.Ok(categorias);
-})
-.WithName("ObterCategorias")
-.Produces<List<CategoriaResponseDto>>(StatusCodes.Status200OK);
-
-categoriasGroup.MapPost("/", async (CriarCategoriaDto dto, AppDbContext db) =>
-{
-    var categoria = new Categoria
-    {
-        Nome = dto.Nome,
-        Atribuicao = dto.Atribuicao
-    };
-
-    db.Categorias.Add(categoria);
-    await db.SaveChangesAsync();
-
-    var response = new CategoriaResponseDto(categoria.Id, categoria.Nome, categoria.Atribuicao);
-    return Results.Created($"/api/categorias/{categoria.Id}", response);
-})
-.WithName("CriarCategoria")
-.Produces<CategoriaResponseDto>(StatusCodes.Status201Created);
-
-#endregion
 
 
 

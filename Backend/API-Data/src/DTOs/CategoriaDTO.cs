@@ -2,9 +2,20 @@
 
 namespace API_Data.src.DTOs
 {
-    public class CategoriaDTO
+
+///    public record CategoriaResponseDtos(int Id, string Nome, Atribuicao Atribuicao);
+
+    public record CategoriaResponseDto
     {
-        public record CriarCategoriaDto(string Nome, Atribuicao Atribuicao);
-        public record CategoriaResponseDto(int Id, string Nome, Atribuicao Atribuicao);
+        public required string Nome { get; init; }
+        public required Atribuicao Atribuicao { get; init; }
     }
+
+    public record CriarCategoriaDto
+    {
+        public required string Nome { get; init; }
+        public required Atribuicao Atribuicao { get; init; }
+    }
+
+
 }

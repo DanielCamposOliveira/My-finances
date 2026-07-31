@@ -1,6 +1,5 @@
 ﻿using API_Data.src.Model;
 using API_Data.src.Repository;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 using static API_Data.src.DTOs.TagDTO;
 
 namespace API_Data.src.Services
@@ -20,7 +19,7 @@ namespace API_Data.src.Services
                 Nome = tag.Nome,
             };
 
-            var retorno = _tagRepository.CriarTag(Dados);
+            var retorno = await _tagRepository.CriarTag(Dados);
 
             if (retorno == null)
             {
