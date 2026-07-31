@@ -2,7 +2,19 @@
 {
     public class TagDTO
     {
-        public record CriarTagDto(string Nome);
-        public record TagResponseDto(int Id, string Nome);
+        public record CriarTagDto
+        {
+            public required string Nome { get; init; }
+        }
+        
+        public record TagResponseDto
+        {
+            public required int Id { get; init; }
+            public required string Nome { get; init; }
+        
+        }
+        
+        
+       
     }
 }

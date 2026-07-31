@@ -13,7 +13,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS:CRIA CONTA
             // ==========================================
-            Endpoint.MapPost("/create", async (CriarContaFixaDto dto, ContasFixasService service) =>
+            Endpoint.MapPost("/create", async (ContaFixaCreateDTO dto, ContasFixasService service) =>
             {
                 var result = await service.CriarContaFixaAsync(dto);
                 return result;
@@ -26,7 +26,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
             // ==========================================
-            Endpoint.MapPatch("/status", async (ContaFixaUpdateDTO.ContaFixaUpdateStatusDTO dto, ContasFixasService service) =>
+            Endpoint.MapPatch("/status", async (ContaFixaUpdateStatusDTO dto, ContasFixasService service) =>
             {
                 var result = await service.UpdateStatusContaFixa(dto.Id_ContaFixa, dto.Status);
                 return Results.Ok(result);

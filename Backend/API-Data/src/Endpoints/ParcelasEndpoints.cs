@@ -33,13 +33,13 @@ namespace API_Data.src.Endpoints
             })
             .WithSummary("Lista faturas")
             .WithDescription("Lista todas as faturas em ABERTO mes atual e ATRAZADAS ")
-            .Produces<List<FaturaMesResponseDto>>(StatusCodes.Status200OK);
+            .Produces<List<ParcelasContaFixaResponseDTO>>(StatusCodes.Status200OK);
 
 
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA FATURAS
             // ==========================================
-            Endpoint.MapPatch("/status", async (FaturaUpdateDTO.FaturaUpdateStatusDTO dto, ContasFixasService service) =>
+            Endpoint.MapPatch("/status", async (ParcelaUpdateStatusDTO dto, ContasFixasService service) =>
             {
                 var result = await service.UpdateStatusParcela(dto.ParcelaId, dto.Status);
                 return result;
@@ -54,7 +54,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA FATURAS
             // ==========================================
-            Endpoint.MapPatch("/Valor", async (FaturaUpdateDTO.FaturaUpdateDsTO dto, ContasFixasService service) =>
+            Endpoint.MapPatch("/Valor", async (ParcelaUpdateValorDTO dto, ContasFixasService service) =>
             {
                 var result = await service.UpdateValorParcela(dto.ParcelaId, dto.ValorParcela);
                 return result;

@@ -3,8 +3,6 @@
 namespace API_Data.src.DTOs
 {
 
-///    public record CategoriaResponseDtos(int Id, string Nome, Atribuicao Atribuicao);
-
     public record CategoriaResponseDto
     {
         public required string Nome { get; init; }

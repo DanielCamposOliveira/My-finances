@@ -1,4 +1,5 @@
 ﻿using API_Data.src.Data;
+using API_Data.src.DTOs;
 using API_Data.src.Model;
 using Microsoft.EntityFrameworkCore;
 using static API_Data.src.DTOs.TagDTO;
@@ -34,8 +35,13 @@ namespace API_Data.src.Repository
             try
             {
                 var tags = await _db.Tags
-               .Select(t => new TagResponseDto(t.Id, t.Nome))
-               .ToListAsync();
+                    .AsNoTracking() // Dica: excelente para performance em consultas de leitura
+                    .Select(c => new TagResponseDto
+                    {
+                        Id = c.Id,
+                        Nome = c.Nome
+                    })
+                    .ToListAsync();
 
                 return tags;
             }

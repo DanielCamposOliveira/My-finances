@@ -16,7 +16,7 @@ namespace API_Data.src.Services
         }
 
         // # Cria conta fixa
-        public async Task<IResult> CriarContaFixaAsync(CriarContaFixaDto Dados)
+        public async Task<IResult> CriarContaFixaAsync(ContaFixaCreateDTO Dados)
         {
             // Verifica se existe a categoria
             var categoriaExiste = await _repository.CheckCategoriasPorIdsAsync(Dados.CategoriaId);
@@ -103,10 +103,10 @@ namespace API_Data.src.Services
 
 
         //## Obter faturas com Status Aberto(Mes recorent) ou Vencida(Ano recorrent) 
-        public async Task<List<FaturaMesResponseDto>> ListFaturaPendenteAsync()
+        public async Task<List<ParcelasContaFixaResponseDTO>> ListFaturaPendenteAsync()
         {
             var contasAtivas = await _repository.ListaContasFixasAsync();
-            var faturasGeradas = new List<FaturaMesResponseDto>();
+            var faturasGeradas = new List<ParcelasContaFixaResponseDTO>();
             int ano = DateTime.Today.Year;
             int mes = DateTime.Today.Month;
 
@@ -118,15 +118,16 @@ namespace API_Data.src.Services
                 // Monta o DTO
                 foreach (var parcela in parcelasExistentes)
                 {
-                    faturasGeradas.Add(new FaturaMesResponseDto(
-                        parcela.Id,
-                        conta.Id,
-                        conta.Descricao,
-                        parcela.ValorParcela,
-                        parcela.DataVencimento,
-                        parcela.DataPagamento,
-                        parcela.Status
-                    ));
+                    faturasGeradas.Add(new ParcelasContaFixaResponseDTO
+                    {
+                        ParcelaId = parcela.Id,
+                        ContaFixaId = conta.Id,
+                        Descricao = conta.Descricao,
+                        ValorParcela = parcela.ValorParcela,
+                        DataVencimento = parcela.DataVencimento,
+                        DataPagamento = parcela.DataPagamento,
+                        Status = parcela.Status
+                    });
                 }
             }
 
