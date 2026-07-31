@@ -136,10 +136,10 @@ namespace API_Data.src.Services
 
 
         //## Atualiza o status da Fatura
-        public async Task<IResult> UpdateStatusParcela(int parcelaId, StatusParcela status)
+        public async Task<IResult> UpdateStatusParcela(int Id_Parcela, StatusParcela status)
         {
             // Busca a parcela
-            var parcela = await _repository.ObterParcelaPorIdAsync(parcelaId);
+            var parcela = await _repository.ObterParcelaPorIdAsync(Id_Parcela);
 
             if (parcela == null)
             { 
@@ -149,7 +149,7 @@ namespace API_Data.src.Services
                 );
             }
 
-            // Altera o status e registra o momento do pagamento
+            // Altera dados
             parcela.Status = status;
             parcela.DataPagamento = DateTime.UtcNow;
 
@@ -167,12 +167,42 @@ namespace API_Data.src.Services
             return Results.Created();
         }
 
-
-        //## Atualiza o status da Fatura
-        public async Task<IResult> UpdateStatusContaFixa(int Id, bool status)
+        //## Atualiza o ValorParcela da Fatura
+        public async Task<IResult> UpdateValorParcela(int Id_Parcela, decimal ValorParcela)
         {
             // Busca a parcela
-            var Conta = await _repository.ObterContaFixaPorIdAsync(Id);
+            var parcela = await _repository.ObterParcelaPorIdAsync(Id_Parcela);
+
+            if (parcela == null)
+            {
+                return Results.Problem(
+                "Parcela não encontrada !",
+                statusCode: StatusCodes.Status404NotFound
+                );
+            }
+
+            // Altera dados
+            parcela.ValorParcela = ValorParcela;        
+
+            //Grava no banco de dados
+            var retorno = await _repository.AtualizarStatusParcelaAsync(parcela);
+
+            if (!retorno)
+            {
+                return Results.Problem(
+                "Erro ao tentar atualizar o ValorParcela",
+                statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+
+            return Results.Created();
+        }
+
+        //## Atualiza o status da ContaFixa
+        public async Task<IResult> UpdateStatusContaFixa(int Id_ContaFixa, bool status)
+        {
+            // Busca a parcela
+            var Conta = await _repository.ObterContaFixaPorIdAsync(Id_ContaFixa);
 
             if (Conta == null)
             {
@@ -182,7 +212,7 @@ namespace API_Data.src.Services
                 );
             }
 
-            // Altera o status e registra o momento do pagamento
+            // Altera dados
             Conta.Ativo = status;
 
 

@@ -120,6 +120,7 @@ namespace API_Data.src.Data
                 builder.HasOne(cf => cf.Categoria)
                        .WithMany()
                        .HasForeignKey(cf => cf.CategoriaId)
+                       .IsRequired()
                        .OnDelete(DeleteBehavior.Restrict);
 
                 builder.HasMany(cf => cf.Tags)
