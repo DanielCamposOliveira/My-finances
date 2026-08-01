@@ -59,6 +59,7 @@ namespace API_Data.src.Data
                        .OnDelete(DeleteBehavior.Restrict);
 
                 // Relacionamento N:N entre Lancamento e Tag (Join Table implícita do EF Core)
+                // Lancamento <-> Tag
                 builder.HasMany(l => l.Tags)
                        .WithMany(t => t.Lancamentos)
                        .UsingEntity(j => j.ToTable("LancamentoTags"));
@@ -105,8 +106,10 @@ namespace API_Data.src.Data
                        .IsRequired()
                        .OnDelete(DeleteBehavior.Restrict);
 
+                // Relacionamento N:N entre ContaFixa e Tag (Join Table implícita do EF Core)
+                // ContaFixa <-> Tag
                 builder.HasMany(cf => cf.Tags)
-                       .WithMany()
+                       .WithMany(t => t.ContasFixas)
                        .UsingEntity(j => j.ToTable("ContaFixaTags"));
             });
 
@@ -124,6 +127,7 @@ namespace API_Data.src.Data
                        .HasConversion<int>()
                        .IsRequired();
 
+                // Relacionamento com ContaFixa
                 builder.HasOne(p => p.ContaFixa)
                        .WithMany(cf => cf.Parcelas)
                        .HasForeignKey(p => p.ContaFixaId)
@@ -147,6 +151,19 @@ namespace API_Data.src.Data
                 new Tag { Id = 11, Nome = "Streaming" },
                 new Tag { Id = 12, Nome = "IA" },
                 new Tag { Id = 13, Nome = "Armazenamento em Nuvem" }  
+            );
+
+            modelBuilder.Entity<Categoria>().HasData(
+                new Categoria { Id = 1, Nome = "Moradia" },
+                new Categoria { Id = 2, Nome = "Transporte" },
+                new Categoria { Id = 3, Nome = "Alimentação" },
+                new Categoria { Id = 4, Nome = "Lazer" },
+                new Categoria { Id = 5, Nome = "Educação" },
+                new Categoria { Id = 6, Nome = "Salário" },
+                new Categoria { Id = 7, Nome = "Investimentos" },
+                new Categoria { Id = 8, Nome = "Outros" },
+                new Categoria { Id = 9, Nome = "Vale-Refeição" },
+                new Categoria { Id = 10, Nome = "Vale-Transporte" }
             );
         }
 

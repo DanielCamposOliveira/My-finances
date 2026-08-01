@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace API_Data.src.Model
+﻿namespace API_Data.src.Model
 {
     public class Tag
     {
@@ -8,7 +6,10 @@ namespace API_Data.src.Model
         public int Id { get; set; }   
         public string Nome { get; set; } = string.Empty;
 
+
+        // Coleções para navegação inversa
         public ICollection<Lancamento> Lancamentos { get; set; } = new List<Lancamento>();
+        public ICollection<ContaFixa> ContasFixas { get; set; } = new List<ContaFixa>();
     }
 }
 
