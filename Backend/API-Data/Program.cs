@@ -4,7 +4,6 @@ using API_Data.src.Endpoints;
 using API_Data.src.Repository;
 using API_Data.src.Services;
 using Microsoft.EntityFrameworkCore;
-using static API_Data.src.DTOs.LancamentoDto;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,11 +24,17 @@ builder.Services.AddScoped<TagService>();
 builder.Services.AddScoped<CategoriaRepository>();
 builder.Services.AddScoped<CategoriaService>();
 
+
+
 // serviços necessários para o Swagger funcionar
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
 
-
+builder.Services.AddSwaggerGen(options =>
+{
+    // Usa o nome completo da classe (ex: API_Data.src.DTOs.Lancamento.Create) para o ID do schema
+    options.CustomSchemaIds(type => type.FullName);
+});
 
 var app = builder.Build();
 
@@ -51,52 +56,10 @@ if (app.Environment.IsDevelopment())
 
 // Mapeamento dos grupos de endpoints
 app.MapContasFixasEndpoints();
-app.MapParcelasEndpoints();
+
 app.MapTagEndpoints();
 app.MapCategoriaEndpoints();
-
-
-
-
-
-
-
-
-#region lancamentos
-
-// ==========================================
-// ROTAS: LANÇAMENTOS (Com regras de negócio)
-// ==========================================
-var lancamentosGroup = app.MapGroup("/api/lancamentos").WithTags("Lançamentos");
-
-lancamentosGroup.MapPost("/", async (CriarLancamentoDto dto, LancamentosService lancamentosService) =>
-{
-    try
-    {
-        var resultado = await lancamentosService.CriarLancamentoAsync(dto);
-        return Results.Created($"/api/lancamentos/{resultado.Id}", resultado);
-    }
-    catch (ArgumentException ex)
-    {
-        return Results.BadRequest(new { mensagem = ex.Message });
-    }
-})
-.WithName("CriarLancamento")
-.Produces<LancamentoResponseDto>(StatusCodes.Status201Created)
-.Produces(StatusCodes.Status400BadRequest);
-
-lancamentosGroup.MapGet("/", async (LancamentosService lancamentosService) =>
-{
-    var lancamentos = await lancamentosService.ObterTodosLancamentosAsync();
-    return Results.Ok(lancamentos);
-})
-.WithName("ObterLancamentos")
-.Produces<List<LancamentoResponseDto>>(StatusCodes.Status200OK);
-
-#endregion
-
-
-
+app.MapLancamentoEndpoints();
 
 
 app.Run();

@@ -23,8 +23,8 @@ namespace API_Data.src.Repository
             }
             catch
             {
-            return false;
-            }          
+                return false;
+            }
         }
 
 
@@ -37,9 +37,10 @@ namespace API_Data.src.Repository
             }
             catch
             {
-            return new List<Tag>();
+                return [];
             }
         }
+
 
         // Criar a Conta Fixa
         public async Task<ContaFixa> CriarContaFixaAsync(ContaFixa contaFixa)
@@ -59,8 +60,7 @@ namespace API_Data.src.Repository
 
 
 
-
-        // ## Lista todas as Contas Fixa Ativas
+        // ## Lista todas as Contas ativas
         public async Task<List<ContaFixa>> ListaContasFixasAtivasAsync()
         {
             try
@@ -74,9 +74,10 @@ namespace API_Data.src.Repository
             }
             catch
             {
-                return new List<ContaFixa>();
+                return [];
             }
         }
+
 
         // ## Lista todas as Contas Fixa
         public async Task<List<ContaFixa>> ListaContasFixasAsync()
@@ -91,21 +92,22 @@ namespace API_Data.src.Repository
             }
             catch
             {
-                return new List<ContaFixa>();
+                return [];
             }
         }
 
 
         // ## Lista todas as parcelas do mes
-        public async Task<Parcela?> ObterParcelaDoMesAsync(int contaFixaId, int ano, int mes)
+        public async Task<ContaFixaParcela?> ObterParcelaDoMesAsync(int contaFixaId, int ano, int mes)
         {
             try
             {
-                return await _db.Parcelas
+                return await _db.ContaFixaParcelas
+                    .AsNoTracking()
                                 .FirstOrDefaultAsync(p => p.ContaFixaId == contaFixaId
                                && p.DataVencimento.Year == ano
                                && p.DataVencimento.Month == mes);
-                              
+
             }
             catch
             {
@@ -116,7 +118,7 @@ namespace API_Data.src.Repository
 
 
         // ## Buscar todas as parcelas do Mes atual que NÃO esteja como PAGO por ID da CONTA
-        public async Task<List<Parcela>> ListParcelasAbertasAtrasadasAsync(int contaFixaId, int ano, int mes)
+        public async Task<List<ContaFixaParcela>> ListParcelasAbertasAtrasadasAsync(int contaFixaId, int ano, int mes)
         {
             try
             {
@@ -126,7 +128,7 @@ namespace API_Data.src.Repository
                 // 2. Define o primeiro dia do próximo mês (ex: 01/08/2026)
                 var fimMes = inicioMes.AddMonths(1);
 
-                return await _db.Parcelas
+                return await _db.ContaFixaParcelas
                     .AsNoTracking()
                     .Where(p => p.ContaFixaId == contaFixaId && p.Status != StatusParcela.Pago &&
                         (
@@ -144,17 +146,17 @@ namespace API_Data.src.Repository
             }
             catch
             {
-                return new List<Parcela>();
+                return new List<ContaFixaParcela>();
             }
         }
 
 
         // ## Cria a parcela da Contas Fixa
-        public async Task<Parcela> CriarParcelaFixaAsync(Parcela parcela)
+        public async Task<ContaFixaParcela> CriarParcelaFixaAsync(ContaFixaParcela parcela)
         {
             try
             {
-                _db.Parcelas.Add(parcela);
+                _db.ContaFixaParcelas.Add(parcela);
                 await _db.SaveChangesAsync();
                 return parcela;
             }
@@ -165,22 +167,29 @@ namespace API_Data.src.Repository
         }
 
 
-
         // ## Busca a parcela
-        public async Task<Parcela?> ObterParcelaPorIdAsync(int parcelaId)
-        {
-            return await _db.Parcelas.FindAsync(parcelaId);
-        }
-
-        // ## Atualiza o status da parcela
-        public async Task<bool> AtualizarStatusParcelaAsync(Parcela parcela)
+        public async Task<ContaFixaParcela?> ObterParcelaPorIdAsync(int parcelaId)
         {
             try
             {
-                _db.Parcelas.Update(parcela);
+                return await _db.ContaFixaParcelas.FindAsync(parcelaId);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+        // ## Atualiza o status da parcela
+        public async Task<bool> AtualizarStatusParcelaAsync(ContaFixaParcela parcela)
+        {
+            try
+            {
+                _db.ContaFixaParcelas.Update(parcela);
                 await _db.SaveChangesAsync();
                 return true;
-                
+
             }
             catch
             {
@@ -190,11 +199,17 @@ namespace API_Data.src.Repository
         }
 
 
-
         // ## Busca a ContaFixa
         public async Task<ContaFixa?> ObterContaFixaPorIdAsync(int Id)
         {
-            return await _db.ContaFixa.FindAsync(Id);
+            try
+            {
+                return await _db.ContaFixa.FindAsync(Id);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
 

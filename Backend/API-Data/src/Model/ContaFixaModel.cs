@@ -13,6 +13,7 @@
         public Categoria Categoria { get; set; } = null!;
 
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
-        public ICollection<Parcela> Parcelas { get; set; } = new List<Parcela>();
+
+        public ICollection<ContaFixaParcela> Parcelas { get; set; } = new List<ContaFixaParcela>();
     }
 }

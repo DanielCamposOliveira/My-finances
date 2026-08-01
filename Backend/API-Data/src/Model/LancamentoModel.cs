@@ -16,9 +16,6 @@ namespace API_Data.src.Model
         public decimal ValorTotal { get; set; }
 
 
-        public TipoLancamento Tipo { get; set; }
-
-
         public int QtdParcelas { get; set; } = 1;
 
  
@@ -30,6 +27,7 @@ namespace API_Data.src.Model
         public Categoria Categoria { get; set; } = null!;
 
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
-        public ICollection<Parcela> Parcelas { get; set; } = new List<Parcela>();
+
+        public ICollection<LancamentoParcela> Parcelas { get; set; } = new List<LancamentoParcela>();
     }
 }

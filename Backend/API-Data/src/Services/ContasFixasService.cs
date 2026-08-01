@@ -1,5 +1,5 @@
 ﻿
-using API_Data.src.DTOs;
+using API_Data.src.DTOs.ContasFixas;
 using API_Data.src.Enum;
 using API_Data.src.Model;
 using API_Data.src.Repository;
@@ -16,7 +16,7 @@ namespace API_Data.src.Services
         }
 
         // # Cria conta fixa
-        public async Task<IResult> CriarContaFixaAsync(ContaFixaCreateDTO Dados)
+        public async Task<IResult> CriarContaFixaAsync(Create Dados)
         {
             // Verifica se existe a categoria
             var categoriaExiste = await _repository.CheckCategoriasPorIdsAsync(Dados.CategoriaId);
@@ -41,7 +41,7 @@ namespace API_Data.src.Services
             };
 
             // Salva no banco de dados
-            var retorno =  await _repository.CriarContaFixaAsync(ContaFixaModel);
+            var retorno = await _repository.CriarContaFixaAsync(ContaFixaModel);
 
             if (retorno == null)
             {
@@ -63,7 +63,7 @@ namespace API_Data.src.Services
             int mes = DateTime.Today.Month;
 
             var contasAtivas = await _repository.ListaContasFixasAtivasAsync();
-            
+
 
             foreach (var conta in contasAtivas)
             {
@@ -75,7 +75,7 @@ namespace API_Data.src.Services
                     int diaAjustado = Math.Min(conta.DiaVencimento, DateTime.DaysInMonth(ano, mes));
                     var dataVencimento = new DateTime(ano, mes, diaAjustado, 0, 0, 0, DateTimeKind.Utc);
 
-                    var novaParcela = new Parcela
+                    var novaParcela = new ContaFixaParcela
                     {
                         ContaFixaId = conta.Id,
                         NumeroParcela = mes,
@@ -85,12 +85,12 @@ namespace API_Data.src.Services
                     };
 
                     parcelaExistente = await _repository.CriarParcelaFixaAsync(novaParcela);
-                    if(parcelaExistente !=null)
+                    if (parcelaExistente != null)
                     {
                         created = true;
                     }
-                    
-                }        
+
+                }
             }
 
             if (created == true)
@@ -101,12 +101,38 @@ namespace API_Data.src.Services
         }
 
 
+        public async Task<List<ContaFixaResponse>> ListaTodasContasFixa()
+        {
+            var Contas = await _repository.ListaContasFixasAsync();
+
+            var contasResponse = new List<ContaFixaResponse>();
+
+            foreach (var _conta in Contas)
+            {
+                contasResponse.Add(new ContaFixaResponse
+                {
+                    Id = _conta.Id,
+                    Descricao = _conta.Descricao,
+                    ValorBase = _conta.ValorBase,
+                    DiaVencimento = _conta.DiaVencimento,
+                    CategoriaId = _conta.CategoriaId,      
+                    Ativo = _conta.Ativo,
+                    //Tags = _conta.Tags.Select(t => new TagResponse
+                    //{
+                    //    Id = t.Id,
+                    //    Descricao = t.Descricao
+                    //}).ToList()
+                });
+            }
+            return contasResponse;
+        }
+
 
         //## Obter faturas com Status Aberto(Mes recorent) ou Vencida(Ano recorrent) 
-        public async Task<List<ParcelasContaFixaResponseDTO>> ListFaturaPendenteAsync()
+        public async Task<List<ParcelasResponse>> ListFaturaPendenteAsync()
         {
-            var contasAtivas = await _repository.ListaContasFixasAsync();
-            var faturasGeradas = new List<ParcelasContaFixaResponseDTO>();
+            var contasAtivas = await _repository.ListaContasFixasAtivasAsync();
+            var faturasGeradas = new List<ParcelasResponse>();
             int ano = DateTime.Today.Year;
             int mes = DateTime.Today.Month;
 
@@ -118,11 +144,11 @@ namespace API_Data.src.Services
                 // Monta o DTO
                 foreach (var parcela in parcelasExistentes)
                 {
-                    faturasGeradas.Add(new ParcelasContaFixaResponseDTO
+                    faturasGeradas.Add(new ParcelasResponse
                     {
-                        ParcelaId = parcela.Id,
+                        Id = parcela.Id,
                         ContaFixaId = conta.Id,
-                        Descricao = conta.Descricao,
+                        Descricao = conta.Descricao,    
                         ValorParcela = parcela.ValorParcela,
                         DataVencimento = parcela.DataVencimento,
                         DataPagamento = parcela.DataPagamento,
@@ -135,7 +161,6 @@ namespace API_Data.src.Services
         }
 
 
-
         //## Atualiza o status da Fatura
         public async Task<IResult> UpdateStatusParcela(int Id_Parcela, StatusParcela status)
         {
@@ -143,7 +168,7 @@ namespace API_Data.src.Services
             var parcela = await _repository.ObterParcelaPorIdAsync(Id_Parcela);
 
             if (parcela == null)
-            { 
+            {
                 return Results.Problem(
                 "Parcela não encontrada !",
                 statusCode: StatusCodes.Status404NotFound
@@ -152,12 +177,12 @@ namespace API_Data.src.Services
 
             // Altera dados
             parcela.Status = status;
-            parcela.DataPagamento = DateTime.UtcNow;
+            parcela.DataPagamento = status == StatusParcela.Pago ? DateTime.UtcNow : null;
 
             //Grava no banco de dados
             var retorno = await _repository.AtualizarStatusParcelaAsync(parcela);
 
-            if(!retorno)
+            if (!retorno)
             {
                 return Results.Problem(
                 "Erro ao tentar atualizar o Status",
@@ -167,6 +192,7 @@ namespace API_Data.src.Services
 
             return Results.Created();
         }
+
 
         //## Atualiza o ValorParcela da Fatura
         public async Task<IResult> UpdateValorParcela(int Id_Parcela, decimal ValorParcela)
@@ -183,7 +209,7 @@ namespace API_Data.src.Services
             }
 
             // Altera dados
-            parcela.ValorParcela = ValorParcela;        
+            parcela.ValorParcela = ValorParcela;
 
             //Grava no banco de dados
             var retorno = await _repository.AtualizarStatusParcelaAsync(parcela);
@@ -198,6 +224,7 @@ namespace API_Data.src.Services
 
             return Results.Created();
         }
+
 
         //## Atualiza o status da ContaFixa
         public async Task<IResult> UpdateStatusContaFixa(int Id_ContaFixa, bool status)

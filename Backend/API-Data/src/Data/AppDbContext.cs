@@ -9,10 +9,10 @@ namespace API_Data.src.Data
 
         public DbSet<Categoria> Categorias => Set<Categoria>();
         public DbSet<Tag> Tags => Set<Tag>();
-        public DbSet<Lancamento> Lancamentos => Set<Lancamento>();
-        public DbSet<Parcela> Parcelas => Set<Parcela>();
-
+        public DbSet<Lancamento> Lancamentos => Set<Lancamento>();          
         public DbSet<ContaFixa> ContaFixa => Set<ContaFixa>();
+        public DbSet<LancamentoParcela> LancamentoParcelas => Set<LancamentoParcela>();
+        public DbSet<ContaFixaParcela> ContaFixaParcelas => Set<ContaFixaParcela>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,10 +53,6 @@ namespace API_Data.src.Data
                        .HasPrecision(18, 2)
                        .IsRequired();
 
-                builder.Property(l => l.Tipo)
-                       .HasConversion<int>()
-                       .IsRequired();
-
                 builder.HasOne(l => l.Categoria)
                        .WithMany(c => c.Lancamentos)
                        .HasForeignKey(l => l.CategoriaId)
@@ -68,10 +64,10 @@ namespace API_Data.src.Data
                        .UsingEntity(j => j.ToTable("LancamentoTags"));
             });
 
-
-            // Mapeamento: Parcela
-            modelBuilder.Entity<Parcela>(builder =>
+            // Mapeamento: LancamentoParcela
+            modelBuilder.Entity<LancamentoParcela>(builder =>
             {
+                builder.ToTable("lancamento_parcela");
                 builder.HasKey(p => p.Id);
 
                 builder.Property(p => p.ValorParcela)
@@ -82,25 +78,11 @@ namespace API_Data.src.Data
                        .HasConversion<int>()
                        .IsRequired();
 
-                // Relacionamento Opcional com Lancamento (Compras/Receitas parceladas ou à vista)
                 builder.HasOne(p => p.Lancamento)
                        .WithMany(l => l.Parcelas)
                        .HasForeignKey(p => p.LancamentoId)
-                       .IsRequired(false)
-                       .OnDelete(DeleteBehavior.Cascade); // Se apagar o Lançamento, apaga as parcelas dele
-
-                // Relacionamento Opcional com ContaFixa (Contas recorrentes/mensais)
-                builder.HasOne(p => p.ContaFixa)
-                       .WithMany(cf => cf.Parcelas)
-                       .HasForeignKey(p => p.ContaFixaId)
-                       .IsRequired(false)
-                       .OnDelete(DeleteBehavior.Cascade); // Se apagar a Conta Fixa, apaga as faturas dela
-
-                // Constraint de Banco (Check Constraint): Garante que OU tem LancamentoId OU tem ContaFixaId
-                builder.ToTable(t => t.HasCheckConstraint(
-                    "CK_Parcela_OrigemUnica",
-                    "(\"LancamentoId\" IS NOT NULL AND \"ContaFixaId\" IS NULL) OR (\"LancamentoId\" IS NULL AND \"ContaFixaId\" IS NOT NULL)"
-                ));
+                       .IsRequired()
+                       .OnDelete(DeleteBehavior.Cascade);
             });
 
 
@@ -126,6 +108,27 @@ namespace API_Data.src.Data
                 builder.HasMany(cf => cf.Tags)
                        .WithMany()
                        .UsingEntity(j => j.ToTable("ContaFixaTags"));
+            });
+
+            // Mapeamento: ContaFixaParcela
+            modelBuilder.Entity<ContaFixaParcela>(builder =>
+            {
+                builder.ToTable("contafixa_parcela");
+                builder.HasKey(p => p.Id);
+
+                builder.Property(p => p.ValorParcela)
+                       .HasPrecision(18, 2)
+                       .IsRequired();
+
+                builder.Property(p => p.Status)
+                       .HasConversion<int>()
+                       .IsRequired();
+
+                builder.HasOne(p => p.ContaFixa)
+                       .WithMany(cf => cf.Parcelas)
+                       .HasForeignKey(p => p.ContaFixaId)
+                       .IsRequired()
+                       .OnDelete(DeleteBehavior.Cascade);
             });
 
 

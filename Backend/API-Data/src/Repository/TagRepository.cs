@@ -26,7 +26,7 @@ namespace API_Data.src.Repository
             }
             catch
             {
-                return null;
+                return new Tag();
             }
         }
 

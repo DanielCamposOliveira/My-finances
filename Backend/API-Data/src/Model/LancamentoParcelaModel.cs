@@ -2,7 +2,7 @@
 
 namespace API_Data.src.Model
 {
-    public class Parcela
+    public class LancamentoParcela
     {
         public int Id { get; set; }
         public int NumeroParcela { get; set; }
@@ -11,14 +11,8 @@ namespace API_Data.src.Model
         public DateTime? DataPagamento { get; set; }
         public StatusParcela Status { get; set; } = StatusParcela.Aberto;
 
-
-        // Relacionamento com Lançamentos (Opcional se for oriundo de Conta Fixa)
-        public int? LancamentoId { get; set; }
-        public Lancamento? Lancamento { get; set; }
-
-
-        // Relacionamento com Contas Fixas (Opcional se for de Lançamento)
-        public int? ContaFixaId { get; set; }
-        public ContaFixa? ContaFixa { get; set; }
+        // Relacionamento Obrigatório com Lancamento
+        public int LancamentoId { get; set; }
+        public Lancamento Lancamento { get; set; } = null!;
     }
 }

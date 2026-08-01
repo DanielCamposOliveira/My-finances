@@ -53,7 +53,7 @@ namespace API_Data.src.Repository
             }
             catch
             {
-                return new List<CategoriaResponseDto>();
+                return [];
             }
         }
 

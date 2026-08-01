@@ -1,10 +1,10 @@
 ﻿using API_Data.src.Enum;
 
-namespace API_Data.src.DTOs
+namespace API_Data.src.DTOs.ContasFixas
 {
-    public record ParcelasContaFixaResponseDTO
+    public record ParcelasResponse
     {
-        public required int ParcelaId { get; init; }
+        public required int Id { get; init; }
         public required int ContaFixaId { get; init; }
         public required string Descricao { get; init; }
         public required decimal ValorParcela { get; init; }
@@ -13,17 +13,16 @@ namespace API_Data.src.DTOs
         public required StatusParcela Status { get; init; }
     }
 
-    public record ParcelaUpdateStatusDTO
+    public record ParcelaUpdateStatus
     {
         public required int ParcelaId { get; init; }
         public required StatusParcela Status { get; init; }
     }
 
 
-    public record ParcelaUpdateValorDTO
+    public record ParcelaUpdateValor
     {
         public required int ParcelaId { get; init; }
         public required decimal ValorParcela { get; init; }
     }
-
 }

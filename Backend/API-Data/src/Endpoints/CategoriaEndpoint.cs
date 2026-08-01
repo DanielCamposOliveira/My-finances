@@ -8,7 +8,7 @@ namespace API_Data.src.Endpoints
     {
         public static void MapCategoriaEndpoints(this IEndpointRouteBuilder app)
         {
-            var Endpoint = app.MapGroup("/api/categorias").WithTags("Categorias");
+            var Endpoint = app.MapGroup("/api/v1/categorias").WithTags("Categorias");
 
             // ==========================================
             // ROTAS: CRIA Categoria

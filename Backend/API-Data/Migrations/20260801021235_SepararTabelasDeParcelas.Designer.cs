@@ -3,6 +3,7 @@ using System;
 using API_Data.src.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API_Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260801021235_SepararTabelasDeParcelas")]
+    partial class SepararTabelasDeParcelas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,6 +136,9 @@ namespace API_Data.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<int>("QtdParcelas")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Tipo")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("ValorTotal")
