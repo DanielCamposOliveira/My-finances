@@ -25,7 +25,8 @@ builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
-
+builder.Services.AddScoped<IHistoricoFinanceiroAnualRepository, HistoricoFinanceiroAnualRepository>();
+builder.Services.AddScoped<IHistoricoFinanceiroAnualService, HistoricoFinanceiroAnualService>();
 
 
 // serviços necessários para o Swagger funcionar
@@ -58,7 +59,7 @@ if (app.Environment.IsDevelopment())
 
 // Mapeamento dos grupos de endpoints
 app.MapContasFixasEndpoints();
-
+app.MapHistoricoFinanceiroAnualEndpoints();
 app.MapTagEndpoints();
 app.MapCategoriaEndpoints();
 app.MapLancamentoEndpoints();
