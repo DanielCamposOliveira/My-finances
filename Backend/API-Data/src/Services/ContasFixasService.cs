@@ -2,15 +2,16 @@
 using API_Data.src.DTOs.ContasFixas;
 using API_Data.src.Enum;
 using API_Data.src.Model;
-using API_Data.src.Repository;
+using API_Data.src.Repository.Interface;
+using API_Data.src.Services.Interface;
 
 namespace API_Data.src.Services
 {
-    public class ContasFixasService
+    public class ContasFixasService : IContasFixasService
     {
-        private readonly ContasFixasRepository _repository;
+        private readonly IContasFixasRepository _repository;
 
-        public ContasFixasService(ContasFixasRepository repository)
+        public ContasFixasService(IContasFixasRepository repository)
         {
             _repository = repository;
         }

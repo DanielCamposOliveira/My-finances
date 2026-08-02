@@ -1,15 +1,16 @@
 ﻿using API_Data.src.DTOs.Lancamento;
 using API_Data.src.Enum;
 using API_Data.src.Model;
-using API_Data.src.Repository;
+using API_Data.src.Repository.Interface;
+using API_Data.src.Services.Interface;
 
 namespace API_Data.src.Services;
 
-public class LancamentosService
+public class LancamentosService : ILancamentosService
 {
-    private readonly LancamentosRepository _repository;
+    private readonly ILancamentosRepository _repository;
 
-    public LancamentosService(LancamentosRepository repository)
+    public LancamentosService(ILancamentosRepository repository)
     {
         _repository = repository;
     }

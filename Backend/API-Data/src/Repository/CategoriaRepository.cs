@@ -1,11 +1,12 @@
 ﻿using API_Data.src.Data;
 using API_Data.src.DTOs;
 using API_Data.src.Model;
+using API_Data.src.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_Data.src.Repository
 {
-    public class CategoriaRepository
+    public class CategoriaRepository : ICategoriaRepository
     {
         private readonly AppDbContext _db;
         public CategoriaRepository(AppDbContext db)
@@ -13,7 +14,7 @@ namespace API_Data.src.Repository
             _db = db;
         }
 
-        public async Task<CategoriaResponseDto?> CriarCategoriaAsync(Categoria categoria)
+        public async Task<bool?> CriarCategoriaAsync(Categoria categoria)
         {
             try
             {
@@ -21,17 +22,11 @@ namespace API_Data.src.Repository
                 _db.Categorias.Add(categoria);
                 await _db.SaveChangesAsync();
 
-               
-                return new CategoriaResponseDto
-                {
-                    Nome = categoria.Nome,
-                    Atribuicao = categoria.Atribuicao
-                };
-
+               return true;
             }
             catch
             {
-                return null;
+                return false;
             }
         }
 
@@ -44,6 +39,7 @@ namespace API_Data.src.Repository
                     .AsNoTracking() // Dica: excelente para performance em consultas de leitura
                     .Select(c => new CategoriaResponseDto
                     {
+                        Id = c.Id,
                         Nome = c.Nome,
                         Atribuicao = c.Atribuicao
                     })

@@ -1,5 +1,6 @@
 ﻿using API_Data.src.DTOs;
-using API_Data.src.Services;
+using API_Data.src.Services.Interface;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace API_Data.src.Endpoints
@@ -15,7 +16,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
 
 
-            Endpoint.MapPost("/", async (CriarCategoriaDto dto, CategoriaService service) =>
+            Endpoint.MapPost("/", async ([FromBody] CriarCategoriaDto dto, ICategoriaService service) =>
             {
                 var response = await service.CriarCategoria(dto);
                 return response;
@@ -29,7 +30,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: LISTA Categoria
             // ==========================================
-            Endpoint.MapGet("/", async (CategoriaService service) =>
+            Endpoint.MapGet("/", async (ICategoriaService service) =>
             {
                 var response = await service.ListaCategoria();
                 return response;

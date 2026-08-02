@@ -1,12 +1,12 @@
 ﻿using API_Data.src.Data;
 using API_Data.src.DTOs;
 using API_Data.src.Model;
+using API_Data.src.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
-using static API_Data.src.DTOs.TagDTO;
 
 namespace API_Data.src.Repository
 {
-    public class TagRepository
+    public class TagRepository : ITagRepository
     {
         private readonly AppDbContext _db;
         public TagRepository(AppDbContext db)

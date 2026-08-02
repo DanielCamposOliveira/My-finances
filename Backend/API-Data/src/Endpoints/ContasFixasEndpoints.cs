@@ -1,5 +1,6 @@
 ﻿using API_Data.src.DTOs.ContasFixas;
-using API_Data.src.Services;
+using API_Data.src.Services.Interface;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API_Data.src.Endpoints
 {
@@ -13,7 +14,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS:CRIA CONTA
             // ==========================================
-            Endpoint.MapPost("/", async (Create dto, ContasFixasService service) =>
+            Endpoint.MapPost("/", async ([FromBody] Create dto, IContasFixasService service) =>
             {
                 var result = await service.CriarContaFixaAsync(dto);
                 return result;
@@ -26,7 +27,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: GERA AS FATURAS DO MÊS
             // ==========================================
-            Endpoint.MapPost("/generator", async (ContasFixasService service) =>
+            Endpoint.MapPost("/generator", async (IContasFixasService service) =>
             {
                 var result = await service.GerarFaturasMesAsync();
                 return result;
@@ -41,7 +42,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: LISTAR PARCELAS PENDENTES
             // ==========================================
-            Endpoint.MapGet("/", async (ContasFixasService lancamentosService) =>
+            Endpoint.MapGet("/", async (IContasFixasService lancamentosService) =>
             {
                 var lancamentos = await lancamentosService.ListaTodasContasFixa();
                 return lancamentos;
@@ -55,7 +56,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: LISTAR PARCELAS PENDENTES
             // ==========================================
-            Endpoint.MapGet("/parcela/pendentes", async (ContasFixasService lancamentosService) =>
+            Endpoint.MapGet("/parcela/pendentes", async (IContasFixasService lancamentosService) =>
             {
                 var lancamentos = await lancamentosService.ListFaturaPendenteAsync();
                 return lancamentos;
@@ -70,7 +71,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
             // ==========================================
-            Endpoint.MapPatch("/update/status", async (ContaFixaUpdateStatus dto, ContasFixasService service) =>
+            Endpoint.MapPatch("/update/status", async ([FromBody] ContaFixaUpdateStatus dto, IContasFixasService service) =>
             {
                 var result = await service.UpdateStatusContaFixa(dto.Id_ContaFixa, dto.Status);
                 return Results.Ok(result);
@@ -85,7 +86,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
             // ==========================================
-            Endpoint.MapPatch("/parcela/update/status", async (ParcelaUpdateStatus dto, ContasFixasService service) =>
+            Endpoint.MapPatch("/parcela/update/status", async ([FromBody] ParcelaUpdateStatus dto, IContasFixasService service) =>
             {
                 var result = await service.UpdateStatusParcela(dto.ParcelaId, dto.Status);
                 return Results.Ok(result);
@@ -100,7 +101,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: ATUALIZAR O VALOR DA CONTA FIXA
             // ==========================================
-            Endpoint.MapPatch("/parcela/update/valor", async (ParcelaUpdateValor dto, ContasFixasService service) =>
+            Endpoint.MapPatch("/parcela/update/valor", async ([FromBody] ParcelaUpdateValor dto, IContasFixasService service) =>
             {
                 var result = await service.UpdateValorParcela(dto.ParcelaId, dto.ValorParcela);
                 return Results.Ok(result);

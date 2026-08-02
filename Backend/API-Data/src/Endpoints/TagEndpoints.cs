@@ -1,5 +1,6 @@
-﻿using API_Data.src.Services;
-using static API_Data.src.DTOs.TagDTO;
+﻿using API_Data.src.DTOs;
+using API_Data.src.Services.Interface;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API_Data.src.Endpoints
 {
@@ -12,7 +13,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             var Endpoint = app.MapGroup("/api/v1/tags").WithTags("Tags");
 
-            Endpoint.MapPost("/", async (CriarTagDto dto, TagService service) =>
+            Endpoint.MapPost("/", async ([FromBody]  CriarTagDto dto, ITagService service) =>
             {
                 var response = await service.CriarTag(dto);
                 return response;
@@ -26,7 +27,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: LISTA TAGS
             // ==========================================
-            Endpoint.MapGet("/", async (TagService service) =>
+            Endpoint.MapGet("/", async (ITagService service) =>
             {
                 var response = await service.ListaTags();
                 return response;

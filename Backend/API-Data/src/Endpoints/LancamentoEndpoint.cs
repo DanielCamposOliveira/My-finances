@@ -1,6 +1,6 @@
 ﻿using API_Data.src.DTOs.Lancamento;
-using API_Data.src.Enum;
-using API_Data.src.Services;
+using API_Data.src.Services.Interface;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API_Data.src.Endpoints
 {
@@ -13,9 +13,9 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: CRIAR LANÇAMENTO
             // ==========================================
-            Endpoint.MapPost("/", async (Create dto, LancamentosService lancamentosService) =>
+            Endpoint.MapPost("/", async ([FromBody] Create dto, ILancamentosService ILancamentosService) =>
             {
-                var resultado = await lancamentosService.CriarLancamentoAsync(dto);
+                var resultado = await ILancamentosService.CriarLancamentoAsync(dto);
                 return resultado;
             })
             .WithSummary("Criar Lancamento")
@@ -29,9 +29,9 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: LISTAR PARCELAS
             // ==========================================
-            Endpoint.MapGet("/parcela", async (LancamentosService lancamentosService) =>
+            Endpoint.MapGet("/parcela", async (ILancamentosService ILancamentosService) =>
             {
-                var lancamentos = await lancamentosService.ListarLancamentosAsync();
+                var lancamentos = await ILancamentosService.ListarLancamentosAsync();
                 return lancamentos;
             })
             .WithName("Lista todo os Lancamento")
@@ -44,9 +44,9 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: LISTAR PARCELAS PENDENTES
             // ==========================================
-            Endpoint.MapGet("/parcela/pendentes", async (LancamentosService lancamentosService) =>
+            Endpoint.MapGet("/parcela/pendentes", async (ILancamentosService ILancamentosService) =>
             {
-                var lancamentos = await lancamentosService.ListFaturaPendenteAsync();
+                var lancamentos = await ILancamentosService.ListFaturaPendenteAsync();
                 return lancamentos;
             })
             .WithName("Lista os Lancamento")
@@ -59,7 +59,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
             // ==========================================
-            Endpoint.MapPatch("/parcela/update", async (ParcelaUpdateStatus dto, LancamentosService service) =>
+            Endpoint.MapPatch("/parcela/update", async ([FromBody] ParcelaUpdateStatus dto, ILancamentosService service) =>
             {
                 var result = await service.UptateStatusLancamentoParcela(dto.ParcelaId, dto.Status);
                 return result;

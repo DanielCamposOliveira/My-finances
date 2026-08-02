@@ -1,14 +1,15 @@
-﻿using API_Data.src.Model;
-using API_Data.src.Repository;
-using static API_Data.src.DTOs.TagDTO;
+﻿using API_Data.src.DTOs;
+using API_Data.src.Model;
+using API_Data.src.Repository.Interface;
+using API_Data.src.Services.Interface;
 
 namespace API_Data.src.Services
 {
-    public class TagService
+    public class TagService : ITagService
     {
 
-        private readonly TagRepository _tagRepository;
-        public TagService(TagRepository tag)
+        private readonly ITagRepository _tagRepository;
+        public TagService(ITagRepository tag)
         {
             _tagRepository = tag;
         }

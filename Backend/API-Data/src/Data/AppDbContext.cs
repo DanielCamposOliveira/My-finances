@@ -53,20 +53,22 @@ namespace API_Data.src.Data
                        .HasPrecision(18, 2)
                        .IsRequired();
 
-                builder.HasOne(l => l.Categoria)
-                       .WithMany(c => c.Lancamentos)
-                       .HasForeignKey(l => l.CategoriaId)
-                       .OnDelete(DeleteBehavior.Restrict);
+                // Relacionamento 1:N entre Categoria e Lancamento. 
+                builder.HasOne(l => l.Categoria) // Define o relacionamento 1:N (Lancamento tem uma Categoria)
+                       .WithMany(c => c.Lancamentos) // Define a relação inversa (Categoria tem muitos Lancamentos)
+                       .HasForeignKey(l => l.CategoriaId) // Define a chave estrangeira 
+                       .IsRequired() // Define que a Categoria é obrigatória para um Lancamento
+                       .OnDelete(DeleteBehavior.Restrict); // Evita exclusão da Categoria se houver lançamentos associados
 
                 // Relacionamento N:N entre Lancamento e Tag (Join Table implícita do EF Core)
-                // Lancamento <-> Tag
-                builder.HasMany(l => l.Tags)
-                       .WithMany(t => t.Lancamentos)
-                       .UsingEntity(j => j.ToTable("LancamentoTags"));
+                builder.HasMany(l => l.Tags) // Define o relacionamento N:N (Lancamento tem muitas Tags)
+                       .WithMany(t => t.Lancamentos) // Define a relação inversa (Tag tem muitos Lancamentos)
+                       .UsingEntity(j => j.ToTable("LancamentoTags")); // Define a tabela de junção (join table) com o nome "LancamentoTags"
+
             });
 
             // Mapeamento: LancamentoParcela
-            modelBuilder.Entity<LancamentoParcela>(builder =>
+            modelBuilder.Entity<LancamentoParcela>(builder =>   
             {
                 builder.ToTable("lancamento_parcela");
                 builder.HasKey(p => p.Id);
@@ -100,11 +102,12 @@ namespace API_Data.src.Data
                        .HasPrecision(18, 2)
                        .IsRequired();
 
-                builder.HasOne(cf => cf.Categoria)
-                       .WithMany()
-                       .HasForeignKey(cf => cf.CategoriaId)
-                       .IsRequired()
-                       .OnDelete(DeleteBehavior.Restrict);
+                // Relacionamento 1:N entre Categoria e ContaFixa
+                builder.HasOne(cf => cf.Categoria) // Define o relacionamento 1:N (ContaFixa tem uma Categoria)
+                       .WithMany(c => c.ContasFixas) // Define a relação inversa (Categoria tem muitas ContasFixas)
+                       .HasForeignKey(cf => cf.CategoriaId) // Define a chave estrangeira
+                       .IsRequired() // Define que a Categoria é obrigatória para uma ContaFixa
+                       .OnDelete(DeleteBehavior.Restrict); // Evita exclusão da Categoria se houver contas fixas associadas
 
                 // Relacionamento N:N entre ContaFixa e Tag (Join Table implícita do EF Core)
                 // ContaFixa <-> Tag
@@ -148,9 +151,8 @@ namespace API_Data.src.Data
                 new Tag { Id = 8, Nome = "Outros" },
                 new Tag { Id = 9, Nome = "Facudade" },
                 new Tag { Id = 10, Nome = "Emprestimo" },
-                new Tag { Id = 11, Nome = "Streaming" },
-                new Tag { Id = 12, Nome = "IA" },
-                new Tag { Id = 13, Nome = "Armazenamento em Nuvem" }  
+                new Tag { Id = 11, Nome = "Streaming" }
+
             );
 
             modelBuilder.Entity<Categoria>().HasData(

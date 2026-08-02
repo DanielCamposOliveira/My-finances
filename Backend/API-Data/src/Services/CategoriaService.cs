@@ -1,14 +1,15 @@
 ﻿using API_Data.src.DTOs;
 using API_Data.src.Model;
-using API_Data.src.Repository;
+using API_Data.src.Repository.Interface;
+using API_Data.src.Services.Interface;
 
 namespace API_Data.src.Services
 {
-    public class CategoriaService
+    public class CategoriaService : ICategoriaService
     {
-        private readonly CategoriaRepository _categoriaRepository;
+        private readonly ICategoriaRepository _categoriaRepository;
             
-        public CategoriaService(CategoriaRepository repo)
+        public CategoriaService(ICategoriaRepository repo)
         {
             _categoriaRepository = repo;
         }
@@ -23,7 +24,7 @@ namespace API_Data.src.Services
 
             var retorno = await _categoriaRepository.CriarCategoriaAsync(Dados);
 
-            if(retorno == null)
+            if(retorno == false)
             {
                 return Results.Problem(
                 "Erro ao criar Categoria",

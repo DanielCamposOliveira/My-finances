@@ -1,11 +1,12 @@
 ﻿using API_Data.src.Data;
 using API_Data.src.Enum;
 using API_Data.src.Model;
+using API_Data.src.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_Data.src.Repository
 {
-    public class ContasFixasRepository
+    public class ContasFixasRepository : IContasFixasRepository
     {
         private readonly AppDbContext _db;
         public ContasFixasRepository(AppDbContext db)
@@ -29,21 +30,22 @@ namespace API_Data.src.Repository
 
 
         //## Obtem a lista de Tag
-        public async Task<List<Tag>> ListaTagsPorIdsAsync(List<int> tagIds)
+        public async Task<List<Tag>?> ListaTagsPorIdsAsync(List<int> tagIds)
         {
             try
             {
+                // Garante que o Tracking está ativo para registrar as entidades no Change Tracker
                 return await _db.Tags.Where(t => tagIds.Contains(t.Id)).ToListAsync();
             }
             catch
             {
-                return [];
+                return new List<Tag>();
             }
         }
 
 
         // Criar a Conta Fixa
-        public async Task<ContaFixa> CriarContaFixaAsync(ContaFixa contaFixa)
+        public async Task<ContaFixa?> CriarContaFixaAsync(ContaFixa contaFixa)
         {
             try
             {
@@ -58,10 +60,8 @@ namespace API_Data.src.Repository
         }
 
 
-
-
         // ## Lista todas as Contas ativas
-        public async Task<List<ContaFixa>> ListaContasFixasAtivasAsync()
+        public async Task<List<ContaFixa>?> ListaContasFixasAtivasAsync()
         {
             try
             {
@@ -152,7 +152,7 @@ namespace API_Data.src.Repository
 
 
         // ## Cria a parcela da Contas Fixa
-        public async Task<ContaFixaParcela> CriarParcelaFixaAsync(ContaFixaParcela parcela)
+        public async Task<ContaFixaParcela?> CriarParcelaFixaAsync(ContaFixaParcela parcela)
         {
             try
             {

@@ -2,7 +2,9 @@
 using API_Data.src.Data;
 using API_Data.src.Endpoints;
 using API_Data.src.Repository;
+using API_Data.src.Repository.Interface;
 using API_Data.src.Services;
+using API_Data.src.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,14 +17,14 @@ var connectionString = builder.Configuration.GetConnectionString("PostgreSQLConn
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
 // Registro de Serviços de Repositório e Regra de Negócio no Container de DI
-builder.Services.AddScoped<LancamentosRepository>();
-builder.Services.AddScoped<LancamentosService>();
-builder.Services.AddScoped<ContasFixasRepository>();
-builder.Services.AddScoped<ContasFixasService>();
-builder.Services.AddScoped<TagRepository>();
-builder.Services.AddScoped<TagService>();
-builder.Services.AddScoped<CategoriaRepository>();
-builder.Services.AddScoped<CategoriaService>();
+builder.Services.AddScoped<ILancamentosRepository, LancamentosRepository>();
+builder.Services.AddScoped<ILancamentosService, LancamentosService>();
+builder.Services.AddScoped<IContasFixasRepository, ContasFixasRepository>();
+builder.Services.AddScoped<IContasFixasService, ContasFixasService>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
 
 

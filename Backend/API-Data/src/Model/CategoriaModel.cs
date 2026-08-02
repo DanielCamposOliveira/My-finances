@@ -11,6 +11,9 @@ namespace API_Data.src.Model
 
         public Atribuicao Atribuicao { get; set; }
 
+        // Coleções para navegação inversa
+        // Coleções para bater com o .WithMany(...)
         public ICollection<Lancamento> Lancamentos { get; set; } = new List<Lancamento>();
+        public ICollection<ContaFixa> ContasFixas { get; set; } = new List<ContaFixa>();
     }
 }

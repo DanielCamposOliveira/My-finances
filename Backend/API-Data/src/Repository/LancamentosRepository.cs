@@ -2,11 +2,12 @@
 using API_Data.src.DTOs.Lancamento;
 using API_Data.src.Enum;
 using API_Data.src.Model;
+using API_Data.src.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_Data.src.Repository;
 
-public class LancamentosRepository
+public class LancamentosRepository : ILancamentosRepository
 {
     private readonly AppDbContext _db;
 
@@ -43,7 +44,7 @@ public class LancamentosRepository
     }
 
     // ## Adiciona um novo lançamento
-    public async Task<Lancamento> AdicionarLancamentoAsync(Lancamento lancamento)
+    public async Task<Lancamento?> AdicionarLancamentoAsync(Lancamento lancamento)
     {
         try
         {
@@ -58,7 +59,7 @@ public class LancamentosRepository
     }
 
     // ## Lista todas as Contas
-    public async Task<List<Lancamento>> ListaLancamentosAsync()
+    public async Task<List<Lancamento>?> ListaLancamentosAsync()
     {
         try
         {
@@ -76,7 +77,7 @@ public class LancamentosRepository
 
 
     // Lista todos os lançamentos com suas categorias, tags e parcelas
-    public async Task<List<LancamentoResponse>> ListaTodosLancamentosAsync()
+    public async Task<List<LancamentoResponse>?> ListaTodosLancamentosAsync()
     {
         try
         {
@@ -114,7 +115,7 @@ public class LancamentosRepository
 
 
     // ## Buscar todas as parcelas do Mes atual que NÃO esteja como PAGO por ID da CONTA
-    public async Task<List<LancamentoParcela>> ListParcelasAbertasAtrasadasAsync(int LancamentoId, int ano, int mes)
+    public async Task<List<LancamentoParcela>?> ListParcelasAbertasAtrasadasAsync(int LancamentoId, int ano, int mes)
     {
         try
         {
@@ -167,7 +168,15 @@ public class LancamentosRepository
     // ## Busca a parcela
     public async Task<LancamentoParcela?> BuscaLancamentoParcelasync(int id)
     {
-        return await _db.LancamentoParcelas.FindAsync(id);
+        try
+        {
+            return await _db.LancamentoParcelas.FindAsync(id);
+        }
+        catch
+        {
+            return null;
+        }
+
     }
 
 }
