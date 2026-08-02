@@ -13,6 +13,7 @@ namespace API_Data.src.Data
         public DbSet<ContaFixa> ContaFixa => Set<ContaFixa>();
         public DbSet<LancamentoParcela> LancamentoParcelas => Set<LancamentoParcela>();
         public DbSet<ContaFixaParcela> ContaFixaParcelas => Set<ContaFixaParcela>();
+        public DbSet<HistoricoFinanceiroAnual> HistoricosFinanceiros => Set<HistoricoFinanceiroAnual>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -136,6 +137,23 @@ namespace API_Data.src.Data
                        .HasForeignKey(p => p.ContaFixaId)
                        .IsRequired()
                        .OnDelete(DeleteBehavior.Cascade);
+            });
+
+
+            // Mapeamento: HistoricoFinanceiroAnual
+            modelBuilder.Entity<HistoricoFinanceiroAnual>(builder =>
+            {
+                builder.HasKey(h => h.Id);
+
+                builder.Property(h => h.TotalSaldo)
+                       .HasPrecision(18, 2) // Define a precisão do campo (18 dígitos no total, 2 após a vírgula)
+                       .HasDefaultValue(0); // Define o valor padrão como 0, caso não seja especificado
+
+                builder.Property(h => h.TotalDivida)
+                       .HasPrecision(18, 2)
+                       .HasDefaultValue(0);
+                                    
+                builder.HasIndex(h => new { h.Ano, h.Mes }).IsUnique(); // Garante que não haja duplicidade de registros para o mesmo Ano e Mês
             });
 
 
