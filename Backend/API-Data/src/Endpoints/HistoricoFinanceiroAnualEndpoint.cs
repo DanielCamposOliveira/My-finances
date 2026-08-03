@@ -7,13 +7,13 @@ namespace API_Data.src.Endpoints
     {
         public static void MapHistoricoFinanceiroAnualEndpoints(this IEndpointRouteBuilder app)
         {
-            var Endpoint = app.MapGroup("/api/v1/HistoricoFinanceiroAnual").WithTags("Historico Financeiro Anual");
+            var EndpointHistorico = app.MapGroup("/api/v1/HistoricoFinanceiroAnual").WithTags("Historico Financeiro Anual");
 
             // ==========================================
             // ROTAS:LISTAR HISTORICO FINANCEIRO ANUAL
             // ==========================================
 
-            Endpoint.MapGet("/{ano:int}", async (int ano, IHistoricoFinanceiroAnualService service) =>
+            EndpointHistorico.MapGet("/{ano:int}", async (int ano, IHistoricoFinanceiroAnualService service) =>
             {
                 var result = await service.ListaHistoricoAsync(ano);
                 return result;
@@ -27,15 +27,28 @@ namespace API_Data.src.Endpoints
             // ROTAS:ATUALIZAR HISTORICO FINANCEIRO ANUAL
             // ==========================================
 
-            Endpoint.MapPost("/AtualizarHistoricoMes", async (HistoricoMesRequest request, IHistoricoFinanceiroAnualService service) =>
+            EndpointHistorico.MapPost("/AtualizarHistoricoMes", async (HistoricoMesRequest request, IHistoricoFinanceiroAnualService service) =>
             {
-                var result = await service.AtualizarHistoricoMesAsync(request);
+                var result = await service.UpdateHistoricoMesAsync(request);
                 return result;
             }) .WithSummary("Atualizar Histórico Financeiro Anual")
                .WithDescription("Atualiza o histórico financeiro anual para um mês específico")
                .Produces(StatusCodes.Status200OK)
                .Produces(StatusCodes.Status400BadRequest)
                .Produces(StatusCodes.Status500InternalServerError);
+
+
+
+
+            EndpointHistorico.MapPost("/generator", async (IHistoricoFinanceiroAnualService service) =>
+            {
+                var result = await service.GerarHistoricoMesAsync();
+                return result;
+            })
+            .WithSummary("Gerar Histórico Financeiro Anual")
+            .WithDescription("Gera o histórico financeiro anual para um ano específico")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status500InternalServerError);
 
         }
 

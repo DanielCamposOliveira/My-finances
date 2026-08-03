@@ -7,9 +7,11 @@ namespace API_Data.src.Services
     public class HistoricoFinanceiroAnualService : IHistoricoFinanceiroAnualService
     {
         private readonly IHistoricoFinanceiroAnualRepository _Repo;
-        public HistoricoFinanceiroAnualService(IHistoricoFinanceiroAnualRepository repo)
+        private readonly IConsultaService _service;
+        public HistoricoFinanceiroAnualService(IHistoricoFinanceiroAnualRepository repo, IConsultaService service)
         {
             _Repo = repo;
+            _service = service;
         }
         public async Task<List<GraficoHistoricoResponse>> ListaHistoricoAsync(int ano)
         {
@@ -57,7 +59,13 @@ namespace API_Data.src.Services
 
         }
 
-        public async Task<IResult> AtualizarHistoricoMesAsync(HistoricoMesRequest request)
+        /// <summary>
+        /// Atualiza o histórico do mês com os valores fornecidos no request.
+        /// RASCUNHO: Este método é chamado para atualizar o histórico do mês com os valores fornecidos 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task<IResult> UpdateHistoricoMesAsync(HistoricoMesRequest request)
         {
            var response = await _Repo.AtualizarHistoricoMesAsync(request);
            if(response == false)
@@ -69,6 +77,55 @@ namespace API_Data.src.Services
 
             return Results.Created();
 
+        }
+
+        /// <summary>
+        /// Gera o histórico do mês anterior, verificando se já existe um registro para o mês e ano correspondentes. 
+        /// Se não existir, calcula o total de dívidas e saldo, e cria um novo registro no banco de dados.
+        /// RASCUNHO: Este método é chamado para gerar o histórico do mês anterior, verificando se já existe um registro para o mês e ano correspondentes.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IResult> GerarHistoricoMesAsync()
+        {
+     
+            int ano = DateTime.Today.Year;
+            int mes = DateTime.Today.Month - 1; // Pega o mes passado
+            // verifica se o mês é 0 (janeiro), então ajusta para dezembro do ano anterior
+            if (mes == 0)
+            {
+                mes = 12;
+                ano--;
+            }
+
+
+            //verifica se já existe um registro para o mês atual
+            var Valor = await _Repo.ObterHistoricosMesAsync(mes, ano);
+            if (Valor != null && Valor.Any())
+            {
+                return Results.Conflict($"O histórico para {mes}/{ano} já existe.");
+            }
+
+
+            var _TotalDivida = await _service.TotalDividasMes();
+            var _TotalSaldo = await _service.TotalSaldo();
+
+            // Monta o pacote de dados para o histórico do mês
+            var HistoricoMesRequest = new HistoricoMesRequest
+            {   
+                ano = Convert.ToInt32(ano),
+                mes = Convert.ToInt32(mes),
+                novoSaldo = Convert.ToInt32(_TotalSaldo),
+                novaDivida = Convert.ToInt32(_TotalDivida)
+            };
+
+            var response = await _Repo.AtualizarHistoricoMesAsync(HistoricoMesRequest);
+            if (response == false)
+            {
+                return Results.Problem(
+                 "Erro ao cadastrar o histórico do mês.",
+                 statusCode: StatusCodes.Status500InternalServerError);
+            }
+            return Results.Created();
         }
     }
 }

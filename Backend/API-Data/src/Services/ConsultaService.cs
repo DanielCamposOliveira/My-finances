@@ -12,10 +12,6 @@ namespace API_Data.src.Services
         }
 
 
-
-
-        #region Rotas validadas
-
         // RASCUNHO: Soma tudo que estejam com vencimento até o mês/ano informado e seja com status "Aberto" e atribuição "Ganho"
         public async Task<Decimal> TotalReceber()
         {
@@ -70,7 +66,7 @@ namespace API_Data.src.Services
             return retorno;
         }
 
-        #endregion
+  
     }
 }
 

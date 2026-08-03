@@ -9,6 +9,7 @@ namespace API_Data.src.Endpoints
                     
             var EndpointValores = app.MapGroup("/api/v1/Consulta/Valores").WithTags("Consulta");
             var EndpointDividas = app.MapGroup("/api/v1/Consulta/Dividas").WithTags("Consulta");
+            
 
             // - Dashboard
             // ==========================================

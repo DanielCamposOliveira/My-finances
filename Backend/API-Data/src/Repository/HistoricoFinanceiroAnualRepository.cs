@@ -23,15 +23,25 @@ namespace API_Data.src.Repository
                 .ToListAsync();
         }
 
+        public async Task<List<HistoricoFinanceiroAnual>> ObterHistoricosMesAsync(int mes, int ano)
+        {
+            return await _db.HistoricosFinanceiros
+              .AsNoTracking()
+                .Where(h => h.Ano == ano && h.Mes == mes)
+                .ToListAsync();
+        }
+
 
         // Implementação do método AtualizarHistoricoMesAsync
         public async Task<Boolean> AtualizarHistoricoMesAsync(HistoricoMesRequest request)
         {
             try
             {
+                // Verifica se já existe um registro para o mês e ano fornecidos
                 var registro = await _db.HistoricosFinanceiros
                 .FirstOrDefaultAsync(h => h.Ano == request.ano && h.Mes == request.mes);
 
+                // Se não existir, cria um novo registro; caso contrário, atualiza o existente
                 if (registro == null)
                 {
                     registro = new HistoricoFinanceiroAnual

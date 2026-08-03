@@ -9,6 +9,8 @@ namespace API_Data.src.Repository.Interface
 
         public Task<Boolean> AtualizarHistoricoMesAsync(HistoricoMesRequest request);
 
+        public Task<List<HistoricoFinanceiroAnual>> ObterHistoricosMesAsync(int mes, int ano);
+
 
     }
 }

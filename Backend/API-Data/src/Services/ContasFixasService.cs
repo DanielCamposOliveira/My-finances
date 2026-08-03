@@ -118,11 +118,7 @@ namespace API_Data.src.Services
                     DiaVencimento = _conta.DiaVencimento,
                     CategoriaId = _conta.CategoriaId,      
                     Ativo = _conta.Ativo,
-                    //Tags = _conta.Tags.Select(t => new TagResponse
-                    //{
-                    //    Id = t.Id,
-                    //    Descricao = t.Descricao
-                    //}).ToList()
+                    TagIds = _conta.Tags.Select(t => t.Id).ToList()   
                 });
             }
             return contasResponse;
