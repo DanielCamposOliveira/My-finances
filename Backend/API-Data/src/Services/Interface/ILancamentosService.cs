@@ -12,5 +12,11 @@ namespace API_Data.src.Services.Interface
         public Task<IResult> CriarLancamentoAsync(Create dto);
 
         public Task<IResult> UptateStatusLancamentoParcela(int id, StatusParcela status);
+
+       
+
+
+
+
     }
 }

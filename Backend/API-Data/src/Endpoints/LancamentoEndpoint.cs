@@ -71,6 +71,8 @@ namespace API_Data.src.Endpoints
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status200OK);
 
+
+
         }
     }
 }

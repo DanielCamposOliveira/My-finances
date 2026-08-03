@@ -125,9 +125,10 @@ public class LancamentosRepository : ILancamentosRepository
             // 2. Define o primeiro dia do próximo mês (ex: 01/08/2026)
             var fimMes = inicioMes.AddMonths(1);
 
-            return await _db.LancamentoParcelas
-                .AsNoTracking()
-                .Include(p => p.Lancamento)
+            return await _db.LancamentoParcelas // Busca na tabela de parcelas do lançamento
+                .AsNoTracking()  // Evita o rastreamento de alterações para melhorar o desempenho
+                .Include(p => p.Lancamento) // Inclui os dados do lançamento relacionado
+                                            // Filtra as parcelas com base no ID do lançamento, status e datas de vencimento
                 .Where(p => p.LancamentoId == LancamentoId && p.Status != StatusParcela.Pago &&
                     (
                         // Condição 1: Do mês solicitado e não pago
@@ -139,8 +140,8 @@ public class LancamentosRepository : ILancamentosRepository
                         (p.DataVencimento < inicioMes)
                     )
                 )
-                .OrderBy(p => p.DataVencimento)
-                .ToListAsync();
+                .OrderBy(p => p.DataVencimento) // Ordena as parcelas pelo vencimento
+                .ToListAsync(); // Converte o resultado para uma lista
         }
         catch
         {

@@ -87,9 +87,20 @@ namespace API_Data.src.Data
                        .HasForeignKey(p => p.LancamentoId)
                        .IsRequired()
                        .OnDelete(DeleteBehavior.Cascade);
+
+                // Índice para localizar parcelas pendentes por vencimento
+                // e realizar o JOIN com Lancamento sem acessar a tabela principal
+                builder.HasIndex(p => new
+                {
+                    p.Status,
+                    p.DataVencimento,
+                    p.LancamentoId
+                })
+                .HasDatabaseName("IX_LancamentoParcela_Status_DataVencimento_Lancamento") // Nome do índice no banco de dados
+                .IncludeProperties(p => p.ValorParcela); // Inclui a coluna ValorParcela no índice para otimizar consultas que retornam esse campo
             });
 
-
+            
             // Mapeamento: ContaFixa
             modelBuilder.Entity<ContaFixa>(builder =>
             {
@@ -137,6 +148,18 @@ namespace API_Data.src.Data
                        .HasForeignKey(p => p.ContaFixaId)
                        .IsRequired()
                        .OnDelete(DeleteBehavior.Cascade);
+
+                // Índice composto para otimizar consultas por Status, DataVencimento e ContaFixaId
+                // Define o índice composto para otimizar consultas que filtram por Status, DataVencimento e ContaFixaId
+                builder.HasIndex(p => new
+                {
+                    p.Status,
+                    p.DataVencimento,
+                    p.ContaFixaId
+                }) 
+                .HasDatabaseName("IX_ContaFixaParcela_Status_DataVencimento_ContaFixa") // Nome do índice no banco de dados
+                .IncludeProperties(p => p.ValorParcela); // Inclui a coluna ValorParcela no índice para otimizar consultas que retornam esse campo
+
             });
 
 

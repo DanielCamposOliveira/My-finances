@@ -72,7 +72,7 @@ public class LancamentosService : ILancamentosService
         var ListTags = await _repository.ObterTagsPorIdsAsync(dto.TagIds);
 
         // Definição da quantidade de parcelas
-       // int quantidadeEfetivaParcelas = dto.Tipo == TipoLancamento.Parcelado ? dto.QtdParcelas : 1;
+        // int quantidadeEfetivaParcelas = dto.Tipo == TipoLancamento.Parcelado ? dto.QtdParcelas : 1;
 
         // Mapeamento para a entidade do domínio
         var lancamento = new Lancamento
@@ -141,5 +141,6 @@ public class LancamentosService : ILancamentosService
 
         return Results.Created();
     }
+
 
 }

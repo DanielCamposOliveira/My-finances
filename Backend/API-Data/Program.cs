@@ -27,7 +27,8 @@ builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IHistoricoFinanceiroAnualRepository, HistoricoFinanceiroAnualRepository>();
 builder.Services.AddScoped<IHistoricoFinanceiroAnualService, HistoricoFinanceiroAnualService>();
-
+builder.Services.AddScoped<IConsultaRepository, ConsultaRepository>();
+builder.Services.AddScoped<IConsultaService, ConsultaService>();
 
 // serviços necessários para o Swagger funcionar
 builder.Services.AddEndpointsApiExplorer();
@@ -63,6 +64,6 @@ app.MapHistoricoFinanceiroAnualEndpoints();
 app.MapTagEndpoints();
 app.MapCategoriaEndpoints();
 app.MapLancamentoEndpoints();
-
+app.MapConsultaEndpoints();
 
 app.Run();

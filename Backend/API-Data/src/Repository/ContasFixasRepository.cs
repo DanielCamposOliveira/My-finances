@@ -130,6 +130,7 @@ namespace API_Data.src.Repository
 
                 return await _db.ContaFixaParcelas
                     .AsNoTracking()
+                    // Filtra as parcelas com base no ID da conta fixa, status e data de vencimento
                     .Where(p => p.ContaFixaId == contaFixaId && p.Status != StatusParcela.Pago &&
                         (
                             // Condição 1: Do mês solicitado e não pago
