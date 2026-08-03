@@ -11,61 +11,44 @@ namespace API_Data.src.Services
             _repository = repository;
         }
 
-        public async Task<Decimal> ValorLancamento()
+
+
+
+        #region Rotas validadas
+
+        // RASCUNHO: Soma tudo que estejam com vencimento até o mês/ano informado e seja com status "Aberto" e atribuição "Ganho"
+        public async Task<Decimal> TotalReceber()
         {
             int ano = DateTime.Today.Year;
             int mes = DateTime.Today.Month;
 
-            var retorno = await _repository.ValorLancamento(ano, mes);
+            var retorno = await _repository.TotalReceber(ano, mes);
             return retorno;
         }
 
-        public async Task<Decimal> ValorContaFixa()
-        {
-            int ano = DateTime.Today.Year;
-            int mes = DateTime.Today.Month;
 
-            var retorno = await _repository.ValorContaFixa(ano, mes);
-            return retorno;
-        }
 
-        public async Task<Decimal> TotalContasApgar()
-        {
-            int ano = DateTime.Today.Year;
-            int mes = DateTime.Today.Month;
-
-            var retorno = await _repository.TotalContasApgar(ano, mes);
-            return retorno;
-        }
-
-        public async Task<Decimal> TotalContasReceber()
-        {
-            int ano = DateTime.Today.Year;
-            int mes = DateTime.Today.Month;
-
-            var retorno = await _repository.TotalContasReceber(ano, mes);
-            return retorno;
-        }
-
-        //## 
+        // RASCUNHO: Isso significa que vai buscar todas as dividas que foram pagas no mês 
         public async Task<Decimal> TotalSaldo()
         {
             int ano = DateTime.Today.Year;
             int mes = DateTime.Today.Month;
 
-            var retorno = await _repository.TotalContasSaldo(ano, mes);
+            var retorno = await _repository.TotalSaldo(ano, mes);
             return retorno;
         }
 
-        // Dividas que pague esse mes
-        public async Task<Decimal> TotalPagasDoMes()
+
+        // RASCUNHO: Isso significa que vai buscar todas as dividas que foram pagas no mês
+        public async Task<Decimal> TotalQuitadasDoMes()
         {
             int ano = DateTime.Today.Year;
             int mes = DateTime.Today.Month;
 
-            var retorno = await _repository.TotalPagasDoMes(ano, mes);
+            var retorno = await _repository.TotalQuitadasDoMes(ano, mes);
             return retorno;
         }
+
 
         // RASCUNHO: Isso significa que vai buscar todas as dividas que foram criadas no mês, independente de estarem pagas ou não.
         public async Task<Decimal> TotalDividasMes()
@@ -75,6 +58,19 @@ namespace API_Data.src.Services
             var retorno = await _repository.TotalDividasMes(ano, mes);
             return retorno;
         }
+
+
+        // RASCUNHO: Retorna o valor total das todas dividas que foram criadas no mês que esta em aberto e as contas Atrasado dos meses anteriores
+        public async Task<Decimal> TotalContasPendentes()
+        {
+            int ano = DateTime.Today.Year;
+            int mes = DateTime.Today.Month;
+
+            var retorno = await _repository.TotalContasPendentes(ano, mes);
+            return retorno;
+        }
+
+        #endregion
     }
 }
 

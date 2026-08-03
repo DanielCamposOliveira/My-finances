@@ -2,17 +2,14 @@
 {
     public interface IConsultaRepository
     {
-        public Task<Decimal> ValorLancamento(int ano, int mes);
 
-        public Task<Decimal> ValorContaFixa(int ano, int mes);
+        public Task<Decimal> TotalContasPendentes(int ano, int mes);
 
-        public Task<Decimal> TotalContasApgar(int ano, int mes);
+        public Task<Decimal> TotalReceber(int ano, int mes);
 
-        public Task<Decimal> TotalContasReceber(int ano, int mes);
+        public Task<Decimal> TotalSaldo(int ano, int mes);
 
-        public Task<Decimal> TotalContasSaldo(int ano, int mes);
-
-        public Task<Decimal> TotalPagasDoMes(int ano, int mes);
+        public Task<Decimal> TotalQuitadasDoMes(int ano, int mes);
 
         public Task<Decimal> TotalDividasMes(int ano, int mes);
     }

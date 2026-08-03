@@ -2,13 +2,11 @@
 {
     public interface IConsultaService
     {
-        public Task<Decimal> ValorLancamento();
-        public Task<Decimal> ValorContaFixa();
-        public Task<Decimal> TotalContasApgar();
-        public Task<Decimal> TotalContasReceber();
+        public Task<Decimal> TotalContasPendentes();
+        public Task<Decimal> TotalReceber();
         public Task<Decimal> TotalSaldo();
 
-        public Task<Decimal> TotalPagasDoMes();
+        public Task<Decimal> TotalQuitadasDoMes();
         public Task<Decimal> TotalDividasMes(); 
     }
 }
