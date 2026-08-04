@@ -33,17 +33,18 @@ namespace API_Data.src.Services
             return Results.Created();
         }
 
-
-        public async Task<List<TagResponseDto>> ListaTags()
+        //public async Task<List<TagResponseDto>> ListaTags()
+        public async Task<IResult> ListaTags()
         {
            var retorno = await _tagRepository.ListaTags();
            if(retorno == null)
            {
-             var lista = new List<TagResponseDto>();
-             return lista;
-           }              
+                return Results.Problem(
+                "Erro ao Listar Tag",
+                statusCode: StatusCodes.Status500InternalServerError);
+            }
 
-            return retorno;
+            return Results.Ok(retorno);
         }
 
     }

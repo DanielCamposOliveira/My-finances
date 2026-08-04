@@ -5,9 +5,9 @@ namespace API_Data.src.Services.Interface
 {
     public interface ILancamentosService
     {
-        public Task<List<LancamentoResponse>> ListarLancamentosAsync();
+        public Task<IResult> ListarLancamentosAsync();
 
-        public Task<List<ParcelasResponse>> ListFaturaPendenteAsync();
+        public Task<IResult> ListFaturaPendenteAsync();
 
         public Task<IResult> CriarLancamentoAsync(Create dto);
 

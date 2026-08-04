@@ -1,4 +1,5 @@
-﻿using API_Data.src.Repository;
+﻿using API_Data.src.Data;
+using API_Data.src.Repository;
 using API_Data.src.Services;
 using Xunit.Abstractions;
 
@@ -8,6 +9,18 @@ namespace API_Data.Tests
     {
         public ConsultaServiceTest(ITestOutputHelper output) : base(output)
         {
+            EscreverLinha("Registro: " + DateTime.Now);
+        }
+
+        /// <summary>
+        /// Cria uma instância do serviço TagService com os repositórios necessários.
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <returns></returns>
+        protected ConsultaService _ConsultaService(AppDbContext dbContext)
+        {
+            var repo = new ConsultaRepository(dbContext);
+            return new ConsultaService(repo);
         }
 
         [Fact]
@@ -18,19 +31,13 @@ namespace API_Data.Tests
             // 1. ARRANGE (Preparação com componentes REAIS)
             //=============================================================
             using var dbContext = DbContext();
+            var service = _ConsultaService(dbContext);
 
-            // Instanciamos o Repositório REAL com o DbContext REAL
-            var ConsultaRepositoryReal = new ConsultaRepository(dbContext);
-
-            // Instanciamos o Serviço REAL passando o Repositório REAL (sem Moq!)
-            var ConsultaServiceReal = new ConsultaService(ConsultaRepositoryReal);
-
-
-
+      
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado =  ConsultaServiceReal.TotalReceber().Result;
+            var resultado = service.TotalReceber().Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)
@@ -51,19 +58,12 @@ namespace API_Data.Tests
             // 1. ARRANGE (Preparação com componentes REAIS)
             //=============================================================
             using var dbContext = DbContext();
-
-            // Instanciamos o Repositório REAL com o DbContext REAL
-            var ConsultaRepositoryReal = new ConsultaRepository(dbContext);
-
-            // Instanciamos o Serviço REAL passando o Repositório REAL (sem Moq!)
-            var ConsultaServiceReal = new ConsultaService(ConsultaRepositoryReal);
-
-
+            var service = _ConsultaService(dbContext);
 
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = ConsultaServiceReal.TotalSaldo().Result;
+            var resultado = service.TotalSaldo().Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)
@@ -85,19 +85,13 @@ namespace API_Data.Tests
             // 1. ARRANGE (Preparação com componentes REAIS)
             //=============================================================
             using var dbContext = DbContext();
-
-            // Instanciamos o Repositório REAL com o DbContext REAL
-            var ConsultaRepositoryReal = new ConsultaRepository(dbContext);
-
-            // Instanciamos o Serviço REAL passando o Repositório REAL (sem Moq!)
-            var ConsultaServiceReal = new ConsultaService(ConsultaRepositoryReal);
-
+            var service = _ConsultaService(dbContext);
 
 
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = ConsultaServiceReal.TotalQuitadasDoMes().Result;
+            var resultado = service.TotalQuitadasDoMes().Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)
@@ -117,19 +111,12 @@ namespace API_Data.Tests
             // 1. ARRANGE (Preparação com componentes REAIS)
             //=============================================================
             using var dbContext = DbContext();
-
-            // Instanciamos o Repositório REAL com o DbContext REAL
-            var ConsultaRepositoryReal = new ConsultaRepository(dbContext);
-
-            // Instanciamos o Serviço REAL passando o Repositório REAL (sem Moq!)
-            var ConsultaServiceReal = new ConsultaService(ConsultaRepositoryReal);
-
-
+            var service = _ConsultaService(dbContext);
 
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = ConsultaServiceReal.TotalDividasMes().Result;
+            var resultado = service.TotalDividasMes().Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)
@@ -149,19 +136,13 @@ namespace API_Data.Tests
             // 1. ARRANGE (Preparação com componentes REAIS)
             //=============================================================
             using var dbContext = DbContext();
-
-            // Instanciamos o Repositório REAL com o DbContext REAL
-            var ConsultaRepositoryReal = new ConsultaRepository(dbContext);
-
-            // Instanciamos o Serviço REAL passando o Repositório REAL (sem Moq!)
-            var ConsultaServiceReal = new ConsultaService(ConsultaRepositoryReal);
-
+            var service = _ConsultaService(dbContext);
 
 
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = ConsultaServiceReal.TotalContasPendentes().Result;
+            var resultado = service.TotalContasPendentes().Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)

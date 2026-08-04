@@ -64,7 +64,12 @@ namespace API_Data.src.Services
             int mes = DateTime.Today.Month;
 
             var contasAtivas = await _repository.ListaContasFixasAtivasAsync();
-
+            if(contasAtivas == null)
+            {
+                return Results.Problem(
+                    "Erro ao lista faturas",
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
 
             foreach (var conta in contasAtivas)
             {
@@ -102,9 +107,15 @@ namespace API_Data.src.Services
         }
 
 
-        public async Task<List<ContaFixaResponse>> ListaTodasContasFixa()
+        public async Task<IResult> ListaTodasContasFixa()
         {
             var Contas = await _repository.ListaContasFixasAsync();
+            if(Contas == null)
+            {
+                return Results.Problem(
+                    "Ocorreu um Erro ao lista Contas Fixas",
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
 
             var contasResponse = new List<ContaFixaResponse>();
 
@@ -121,14 +132,21 @@ namespace API_Data.src.Services
                     TagIds = _conta.Tags.Select(t => t.Id).ToList()   
                 });
             }
-            return contasResponse;
+            return Results.Ok(contasResponse);
         }
 
 
         //## Obter faturas com Status Aberto(Mes recorent) ou Vencida(Ano recorrent) 
-        public async Task<List<ParcelasResponse>> ListFaturaPendenteAsync()
+        public async Task<IResult> ListFaturaPendenteAsync()
         {
             var contasAtivas = await _repository.ListaContasFixasAtivasAsync();
+            if (contasAtivas == null)
+            {
+                return Results.Problem(
+                    "Ocorreu um Erro ao lista Contas Fixas",
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+
             var faturasGeradas = new List<ParcelasResponse>();
             int ano = DateTime.Today.Year;
             int mes = DateTime.Today.Month;
@@ -154,7 +172,7 @@ namespace API_Data.src.Services
                 }
             }
 
-            return faturasGeradas;
+            return Results.Ok(faturasGeradas);
         }
 
 

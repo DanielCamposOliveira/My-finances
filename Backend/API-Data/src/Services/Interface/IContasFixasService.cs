@@ -10,9 +10,9 @@ namespace API_Data.src.Services.Interface
 
         public Task<IResult> GerarFaturasMesAsync();
 
-        public Task<List<ContaFixaResponse>> ListaTodasContasFixa();
+        public Task<IResult> ListaTodasContasFixa();
 
-        public Task<List<ParcelasResponse>> ListFaturaPendenteAsync();
+        public Task<IResult> ListFaturaPendenteAsync();
 
         public Task<IResult> UpdateStatusParcela(int Id_Parcela, StatusParcela status);
 

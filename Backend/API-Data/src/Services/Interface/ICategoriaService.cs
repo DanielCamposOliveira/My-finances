@@ -6,6 +6,6 @@ namespace API_Data.src.Services.Interface
     {
         public Task<IResult> CriarCategoria(CriarCategoriaDto dto);
 
-        public Task<List<CategoriaResponseDto>> ListaCategoria();
+        public Task<IResult> ListaCategoria();
     }
 }

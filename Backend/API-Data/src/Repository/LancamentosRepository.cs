@@ -38,7 +38,7 @@ public class LancamentosRepository : ILancamentosRepository
         }
         catch
         {
-            return [];
+            return null;
         }
 
     }
@@ -71,7 +71,7 @@ public class LancamentosRepository : ILancamentosRepository
         }
         catch
         {
-            return [];
+            return null;
         }
     }
 
@@ -109,7 +109,7 @@ public class LancamentosRepository : ILancamentosRepository
         }
         catch
         {
-            return [];
+            return null;
         }
     }
 
@@ -145,7 +145,7 @@ public class LancamentosRepository : ILancamentosRepository
         }
         catch
         {
-            return [];
+            return null;
         }
     }
 

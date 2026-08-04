@@ -3,7 +3,6 @@ using API_Data.src.DTOs;
 using API_Data.src.Repository;
 using API_Data.src.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Xunit.Abstractions;
 
 namespace API_Data.Tests

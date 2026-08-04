@@ -34,17 +34,18 @@ namespace API_Data.src.Services
             return Results.Created();
         }
 
-        public async Task<List<CategoriaResponseDto>> ListaCategoria()
+        public async Task<IResult> ListaCategoria()
         {
             var retorno = await _categoriaRepository.ListaCategoriaAsync();
            
             if(retorno == null)
-            {
-                var lista = new List<CategoriaResponseDto>();
-                return lista;
+            { 
+                return Results.Problem(
+                "Erro ao criar Categoria",
+                statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            return retorno;
+            return Results.Ok(retorno);
         }
     }
 }

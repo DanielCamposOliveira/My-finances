@@ -16,17 +16,30 @@ public class LancamentosService : ILancamentosService
     }
 
     //Lista todos os lançamentos
-    public async Task<List<LancamentoResponse>> ListarLancamentosAsync()
+    public async Task<IResult> ListarLancamentosAsync()
     {
         var retorno = await _repository.ListaTodosLancamentosAsync();
+        if (retorno == null)
+        {
+            return Results.Problem(
+            "Ocorreu um Erro ao Listar Lançamentos",
+            statusCode: StatusCodes.Status500InternalServerError);
+        }
 
-        return retorno;
+        return Results.Ok(retorno);
     }
 
     //## Obter faturas com Status Aberto(Mes recorent) ou Vencida(Ano recorrent) 
-    public async Task<List<ParcelasResponse>> ListFaturaPendenteAsync()
+    public async Task<IResult> ListFaturaPendenteAsync()
     {
         var LancamentosAtivos = await _repository.ListaLancamentosAsync();
+        if (LancamentosAtivos == null)
+        {
+            return Results.Problem(
+            "Ocorreu um Erro ao Listar Faturas Pendente",
+            statusCode: StatusCodes.Status500InternalServerError);
+        }
+
         var faturasGeradas = new List<ParcelasResponse>();
         int ano = DateTime.Today.Year;
         int mes = DateTime.Today.Month;
@@ -52,7 +65,7 @@ public class LancamentosService : ILancamentosService
             }
         }
 
-        return faturasGeradas;
+        return Results.Ok(faturasGeradas);
     }
 
     // Cria um lançamento

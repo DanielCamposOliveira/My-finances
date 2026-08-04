@@ -74,7 +74,7 @@ namespace API_Data.src.Repository
             }
             catch
             {
-                return [];
+                return null;
             }
         }
 
@@ -92,7 +92,7 @@ namespace API_Data.src.Repository
             }
             catch
             {
-                return [];
+                return null;
             }
         }
 

@@ -6,7 +6,7 @@ namespace API_Data.src.Services.Interface
     {
         public Task<IResult> CriarTag(CriarTagDto tag);
 
-        public Task<List<TagResponseDto>> ListaTags();
+        public Task<IResult> ListaTags();
 
     }
 }

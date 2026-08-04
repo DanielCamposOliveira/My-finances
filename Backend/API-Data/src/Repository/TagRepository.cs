@@ -26,7 +26,7 @@ namespace API_Data.src.Repository
             }
             catch
             {
-                return new Tag();
+                return null;
             }
         }
 
@@ -47,7 +47,7 @@ namespace API_Data.src.Repository
             }
             catch
             {
-                return new List<TagResponseDto>();
+                return null;
             }
 
         }
