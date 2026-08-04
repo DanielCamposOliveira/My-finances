@@ -13,10 +13,6 @@ namespace API_Data.src.Repository
             _db = db;
         }
 
- 
-
-
-        #region Rotas validadas
 
 
         /// <summary>
@@ -241,15 +237,6 @@ namespace API_Data.src.Repository
                 return 0m;
             }
         }
-
-
-
-        #endregion
-
-        //RASCUNHO
-        // Forma mais neutra para evitar conversões de fuso desnecessárias no SQL
-        //var limiteData = new DateTime(ano, mes, 1).AddMonths(1);
-
 
 
 

@@ -39,7 +39,9 @@ namespace API_Data.src.Endpoints
 
 
 
-
+            // ==========================================
+            // ROTAS:GERAR HISTORICO FINANCEIRO MENSAL
+            // ==========================================
             EndpointHistorico.MapPost("/generator", async (IHistoricoFinanceiroAnualService service) =>
             {
                 var result = await service.GerarHistoricoMesAsync();

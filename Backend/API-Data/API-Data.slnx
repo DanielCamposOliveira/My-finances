@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../API-Data.Tests/API-Data.Tests.csproj" />
   <Project Path="API-Data.csproj" />
 </Solution>

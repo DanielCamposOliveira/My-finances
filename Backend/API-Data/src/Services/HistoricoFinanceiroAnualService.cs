@@ -13,16 +13,30 @@ namespace API_Data.src.Services
             _Repo = repo;
             _service = service;
         }
-        public async Task<List<GraficoHistoricoResponse>> ListaHistoricoAsync(int ano)
+
+        /// <summary>
+        /// Retorna uma lista de objetos GraficoHistoricoResponse contendo os dados de saldo e dívidas para cada mês do ano
+        /// </summary>
+        /// <param name="ano"></param>
+        /// <returns></returns>
+        public async Task<IResult> ListaHistoricoAsync(int ano)
         {
-            // Busca os registros existentes do ano no banco
+            // 1. Busca no repositório
             var registrosBanco = await _Repo.ObterTodosHistoricosAsync(ano);
 
-            // Prepara os arrays de 12 posições zerados
+            // Se o repositório capturou uma exceção e retornou null (Erro no banco)
+            if (registrosBanco == null)
+            {
+                return Results.Problem(
+                    "Erro ao consultar o histórico financeiro no banco de dados.",
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+
+            // 2. Monta os arrays zerados para o gráfico
             var listaSaldo = new decimal[12];
             var listaDivida = new decimal[12];
 
-            //Preenche os meses que já possuem dados gravados
+            // Preenche os meses com os dados do banco
             foreach (var registro in registrosBanco)
             {
                 int indiceMes = registro.Mes - 1; // Mês 1 vira índice 0
@@ -33,30 +47,30 @@ namespace API_Data.src.Services
                 }
             }
 
-            //Monta a estrutura igual ao seu exemplo de gráfico
-            var Dados = new GraficoHistoricoResponse
+            // 3. Monta a estrutura da DTO do gráfico
+            var dadosGrafico = new GraficoHistoricoResponse
             {
                 ChartSeries = new List<SerieGrafico>
-                {
-                    new SerieGrafico
-                    {
-                        Type = "line",
-                        Name = "Saldo",
-                        Color = "#0097FF",
-                        Data = listaSaldo.ToList()
-                    },
-                    new SerieGrafico
-                    {
-                        Type = "line",
-                        Name = "Dívidas",
-                        Color = "#E74C3C",
-                        Data = listaDivida.ToList()
-                    }
-                }
+        {
+            new SerieGrafico
+            {
+                Type = "line",
+                Name = "Saldo",
+                Color = "#0097FF",
+                Data = listaSaldo.ToList()
+            },
+            new SerieGrafico
+            {
+                Type = "line",
+                Name = "Dívidas",
+                Color = "#E74C3C",
+                Data = listaDivida.ToList()
+            }
+        }
             };
 
-            return new List<GraficoHistoricoResponse> { Dados };
-
+            // 4. Retorna HTTP 200 OK contendo os dados empacotados em uma lista
+            return Results.Ok(new List<GraficoHistoricoResponse> { dadosGrafico });
         }
 
         /// <summary>
@@ -100,7 +114,17 @@ namespace API_Data.src.Services
 
             //verifica se já existe um registro para o mês atual
             var Valor = await _Repo.ObterHistoricosMesAsync(mes, ano);
-            if (Valor != null && Valor.Any())
+
+            // se tiver null deu erro
+            if (Valor == null)
+            {
+                return Results.Problem(
+                 "Erro ao cadastrar a conta fixa.",
+                 statusCode: StatusCodes.Status500InternalServerError);
+            }
+            
+            // se não tiver vazio então tem dados
+            if (Valor.Any())
             {
                 return Results.Conflict($"O histórico para {mes}/{ano} já existe.");
             }
@@ -127,5 +151,7 @@ namespace API_Data.src.Services
             }
             return Results.Created();
         }
+
+
     }
 }

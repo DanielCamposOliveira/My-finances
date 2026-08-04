@@ -35,7 +35,7 @@ namespace API_Data.src.Endpoints
             .WithSummary("Tag List")
             .WithDescription("Lista Tag")
             .Produces(StatusCodes.Status500InternalServerError)
-            .Produces<TagResponseDto>(StatusCodes.Status201Created);
+            .Produces<TagResponseDto>(StatusCodes.Status200OK);
 
         }
     }

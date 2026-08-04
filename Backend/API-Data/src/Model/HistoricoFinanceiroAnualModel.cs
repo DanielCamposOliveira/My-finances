@@ -7,5 +7,6 @@
         public int Mes { get; set; }
         public decimal TotalSaldo { get; set; }
         public decimal TotalDivida { get; set; }
+        
     }
 }

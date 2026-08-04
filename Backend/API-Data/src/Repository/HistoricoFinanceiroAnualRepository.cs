@@ -16,19 +16,34 @@ namespace API_Data.src.Repository
         }
 
         public async Task<List<HistoricoFinanceiroAnual>> ObterTodosHistoricosAsync(int ano)
-        {
-            return await _db.HistoricosFinanceiros
-              .AsNoTracking()
+        {      
+            try 
+            {
+                return await _db.HistoricosFinanceiros
+                .AsNoTracking()
                 .Where(h => h.Ano == ano)
                 .ToListAsync();
+            } catch 
+            {
+                return null; //new List<HistoricoFinanceiroAnual>();
+            }
+
         }
 
         public async Task<List<HistoricoFinanceiroAnual>> ObterHistoricosMesAsync(int mes, int ano)
         {
-            return await _db.HistoricosFinanceiros
-              .AsNoTracking()
+            try
+            {
+                return await _db.HistoricosFinanceiros
+                .AsNoTracking()
                 .Where(h => h.Ano == ano && h.Mes == mes)
                 .ToListAsync();
+            }
+            catch (Exception ex) 
+            {
+                return null;
+            }
+
         }
 
 
