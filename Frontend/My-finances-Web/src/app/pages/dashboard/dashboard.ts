@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { MoneyCard } from '../../components/card/money-card/money-card';
 import { MoneyChart } from '../../components/graphic/money-chart/money-chart';
 import { DashboardServe, HistoricoFinanceiroAnual } from '../../service/Dashboard/dashboard-serve';
+import { MoneyTable } from '../../components/Tabela/money-table/money-table';
+import { ContaPendenteItem } from '../../models/contas-pendentes';
 
 export interface DashboardCardItem {
   title: string;
@@ -13,7 +15,7 @@ export interface DashboardCardItem {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, MoneyCard, MoneyChart],
+  imports: [CommonModule, MoneyCard, MoneyChart, MoneyTable],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -28,6 +30,8 @@ export class Dashboard implements OnInit {
   cardValorReceber?: DashboardCardItem;
   cardValorSaldo?: DashboardCardItem;
   cardDeficit?: DashboardCardItem;
+
+  contasPendentes: ContaPendenteItem[] = [];
 
   ngOnInit(): void {
     // 1. Carrega o histórico financeiro da API
@@ -105,6 +109,17 @@ export class Dashboard implements OnInit {
       },
       error: (err) => {
         console.error('Erro ao carregar valor em saldo:', err);
+      },
+    });
+
+    // 5. Carrega a lista de contas pendentes unificadas
+    this.dashboardService.getContasPendentesUnificadas().subscribe({
+      next: (dados) => {
+        this.contasPendentes = dados;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erro ao carregar contas pendentes:', err);
       },
     });
   }
