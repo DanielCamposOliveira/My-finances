@@ -1,16 +1,15 @@
-<div class="card-container" [ngClass]="TypeClass">
-
+<div class="card-container" [ngClass]="card.typeClass">
   <!-- Ícone -->
   <div class="icon-wrapper">
-    <i [ngClass]="iconClass" *ngIf="iconClass"></i>
+    <i [ngClass]="card.iconClass" *ngIf="card.iconClass"></i>
     <ng-content select="[card-icon]"></ng-content>
   </div>
 
   <!-- Título -->
-  <p class="card-title">{{ title }}</p>
+  <p class="card-title">{{ card.title }}</p>
 
   <!-- Saldo -->
   <h2 class="card-balance">
-    {{ balance }}
+    {{ card.value | currency: 'BRL' : 'symbol' : '1.2-2' }}
   </h2>
 </div>

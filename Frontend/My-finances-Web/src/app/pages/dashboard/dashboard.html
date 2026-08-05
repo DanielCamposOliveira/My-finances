@@ -1,29 +1,31 @@
-<div class="dashboard-container" *ngIf="dashboardData">
-  <!-- Seção Superior: Grid de Cards Dinâmico -->
-  <section class="cards-grid">
-    <app-money-card
-      *ngFor="let card of dashboardData.cards"
-      [iconClass]="card.iconClass"
-      [TypeClass]="card.typeClass"
-      [title]="card.title"
-      [balance]="formatCurrency(card.value)"
-    >
-    </app-money-card>
-  </section>
+<div class="dashboard-container">
+  <!-- Seção de Cards -->
+  <div class="cards-grid">
+    @if (cardValorSaldo) {
+      <app-money-card [card]="cardValorSaldo"></app-money-card>
+    }
 
-  <!-- Seção Inferior: Renderiza o gráfico somente quando os dados existirem -->
-  <section class="chart-section">
-    <ng-container *ngIf="historicoFinanceiro; else loading">
+    @if (cardValorReceber) {
+      <app-money-card [card]="cardValorReceber"></app-money-card>
+    }
+
+    @if (cardDividaPendente) {
+      <app-money-card [card]="cardDividaPendente"></app-money-card>
+    }
+
+    @if (cardDeficit) {
+      <app-money-card [card]="cardDeficit"></app-money-card>
+    }
+  </div>
+
+  <!-- Seção do Gráfico (mantida conforme o historicoFinanceiro) -->
+  @if (historicoFinanceiro) {
+    <div class="chart-container">
       <app-money-chart
         [categories]="historicoFinanceiro.chartCategories"
         [series]="historicoFinanceiro.chartSeries"
       >
       </app-money-chart>
-    </ng-container>
-
-    <!-- Indicador visual simples de carregamento -->
-    <ng-template #loading>
-      <p>Carregando gráfico...</p>
-    </ng-template>
-  </section>
+    </div>
+  }
 </div>

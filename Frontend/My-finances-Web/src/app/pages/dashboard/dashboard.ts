@@ -2,8 +2,14 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MoneyCard } from '../../components/card/money-card/money-card';
 import { MoneyChart } from '../../components/graphic/money-chart/money-chart';
-import { ServiceData, DashboardData } from '../../service/service.data';
 import { DashboardServe, HistoricoFinanceiroAnual } from '../../service/Dashboard/dashboard-serve';
+
+export interface DashboardCardItem {
+  title: string;
+  value: number;
+  iconClass: string;
+  typeClass: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -12,29 +18,23 @@ import { DashboardServe, HistoricoFinanceiroAnual } from '../../service/Dashboar
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
-  private serviceData = inject(ServiceData);
   private dashboardService = inject(DashboardServe);
-  private cdr = inject(ChangeDetectorRef); // Injeta o detector de mudanças
+  private cdr = inject(ChangeDetectorRef);
 
-  dashboardData?: DashboardData;
   historicoFinanceiro?: HistoricoFinanceiroAnual;
 
-  ngOnInit(): void {
-    // 1. Carrega os cards do mock
-    this.serviceData.getDashboardData().subscribe({
-      next: (data) => {
-        this.dashboardData = data;
-        this.cdr.detectChanges();
-      },
-    });
+  // Cards do Dashboard
+  cardDividaPendente?: DashboardCardItem;
+  cardValorReceber?: DashboardCardItem;
+  cardValorSaldo?: DashboardCardItem;
+  cardDeficit?: DashboardCardItem;
 
-    // 2. Carrega o histórico financeiro da API
+  ngOnInit(): void {
+    // 1. Carrega o histórico financeiro da API
     this.dashboardService.getHistoricoFinanceiroAnual(2026).subscribe({
       next: (resposta) => {
         if (resposta && resposta.length > 0) {
           const [dados] = resposta;
-
-          console.log('Dados do histórico financeiro:', dados);
 
           this.historicoFinanceiro = {
             chartCategories: dados.chartCategories,
@@ -48,12 +48,78 @@ export class Dashboard implements OnInit {
         console.error('Erro ao carregar histórico financeiro:', err);
       },
     });
+
+    // 2. Dívidas Pendentes
+    this.dashboardService.getDividaPendente().subscribe({
+      next: (resposta) => {
+        if (resposta) {
+          this.cardDividaPendente = {
+            title: 'Conta a Pagar',
+            value: resposta,
+            iconClass: 'fa-solid fa-hand-holding-dollar', // Do seu mock
+            typeClass: 'bills-to-pay', // Do seu mock
+          };
+
+          this.atualizarDeficit(); // Recalcula o déficit
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao carregar dívida pendente:', err);
+      },
+    });
+
+    // 3. Valor a Receber
+    this.dashboardService.getValorReceber().subscribe({
+      next: (resposta) => {
+        if (resposta) {
+          this.cardValorReceber = {
+            title: 'Receber',
+            value: resposta,
+            iconClass: 'fa-solid fa-coins', // Do seu mock
+            typeClass: 'extra-income', // Do seu mock
+          };
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao carregar valor a receber:', err);
+      },
+    });
+
+    // 4. Valor em Saldo
+    this.dashboardService.getValorSaldo().subscribe({
+      next: (resposta: any) => {
+        console.log('Dado vindo do backend:', resposta); // Imprime 660
+
+        if (resposta) {
+          this.cardValorSaldo = {
+            title: 'Saldo',
+            value: resposta, // Usa 'resposta' direto
+            iconClass: 'fa-solid fa-wallet',
+            typeClass: 'salary',
+          };
+          this.atualizarDeficit(); // Recalcula o déficit
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao carregar valor em saldo:', err);
+      },
+    });
   }
 
-  formatCurrency(value: number): string {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
+  // Função auxiliar para calcular o déficit quando ambas as APIs retornarem dados
+  private atualizarDeficit(): void {
+    if (this.cardValorSaldo && this.cardDividaPendente) {
+      const valorCalculado = this.cardValorSaldo.value - this.cardDividaPendente.value;
+
+      this.cardDeficit = {
+        title: 'Déficit',
+        value: valorCalculado,
+        iconClass: 'fa-solid fa-credit-card',
+        typeClass: 'deficit',
+      };
+    }
   }
 }
