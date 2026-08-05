@@ -12,6 +12,8 @@ namespace API_Data.src.DTOs.Lancamento
 
         public required string Lancamento_Descricao { get; init; }
         public required int Lancamento_Id { get; init; }
+
+        public required Atribuicao Atribuicao { get; init; }
     }
 
     public record ParcelaUpdateStatus

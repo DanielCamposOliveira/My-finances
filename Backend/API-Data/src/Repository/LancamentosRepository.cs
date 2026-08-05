@@ -128,7 +128,7 @@ public class LancamentosRepository : ILancamentosRepository
             return await _db.LancamentoParcelas // Busca na tabela de parcelas do lançamento
                 .AsNoTracking()  // Evita o rastreamento de alterações para melhorar o desempenho
                 .Include(p => p.Lancamento) // Inclui os dados do lançamento relacionado
-                                            // Filtra as parcelas com base no ID do lançamento, status e datas de vencimento
+                      .ThenInclude(l => l.Categoria) // Inclui os dados da Categoria vinculada ao Lançamento                      // Filtra as parcelas com base no ID do lançamento, status e datas de vencimento
                 .Where(p => p.LancamentoId == LancamentoId && p.Status != StatusParcela.Pago &&
                     (
                         // Condição 1: Do mês solicitado e não pago
@@ -179,5 +179,13 @@ public class LancamentosRepository : ILancamentosRepository
         }
 
     }
+
+
+
+
+
+ 
+
+
 
 }

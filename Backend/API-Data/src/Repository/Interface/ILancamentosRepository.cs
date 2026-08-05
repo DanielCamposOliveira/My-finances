@@ -20,6 +20,8 @@ namespace API_Data.src.Repository.Interface
         public Task<bool> UpdateLancamentoParcela(LancamentoParcela parcela);
 
         public Task<LancamentoParcela?> BuscaLancamentoParcelasync(int id);
-       
+
+
+
     }
 }

@@ -30,6 +30,7 @@ public class LancamentosService : ILancamentosService
     }
 
     //## Obter faturas com Status Aberto(Mes recorent) ou Vencida(Ano recorrent) 
+ 
     public async Task<IResult> ListFaturaPendenteAsync()
     {
         var LancamentosAtivos = await _repository.ListaLancamentosAsync();
@@ -48,7 +49,7 @@ public class LancamentosService : ILancamentosService
         {
             // 1. Busca no banco se já existem parcelas abertas/atrasadas para essa conta (do mês atual ou anteriores)
             var parcelasExistentes = await _repository.ListParcelasAbertasAtrasadasAsync(Lancamentos.Id, ano, mes);
-
+                      
             // Monta o DTO
             foreach (var parcela in parcelasExistentes)
             {
@@ -60,7 +61,8 @@ public class LancamentosService : ILancamentosService
                     DataVencimento = parcela.DataVencimento,
                     Status = parcela.Status,
                     Lancamento_Descricao = parcela.Lancamento.Descricao,
-                    Lancamento_Id = parcela.LancamentoId
+                    Lancamento_Id = parcela.LancamentoId,
+                    Atribuicao = parcela.Lancamento.Categoria.Atribuicao,
                 });
             }
         }
