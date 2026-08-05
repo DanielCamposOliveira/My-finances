@@ -1,22 +1,29 @@
 <div class="dashboard-container" *ngIf="dashboardData">
-  
   <!-- Seção Superior: Grid de Cards Dinâmico -->
   <section class="cards-grid">
-    <app-money-card 
+    <app-money-card
       *ngFor="let card of dashboardData.cards"
       [iconClass]="card.iconClass"
       [TypeClass]="card.typeClass"
-      [title]="card.title" 
-      [balance]="formatCurrency(card.value)">
+      [title]="card.title"
+      [balance]="formatCurrency(card.value)"
+    >
     </app-money-card>
   </section>
 
-  <!-- Seção Inferior: Gráfico com Dados Dinâmicos -->
+  <!-- Seção Inferior: Renderiza o gráfico somente quando os dados existirem -->
   <section class="chart-section">
-    <app-money-chart 
-      [categories]="dashboardData.chartCategories"
-      [series]="dashboardData.chartSeries">
-    </app-money-chart>
-  </section>
+    <ng-container *ngIf="historicoFinanceiro; else loading">
+      <app-money-chart
+        [categories]="historicoFinanceiro.chartCategories"
+        [series]="historicoFinanceiro.chartSeries"
+      >
+      </app-money-chart>
+    </ng-container>
 
+    <!-- Indicador visual simples de carregamento -->
+    <ng-template #loading>
+      <p>Carregando gráfico...</p>
+    </ng-template>
+  </section>
 </div>

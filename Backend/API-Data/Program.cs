@@ -40,14 +40,30 @@ builder.Services.AddSwaggerGen(options =>
     options.CustomSchemaIds(type => type.FullName);
 });
 
+// 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Liberado", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
 var app = builder.Build();
+
+
+app.UseCors("Liberado");
+
 
 
 app.UseSwagger();
 
 // Configurações do Swagger no ambiente de Desenvolvimento
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
@@ -56,7 +72,7 @@ if (app.Environment.IsDevelopment())
         // Se preferir acessar por http://localhost:8585/swagger, comente a linha abaixo com //
         c.RoutePrefix = string.Empty;
     });
-}
+//}
 
 // Mapeamento dos grupos de endpoints
 app.MapContasFixasEndpoints();
