@@ -55,11 +55,12 @@
   }
 
   tbody tr {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-container);
     transition: background-color 0.2s ease;
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.02);
+      background-color: var(--bg-secondary);
     }
 
     &:last-child {
@@ -67,23 +68,32 @@
     }
   }
 
+  /* Estilos para as células da tabela */
   td {
     padding: 14px 16px;
     color: var(--text-primary);
     vertical-align: middle;
   }
 
+  /* Estilos para as colunas da tabela */
   .col-desc {
     font-weight: 500;
-    color: #e6edf3;
+    color: var(--text-primary);
   }
 
   .col-valor {
+    color: var(--text-primary);
     font-weight: 600;
   }
 
   .col-date {
     color: var(--text-secondary);
+  }
+
+  .col-atribuicao {
+    display: flex;
+    align-items: center;
+    gap: 6px; /* Espaço entre ícone e texto */
   }
 
   /* Badges estilo pílula da imagem */
@@ -96,8 +106,9 @@
     text-align: center;
   }
 
+  /* Badges dos Lançamentos Fixos */
   .badge-fixa {
-    background-color: rgba(88, 166, 255, 0.12);
+    background-color: rgba(255, 88, 88, 0.12);
     color: var(--accent-color);
     border: 1px solid rgba(88, 166, 255, 0.25);
   }
@@ -116,26 +127,56 @@
 
   /* Badges dos Status da Parcela */
   .badge-status-aberto {
-    background-color: rgba(46, 160, 67, 0.15);
-    color: #3fb950;
-    border: 1px solid rgba(46, 160, 67, 0.3);
+    background-color: var(--bg-status-aberto-background-color);
+    color: var(--bg-status-aberto-cor);
+    border: var(--bg-status-aberto-border);
   }
 
   .badge-status-pago {
-    background-color: rgba(46, 160, 67, 0.15);
-    color: #3fb950;
-    border: 1px solid rgba(46, 160, 67, 0.3);
+    background-color: var(--bg-status-pago-background-color);
+    color: var(--bg-status-pago-cor);
+    border: var(--bg-status-pago-border);
   }
 
   .badge-status-atrasado {
-    background-color: rgba(248, 81, 73, 0.15);
-    color: #f85149;
-    border: 1px solid rgba(248, 81, 73, 0.3);
+    background-color: var(--bg-status-atrasado-background-color);
+    color: var(--bg-status-atrasado-cor);
+    border: var(--bg-status-atrasado-border);
   }
 
   .badge-status-cancelado {
-    background-color: rgba(110, 118, 129, 0.15);
-    color: #8b949e;
-    border: 1px solid rgba(110, 118, 129, 0.3);
+    background-color: var(--bg-status-cancelado-background-color);
+    color: var(--bg-status-cancelado-cor);
+    border: var(--bg-status-cancelado-border);
+  }
+
+  .badge-atribuicao-despesa,
+  .badge-atribuicao-desconhecido,
+  .badge-atribuicao-receita {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px; /* Espaço entre ícone e texto */
+
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+  }
+
+  .badge-atribuicao-despesa {
+    background-color: var(--bg-atribuicao-despesa-background-color);
+    color: var(--bg-atribuicao-despesa-cor);
+    border: var(--bg-atribuicao-despesa-border);
+  }
+
+  .badge-atribuicao-receita {
+    background-color: var(--bg-atribuicao-receita-background-color);
+    color: var(--bg-atribuicao-receita-cor);
+    border: var(--bg-atribuicao-receita-border);
+  }
+
+  .badge-atribuicao-desconhecido {
+    background-color: var(--bg-atribuicao-desconhecido-background-color);
+    color: var(--bg-atribuicao-desconhecido-cor);
+    border: var(--bg-atribuicao-desconhecido-border);
   }
 }

@@ -1,21 +1,20 @@
-
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 
 /* src/styles.css */
 
-/* Tema Claro (Padrão) */
 :root {
+  /* Tema (Padrão) */
   --bg-primary: #212529;
   --bg-secondary: #1c222c;
-  --bg-container: #2B3035;
-  
+  --bg-container: #2b3035;
+
   --text-primary: #c9d1d9;
   --text-secondary: #8b949e;
   --text-muted: #6e7681;
-  
+
   --border-color: #30363d;
   --input-border: #30363d;
-  
+
   --accent-color: #58a6ff;
   --shadow-color: rgba(0, 0, 0, 0.3);
 
@@ -23,21 +22,63 @@
   --error-color: #ef4444;
   --error-border: rgba(220, 38, 38, 0.2);
 
+  /* Status das Parcelas */
+  --bg-status-atrasado-cor: #f85149;
+  --bg-status-atrasado-background-color: rgba(248, 81, 73, 0.15);
+  --bg-status-atrasado-border: 1px solid rgba(248, 81, 73, 0.3);
+
+  --bg-status-aberto-cor: #58a6ff;
+  --bg-status-aberto-background-color: rgba(88, 166, 255, 0.12);
+  --bg-status-aberto-border: 1px solid rgba(88, 166, 255, 0.25);
+
+  --bg-status-pago-cor: #3fb950;
+  --bg-status-pago-background-color: rgba(46, 160, 67, 0.15);
+  --bg-status-pago-border: 1px solid rgba(46, 160, 67, 0.3);
+
+  --bg-status-cancelado-cor: #8b949e;
+  --bg-status-cancelado-background-color: rgba(110, 118, 129, 0.15);
+  --bg-status-cancelado-border: 1px solid rgba(110, 118, 129, 0.3);
+
+  /* Atribuição das Categorias */
+  --bg-atribuicao-despesa-cor: #ff6384;
+  --bg-atribuicao-despesa-background-color: rgba(255, 99, 132, 0.15);
+  --bg-atribuicao-despesa-border: 1px solid rgba(255, 99, 132, 0.3);
+
+  --bg-atribuicao-receita-cor: #3fb950;
+  --bg-atribuicao-receita-background-color: rgba(46, 160, 67, 0.15);
+  --bg-atribuicao-receita-border: 1px solid rgba(46, 160, 67, 0.3);
+
+  --bg-atribuicao-desconhecido-cor: #6e7681;
+  --bg-atribuicao-desconhecido-background-color: rgba(110, 118, 129, 0.15);
+  --bg-atribuicao-desconhecido-border: 1px solid rgba(110, 118, 129, 0.3);
+
+  /* Cores das Categorias dos Cards */
+  --Card-salary-color: #2ecc71;
+  --Card-salary-background-color: rgba(30, 158, 86, 0.15);
+
+  --Card-extra-income-color: #00bcd4;
+  --Card-extra-income-background-color: rgba(0, 188, 212, 0.15);
+
+  --Card-bills-to-pay-color: #ff9800;
+  --Card-bills-to-pay-background-color: rgba(255, 152, 0, 0.15);
+
+  --Card-deficit-color: var(--Card-error-color);
+  --Card-deficit-background-color: var(--Card-error-bg);
 }
 
 /* Tema Escuro (Ativado quando adicionamos a classe 'dark-theme' no <body>) */
 body.dark-theme {
   --bg-primary: #212529;
   --bg-secondary: #1c222c;
-  --bg-container: #2B3035;
-  
+  --bg-container: #2b3035;
+
   --text-primary: #c9d1d9;
   --text-secondary: #8b949e;
   --text-muted: #6e7681;
-  
+
   --border-color: #30363d;
   --input-border: #30363d;
-  
+
   --accent-color: #58a6ff;
   --shadow-color: rgba(0, 0, 0, 0.3);
 
@@ -50,27 +91,28 @@ body.light-theme {
   --bg-primary: #ffffff;
   --bg-secondary: #f6f8fa;
   --bg-container: #ffffff;
-  
+
   --text-primary: #24292e;
   --text-secondary: #586069;
   --text-muted: #6a737d;
-  
+
   --border-color: #e1e4e8;
   --input-border: #d1d5da;
-  
+
   --accent-color: #0066cc;
   --shadow-color: rgba(0, 0, 0, 0.04);
 
   --error-bg: rgba(220, 38, 38, 0.08);
   --error-color: #ef4444;
   --error-border: rgba(220, 38, 38, 0.2);
-
 }
 
 /* Aplica o fundo e texto global */
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
   margin: 0;
 }

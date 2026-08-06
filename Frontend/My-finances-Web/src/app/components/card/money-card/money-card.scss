@@ -9,8 +9,17 @@
   flex-direction: column;
   align-items: flex-start;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
 
   .icon-wrapper {
     width: 48px;
@@ -44,32 +53,33 @@
     letter-spacing: -0.5px;
   }
 
-  /* ===================================================
-     CORES DAS CATEGORIAS (Ajustadas para Dark/Light)
-     =================================================== 
-  */
-
   // 1. Salário (Verde)
   &.salary {
     .icon-wrapper {
-      background-color: rgba(30, 158, 86, 0.15);
-      i { color: #2ecc71; }
+      background-color: var(--Card-salary-background-color);
+      i {
+        color: var(--Card-salary-color);
+      }
     }
   }
 
   // 2. Renda Extra (Ciano / Turquesa)
   &.extra-income {
     .icon-wrapper {
-      background-color: rgba(0, 188, 212, 0.15);
-      i { color: #00bcd4; }
+      background-color: var(--Card-extra-income-background-color);
+      i {
+        color: var(--Card-extra-income-color);
+      }
     }
   }
 
   // 3. Contas a Pagar (Laranja)
   &.bills-to-pay {
     .icon-wrapper {
-      background-color: rgba(255, 152, 0, 0.15);
-      i { color: #ff9800; }
+      background-color: var(--Card-bills-to-pay-background-color);
+      i {
+        color: var(--Card-bills-to-pay-color);
+      }
     }
   }
 
@@ -77,15 +87,19 @@
   &.deficit {
     .icon-wrapper {
       background-color: var(--error-bg);
-      i { color: var(--error-color); }
+      i {
+        color: var(--error-color);
+      }
     }
   }
 
   // 5. Poupança (Roxo)
   &.savings {
     .icon-wrapper {
-      background-color: rgba(156, 39, 176, 0.15);
-      i { color: #ab47bc; }
+      background-color: var(--Card-savings-background-color);
+      i {
+        color: var(--Card-savings-color);
+      }
     }
   }
 }
