@@ -1,20 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, map } from 'rxjs';
-import { ContaPendenteItem } from '../../models/contas-pendentes';
+import { ContaPendenteItemModel } from '../../models/InterfaceModel';
+import {HistoricoFinanceiroAnualModel } from '../../models/InterfaceModel';
 // Interfaces para os dados do histórico financeiro
-export interface ChartSeries {
-  type?: string;
-  name: string;
-  color: string;
-  data: number[];
-}
 
-// Interface para o histórico financeiro anual
-export interface HistoricoFinanceiroAnual {
-  chartCategories: string[];
-  chartSeries: ChartSeries[];
-}
 
 @Injectable({
   providedIn: 'root',
@@ -36,8 +26,8 @@ export class DashboardServe {
     'http://localhost:5000/api/v1/lancamentos/parcela/pendentes';
 
   // Métodos para consumir as APIs
-  getHistoricoFinanceiroAnual(ano: number = 2026): Observable<HistoricoFinanceiroAnual[]> {
-    return this.http.get<HistoricoFinanceiroAnual[]>(`${this.HistoricoFinanceiroAnual}/${ano}`);
+  getHistoricoFinanceiroAnual(ano: number = 2026): Observable<HistoricoFinanceiroAnualModel[]> {
+    return this.http.get<HistoricoFinanceiroAnualModel[]>(`${this.HistoricoFinanceiroAnual}/${ano}`);
   }
 
   getDividaPendente(): Observable<number> {
@@ -52,14 +42,14 @@ export class DashboardServe {
     return this.http.get<number>(`${this.baseUrlValorSaldo}`);
   }
 
-  getContasPendentesUnificadas(): Observable<ContaPendenteItem[]> {
+  getContasPendentesUnificadas(): Observable<ContaPendenteItemModel[]> {
     return forkJoin({
       contasFixas: this.http.get<any[]>(this.baseUrlContasFixas),
       lancamentos: this.http.get<any[]>(this.baseUrlLancamentos),
     }).pipe(
       map(({ contasFixas, lancamentos }) => {
         // Normaliza as Contas Fixas
-        const fixasMapeadas: ContaPendenteItem[] = contasFixas.map((item) => ({
+        const fixasMapeadas: ContaPendenteItemModel[] = contasFixas.map((item) => ({
           id: item.id,
           origemId: item.contaFixaId,
           descricao: item.descricao,
@@ -68,10 +58,11 @@ export class DashboardServe {
           dataPagamento: item.dataPagamento,
           status: item.status, // Número vindo da API
           tipo: 'CONTA_FIXA',
+          atribuicao: item.atribuicao, // Número vindo da API
         }));
 
         // Normaliza os Lançamentos
-        const lancamentosMapeados: ContaPendenteItem[] = lancamentos.map((item) => ({
+        const lancamentosMapeados: ContaPendenteItemModel[] = lancamentos.map((item) => ({
           id: item.id,
           origemId: item.lancamento_Id,
           descricao: item.lancamento_Descricao,
@@ -80,6 +71,7 @@ export class DashboardServe {
           numeroParcela: item.numeroParcela,
           status: item.status, // Número vindo da API
           tipo: 'LANCAMENTO',
+          atribuicao: item.atribuicao, // Número vindo da API
         }));
 
         // Une os dois arrays

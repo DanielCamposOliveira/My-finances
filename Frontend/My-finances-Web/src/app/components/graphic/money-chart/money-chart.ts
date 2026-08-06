@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as Highcharts from 'highcharts';
-import { ChartSeries } from '../../../service/Dashboard/dashboard-serve';
+import { ChartSeriesModel } from '../../../models/InterfaceModel';
 
 @Component({
   selector: 'app-money-chart',
@@ -12,7 +12,7 @@ import { ChartSeries } from '../../../service/Dashboard/dashboard-serve';
 })
 export class MoneyChart implements OnChanges {
   @Input() categories: string[] = [];
-  @Input() series: ChartSeries[] = [];
+  @Input() series: ChartSeriesModel[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['categories'] || changes['series']) && this.series.length > 0) {

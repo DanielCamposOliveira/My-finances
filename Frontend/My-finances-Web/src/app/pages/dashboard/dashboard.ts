@@ -1,17 +1,13 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { MoneyCard } from '../../components/card/money-card/money-card';
 import { MoneyChart } from '../../components/graphic/money-chart/money-chart';
-import { DashboardServe, HistoricoFinanceiroAnual } from '../../service/Dashboard/dashboard-serve';
+import { DashboardServe } from '../../service/Dashboard/dashboard-serve';
 import { MoneyTable } from '../../components/Tabela/money-table/money-table';
-import { ContaPendenteItem } from '../../models/contas-pendentes';
+import { ContaPendenteItemModel, HistoricoFinanceiroAnualModel, DashboardCardItemModel } from '../../models/InterfaceModel';
 
-export interface DashboardCardItem {
-  title: string;
-  value: number;
-  iconClass: string;
-  typeClass: string;
-}
+
 
 @Component({
   selector: 'app-dashboard',
@@ -23,15 +19,15 @@ export class Dashboard implements OnInit {
   private dashboardService = inject(DashboardServe);
   private cdr = inject(ChangeDetectorRef);
 
-  historicoFinanceiro?: HistoricoFinanceiroAnual;
+  historicoFinanceiro?: HistoricoFinanceiroAnualModel;
 
   // Cards do Dashboard
-  cardDividaPendente?: DashboardCardItem;
-  cardValorReceber?: DashboardCardItem;
-  cardValorSaldo?: DashboardCardItem;
-  cardDeficit?: DashboardCardItem;
+  cardDividaPendente?: DashboardCardItemModel;
+  cardValorReceber?: DashboardCardItemModel;
+  cardValorSaldo?: DashboardCardItemModel;
+  cardDeficit?: DashboardCardItemModel;
 
-  contasPendentes: ContaPendenteItem[] = [];
+  contasPendentes: ContaPendenteItemModel[] = [];
 
   ngOnInit(): void {
     // 1. Carrega o histórico financeiro da API
@@ -115,6 +111,7 @@ export class Dashboard implements OnInit {
     // 5. Carrega a lista de contas pendentes unificadas
     this.dashboardService.getContasPendentesUnificadas().subscribe({
       next: (dados) => {
+        console.log('atribuicao:', dados); // Verifica os dados recebidos
         this.contasPendentes = dados;
         this.cdr.detectChanges();
       },
@@ -123,6 +120,8 @@ export class Dashboard implements OnInit {
       },
     });
   }
+
+  
 
   // Função auxiliar para calcular o déficit quando ambas as APIs retornarem dados
   private atualizarDeficit(): void {
@@ -136,5 +135,6 @@ export class Dashboard implements OnInit {
         typeClass: 'deficit',
       };
     }
+
   }
 }

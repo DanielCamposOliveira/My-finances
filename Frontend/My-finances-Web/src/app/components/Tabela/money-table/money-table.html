@@ -10,7 +10,7 @@
           <th>Descrição</th>
           <th>Valor</th>
           <th>Vencimento</th>
-
+          <th>Atribuição</th>
           <th>Status</th>
         </tr>
       </thead>
@@ -20,6 +20,13 @@
             <td class="col-desc">{{ item.descricao }}</td>
             <td class="col-valor">{{ item.valorParcela | currency: 'BRL' }}</td>
             <td class="col-date">{{ item.dataVencimento | date: 'dd/MM/yyyy' }}</td>
+
+            <td class="col-atribuicao">
+              <span [ngClass]="getAtribuicaoClass(item.atribuicao)">
+                <i [ngClass]="getAtribuicaoIcon(item.atribuicao)"></i>
+                {{ getAtribuicaoLabel(item.atribuicao) }}
+              </span>
+            </td>
 
             <td>
               <span class="badge" [ngClass]="getStatusClass(item.status)">

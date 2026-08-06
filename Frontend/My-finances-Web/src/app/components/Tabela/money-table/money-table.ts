@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ContaPendenteItem, StatusParcela } from '../../../models/contas-pendentes';
+import { ContaPendenteItemModel, StatusParcelaModel } from '../../../models/InterfaceModel';
+
 
 @Component({
   selector: 'app-money-table',
@@ -10,34 +11,68 @@ import { ContaPendenteItem, StatusParcela } from '../../../models/contas-pendent
 })
 export class MoneyTable {
   // Recebe a lista direta vinda do forkJoin/API
-  @Input() links: ContaPendenteItem[] = [];
+  @Input() links: ContaPendenteItemModel[] = [];
 
   // Mapeia o número retornado para o texto na tela
   getStatusLabel(status: number): string {
     switch (status) {
-      case StatusParcela.Aberto:
+      case StatusParcelaModel.Aberto:
         return 'Aberto';
-      case StatusParcela.Pago:
+      case StatusParcelaModel.Pago:
         return 'Pago';
-      case StatusParcela.Atrasado:
+      case StatusParcelaModel.Atrasado:
         return 'Atrasado';
-      case StatusParcela.Cancelado:
+      case StatusParcelaModel.Cancelado:
         return 'Cancelado';
       default:
         return 'Pendente';
     }
   }
 
+  getAtribuicaoLabel(atribuicao: number): string {
+    switch (atribuicao) {
+      case 1:
+        return 'Despesa';
+      case 2:
+        return 'Ganho';
+      default:
+        return 'Desconhecido';
+    }
+  }
+
+getAtribuicaoClass(atribuicao: number): string {
+  switch (atribuicao) {
+    case 1:
+      return 'badge-atribuicao-despesa';
+    case 2:
+      return 'badge-atribuicao-receita';
+    default:
+      return 'badge-atribuicao-desconhecido';
+  }
+}
+
+getAtribuicaoIcon(atribuicao: number): string {
+  switch (atribuicao) {
+    case 1:
+      return 'fa-solid fa-wallet';
+    case 2:
+      return 'fa-solid fa-coins';
+    default:
+      return 'fa-solid fa-circle-question';
+  }
+}
+
+
   // Mapeia o número retornado para a classe CSS da badge
   getStatusClass(status: number): string {
     switch (status) {
-      case StatusParcela.Aberto:
+      case StatusParcelaModel.Aberto:
         return 'badge-status-aberto';
-      case StatusParcela.Pago:
+      case StatusParcelaModel.Pago:
         return 'badge-status-pago';
-      case StatusParcela.Atrasado:
+      case StatusParcelaModel.Atrasado:
         return 'badge-status-atrasado';
-      case StatusParcela.Cancelado:
+      case StatusParcelaModel.Cancelado:
         return 'badge-status-cancelado';
       default:
         return 'badge-status-aberto';
