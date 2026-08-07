@@ -78,7 +78,7 @@
   /* Estilos para as colunas da tabela */
   .col-desc {
     font-weight: 500;
-    color: var(--text-primary);
+    color: var(--text-secondary);
   }
 
   .col-valor {
@@ -130,6 +130,7 @@
     background-color: var(--bg-status-aberto-background-color);
     color: var(--bg-status-aberto-cor);
     border: var(--bg-status-aberto-border);
+    font-weight: 600;
   }
 
   .badge-status-pago {

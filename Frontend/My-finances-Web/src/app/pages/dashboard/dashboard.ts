@@ -5,9 +5,9 @@ import { MoneyCard } from '../../components/card/money-card/money-card';
 import { MoneyChart } from '../../components/graphic/money-chart/money-chart';
 import { DashboardServe } from '../../service/Dashboard/dashboard-serve';
 import { MoneyTable } from '../../components/Tabela/money-table/money-table';
-import { ContaPendenteItemModel, HistoricoFinanceiroAnualModel, DashboardCardItemModel } from '../../models/InterfaceModel';
-
-
+import { ContaPendenteItemModel, HistoricoFinanceiroAnualModel, DashboardCardItemModel, TagModel, CategoriaModel } from '../../models/InterfaceModel';
+import {TagService} from  '../../service/Tag/tag-service'
+import {CategoriaService} from '../../service/Categoria/categoria-service'
 
 @Component({
   selector: 'app-dashboard',
@@ -29,7 +29,44 @@ export class Dashboard implements OnInit {
 
   contasPendentes: ContaPendenteItemModel[] = [];
 
+  tags?: TagModel;
+  private tagService = inject(TagService);
+
+  Categorias?: CategoriaModel;
+  private categoriaService = inject(CategoriaService);
+
   ngOnInit(): void {
+
+    // Busta todas as Tags
+    this.tagService.getTag().subscribe({
+      next: (resposta) => {
+        console.log("Tags:", resposta);
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erro ao carregar Tags:', err);
+      }
+    });
+
+
+
+
+    this.categoriaService.getCategoria().subscribe({
+      next: (resposta) => {
+        if (resposta && resposta.length > 0) {
+         console.log("Categoria" , resposta);
+        }
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Erro ao carregar Categoria:', error);
+      }
+    });
+
+      
+      
+      
     // 1. Carrega o histórico financeiro da API
     this.dashboardService.getHistoricoFinanceiroAnual(2026).subscribe({
       next: (resposta) => {
