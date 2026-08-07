@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ContaPendenteItemModel, StatusParcelaModel } from '../../../models/InterfaceModel';
+import { ContaPendenteItemModel } from '../../../models/InterfaceModel';
+import { StatusParcelaEnum } from '../../../enums/status-parcela-enum';
 
 
 @Component({
@@ -16,13 +17,13 @@ export class MoneyTable {
   // Mapeia o número retornado para o texto na tela
   getStatusLabel(status: number): string {
     switch (status) {
-      case StatusParcelaModel.Aberto:
+      case StatusParcelaEnum.Aberto:
         return 'Aberto';
-      case StatusParcelaModel.Pago:
+      case StatusParcelaEnum.Pago:
         return 'Pago';
-      case StatusParcelaModel.Atrasado:
+      case StatusParcelaEnum.Atrasado:
         return 'Atrasado';
-      case StatusParcelaModel.Cancelado:
+      case StatusParcelaEnum.Cancelado:
         return 'Cancelado';
       default:
         return 'Pendente';
@@ -66,13 +67,13 @@ getAtribuicaoIcon(atribuicao: number): string {
   // Mapeia o número retornado para a classe CSS da badge
   getStatusClass(status: number): string {
     switch (status) {
-      case StatusParcelaModel.Aberto:
+      case StatusParcelaEnum.Aberto:
         return 'badge-status-aberto';
-      case StatusParcelaModel.Pago:
+      case StatusParcelaEnum.Pago:
         return 'badge-status-pago';
-      case StatusParcelaModel.Atrasado:
+      case StatusParcelaEnum.Atrasado:
         return 'badge-status-atrasado';
-      case StatusParcelaModel.Cancelado:
+      case StatusParcelaEnum.Cancelado:
         return 'badge-status-cancelado';
       default:
         return 'badge-status-aberto';

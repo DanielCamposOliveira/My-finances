@@ -1,13 +1,16 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { MoneyCard } from '../../components/card/money-card/money-card';
 import { MoneyChart } from '../../components/graphic/money-chart/money-chart';
 import { DashboardServe } from '../../service/Dashboard/dashboard-serve';
 import { MoneyTable } from '../../components/Tabela/money-table/money-table';
-import { ContaPendenteItemModel, HistoricoFinanceiroAnualModel, DashboardCardItemModel, TagModel, CategoriaModel } from '../../models/InterfaceModel';
+import { ContaPendenteItemModel, HistoricoFinanceiroAnualModel, DashboardCardItemModel } from '../../models/InterfaceModel';
 import {TagService} from  '../../service/Tag/tag-service'
 import {CategoriaService} from '../../service/Categoria/categoria-service'
+import { TagModel } from '../../models/tag';
+import { CategoriaModel } from '../../models/categoria';
+
+
 
 @Component({
   selector: 'app-dashboard',
@@ -17,7 +20,7 @@ import {CategoriaService} from '../../service/Categoria/categoria-service'
 })
 export class Dashboard implements OnInit {
   private dashboardService = inject(DashboardServe);
-  private cdr = inject(ChangeDetectorRef);
+  private cdr = inject(ChangeDetectorRef); // serve para forçar o Angular a atualizar a tela (HTML)
 
   historicoFinanceiro?: HistoricoFinanceiroAnualModel;
 
@@ -31,6 +34,9 @@ export class Dashboard implements OnInit {
 
   tags?: TagModel;
   private tagService = inject(TagService);
+  TagNome = "Tag_Angula";
+
+
 
   Categorias?: CategoriaModel;
   private categoriaService = inject(CategoriaService);
@@ -38,18 +44,35 @@ export class Dashboard implements OnInit {
   ngOnInit(): void {
 
     // Busta todas as Tags
-    this.tagService.getTag().subscribe({
+    this.tagService.GetTag().subscribe({
       next: (resposta) => {
         console.log("Tags:", resposta);
 
-        this.cdr.detectChanges();
+        this.cdr.detectChanges(); //serve para forçar o Angular a atualizar a tela (HTML)
       },
       error: (err) => {
         console.error('Erro ao carregar Tags:', err);
       }
     });
 
-
+    // cadastro Tag
+  //  this.tagService.PostTag({
+ //     nome: this.TagNome
+ //   }).subscribe({
+ //     next: () => {
+  //      console.log("Tag castrada ");
+  //    },
+ //     error: (err) => {
+ //       if (err.status >= 400 && err.status < 500) { 
+ //         console.error('[Tag] Erro:', err);
+ //       }
+ //       else
+ //       {
+   //       console.error('[Tag] Ocorreu algum erro:', err);
+  //      }
+ //      
+ //     }
+ //   });
 
 
     this.categoriaService.getCategoria().subscribe({

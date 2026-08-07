@@ -1,34 +1,5 @@
-export enum StatusParcelaModel {
-  Aberto = 1,
-  Pago = 2,
-  Atrasado = 3,
-  Cancelado = 4,
-}
-
-export enum AtribuicaoModel {
-  Despesa = 1,
-  Ganho = 2,
-}
-
-export interface CategoriaModel
-{
-  id: number;
-  nome: string;
-  atribuicao: AtribuicaoModel;
-}
-
-
-export interface TagModel
-{
-  id: number;
-  nome: string;
-}
-
-export interface TagCadastorModel
-{
-  nome: string;
-}
-
+import { StatusParcelaEnum } from '../enums/status-parcela-enum';
+import { AtribuicaoEnum } from '../enums/atribuicao-enum';
 
 export interface ContaPendenteItemModel {
   id: number;
@@ -36,11 +7,11 @@ export interface ContaPendenteItemModel {
   descricao: string; // descricao ou lancamento_Descricao
   valorParcela: number;
   dataVencimento: string;
-  status: StatusParcelaModel | number; // Recebe o número da API (1, 2, 3, 4)
+  status: StatusParcelaEnum | number; // Recebe o número da API (1, 2, 3, 4)
   tipo: 'CONTA_FIXA' | 'LANCAMENTO';
   numeroParcela?: number;
   dataPagamento?: string | null;
-  atribuicao : AtribuicaoModel | number; // Recebe o número da API (1, 2)
+  atribuicao : AtribuicaoEnum | number; // Recebe o número da API (1, 2)
 }
 
 // Interfaces para os dados do histórico financeiro
@@ -62,60 +33,4 @@ export interface DashboardCardItemModel {
   value: number;
   iconClass: string;
   typeClass: string;
-}
-
-
-
-
-
-
-// interface para cadastro
-export interface LancamentosModel
-{
-  descricao: string;
-  valorTotal: number;
-  categoriaId: number;
-  dataPrimeiroVencimento: string;
-  //tagIds: Tag[];
-  tagIds?: number  [];
-}
-
-// interface para atualizar o status da parcela
-export interface LancamentoParcelaModel
-{
-  parcelaId: number;
-  status: StatusParcelaModel
-}
-
-
-
-// interface de cadastro Conta Fixa
-export interface ContaFixaCadastroModel
-{
-  descricao: string;
-  valorBase: number;
-  diaVencimento: number;
-  categoriaId: number;
-  tagIds?: number[];
-}
-
-// interface para atualizar  o status da Conta Fixa
-export interface ContaFixaStatusModel
-{
-  id_ContaFixa: number;
-  status: boolean;
-}
-
-// interface para atualizar  o status da Conta Fixa
-export interface ContaFixaStatusParcelaModel
-{
-  parcelaId: number;
-  status: StatusParcelaModel;
-}
-
-// interface para atualizar  o status da Conta Fixa
-export interface ContaFixaValorParcelaModel
-{
-  parcelaId: number;
-  valorParcela: number;
 }
