@@ -11,6 +11,7 @@ namespace API_Data.src.DTOs.ContasFixas
         public required DateTime DataVencimento { get; init; }
         public required DateTime? DataPagamento { get; init; }
         public required StatusParcela Status { get; init; }
+        public required Atribuicao Atribuicao { get; init; }
     }
 
     public record ParcelaUpdateStatus

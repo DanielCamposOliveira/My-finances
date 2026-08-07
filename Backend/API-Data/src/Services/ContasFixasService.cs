@@ -167,7 +167,8 @@ namespace API_Data.src.Services
                         ValorParcela = parcela.ValorParcela,
                         DataVencimento = parcela.DataVencimento,
                         DataPagamento = parcela.DataPagamento,
-                        Status = parcela.Status
+                        Status = parcela.Status,
+                        Atribuicao = parcela.ContaFixa.Categoria.Atribuicao
                     });
                 }
             }

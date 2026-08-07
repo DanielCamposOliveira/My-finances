@@ -59,7 +59,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
             // ==========================================
-            Endpoint.MapPatch("/parcela/update", async ([FromBody] ParcelaUpdateStatus dto, ILancamentosService service) =>
+            Endpoint.MapPatch("/parcela/update/status", async ([FromBody] ParcelaUpdateStatus dto, ILancamentosService service) =>
             {
                 var result = await service.UptateStatusLancamentoParcela(dto.ParcelaId, dto.Status);
                 return result;
