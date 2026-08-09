@@ -6,6 +6,9 @@
         public int Id { get; set; }   
         public string Nome { get; set; } = string.Empty;
 
+        // Relacionamento Obrigatório com User
+        public string UserId { get; set; } = string.Empty;
+        public User User { get; set; } = null!;
 
         // Coleções para navegação inversa
         // Coleções para bater com o .WithMany(...)

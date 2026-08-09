@@ -14,6 +14,7 @@ namespace API_Data.src.Data
         public DbSet<LancamentoParcela> LancamentoParcelas => Set<LancamentoParcela>();
         public DbSet<ContaFixaParcela> ContaFixaParcelas => Set<ContaFixaParcela>();
         public DbSet<HistoricoFinanceiroAnual> HistoricosFinanceiros => Set<HistoricoFinanceiroAnual>();
+        public DbSet<User> Users => Set<User>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +24,7 @@ namespace API_Data.src.Data
             modelBuilder.Entity<Categoria>(builder =>
             {
                 builder.HasKey(c => c.Id);
+
                 builder.Property(c => c.Nome)
                        .IsRequired()
                        .HasMaxLength(100);
@@ -30,15 +32,38 @@ namespace API_Data.src.Data
                 builder.Property(c => c.Atribuicao)
                        .HasConversion<int>()
                        .IsRequired();
+
+                // Relacionamento 1:N entre User e Categoria
+                builder.HasOne(c => c.User)
+                       .WithMany(u => u.Categorias)
+                       .HasForeignKey(c => c.UserId)
+                       .IsRequired()
+                       .OnDelete(DeleteBehavior.Cascade); // Apaga as Categorias do Usuário ao deletar o User
+
+                // Garante que o mesmo usuário não crie duas categorias com o mesmo nome
+                builder.HasIndex(c => new { c.UserId, c.Nome })
+                       .IsUnique();
             });
 
             // Mapeamento: Tag
             modelBuilder.Entity<Tag>(builder =>
             {
                 builder.HasKey(t => t.Id);
+
                 builder.Property(t => t.Nome)
                        .IsRequired()
                        .HasMaxLength(50);
+
+                // Relacionamento 1:N entre User e Tag (Apaga as Tags ao deletar o User)
+                builder.HasOne(t => t.User)
+                       .WithMany(u => u.Tags)
+                       .HasForeignKey(t => t.UserId)
+                       .IsRequired()
+                       .OnDelete(DeleteBehavior.Cascade);
+
+                // Evita tags duplicadas com o mesmo nome para o mesmo usuário
+                builder.HasIndex(t => new { t.UserId, t.Nome })
+                       .IsUnique();
             });
 
             // Mapeamento: Lancamento
@@ -65,6 +90,13 @@ namespace API_Data.src.Data
                 builder.HasMany(l => l.Tags) // Define o relacionamento N:N (Lancamento tem muitas Tags)
                        .WithMany(t => t.Lancamentos) // Define a relação inversa (Tag tem muitos Lancamentos)
                        .UsingEntity(j => j.ToTable("LancamentoTags")); // Define a tabela de junção (join table) com o nome "LancamentoTags"
+
+                // Relacionamento 1:N entre User e Lancamento
+                builder.HasOne(l => l.User)
+                       .WithMany(u => u.Lancamentos)
+                       .HasForeignKey(l => l.UserId)
+                       .IsRequired()
+                       .OnDelete(DeleteBehavior.Cascade); // Apaga os Lançamentos ao deletar o User
 
             });
 
@@ -126,6 +158,13 @@ namespace API_Data.src.Data
                 builder.HasMany(cf => cf.Tags)
                        .WithMany(t => t.ContasFixas)
                        .UsingEntity(j => j.ToTable("ContaFixaTags"));
+
+                // Relacionamento 1:N entre User e ContaFixa
+                builder.HasOne(cf => cf.User)
+                       .WithMany(u => u.ContasFixas)
+                       .HasForeignKey(cf => cf.UserId)
+                       .IsRequired()
+                       .OnDelete(DeleteBehavior.Cascade); // Apaga as Contas Fixas ao deletar o User
             });
 
             // Mapeamento: ContaFixaParcela
@@ -162,24 +201,59 @@ namespace API_Data.src.Data
 
             });
 
-
+                 
             // Mapeamento: HistoricoFinanceiroAnual
             modelBuilder.Entity<HistoricoFinanceiroAnual>(builder =>
             {
                 builder.HasKey(h => h.Id);
 
                 builder.Property(h => h.TotalSaldo)
-                       .HasPrecision(18, 2) // Define a precisão do campo (18 dígitos no total, 2 após a vírgula)
-                       .HasDefaultValue(0); // Define o valor padrão como 0, caso não seja especificado
+                       .HasPrecision(18, 2)
+                       .HasDefaultValue(0);
 
                 builder.Property(h => h.TotalDivida)
                        .HasPrecision(18, 2)
                        .HasDefaultValue(0);
-                                    
-                builder.HasIndex(h => new { h.Ano, h.Mes }).IsUnique(); // Garante que não haja duplicidade de registros para o mesmo Ano e Mês
+
+                // Relacionamento 1:N com User (Deleta o histórico ao apagar o User)
+                builder.HasOne(h => h.User)
+                       .WithMany(u => u.HistoricosFinanceiros)
+                       .HasForeignKey(h => h.UserId)
+                       .IsRequired()
+                       .OnDelete(DeleteBehavior.Cascade);
+
+                // Garante unicidade do histórico por mês/ano PARA CADA USUÁRIO
+                builder.HasIndex(h => new { h.UserId, h.Ano, h.Mes }).IsUnique();
             });
 
+            // Mapeamento: Users
+            modelBuilder.Entity<User>(builder =>
+            {
+                builder.HasKey(u => u.Id);
 
+                builder.Property(u => u.Name)
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                builder.Property(u => u.Email)
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                // Cria o índice único no banco de dados para o campo Email
+                builder.HasIndex(u => u.Email)
+                        .IsUnique();
+
+                builder.Property(u => u.PasswordHash)
+                        .IsRequired();
+
+                builder.Property(u => u.IsActive)
+                        .IsRequired();
+
+                builder.Property(u => u.IsAdmin)
+                        .IsRequired();
+            });
+
+            
             // Carga inicial de Tags padrão (Seed Data)
             modelBuilder.Entity<Tag>().HasData(
                 new Tag { Id = 1, Nome = "Casa" },
@@ -197,16 +271,16 @@ namespace API_Data.src.Data
             );
 
             modelBuilder.Entity<Categoria>().HasData(
-                new Categoria { Id = 1, Nome = "Moradia" },
-                new Categoria { Id = 2, Nome = "Transporte" },
-                new Categoria { Id = 3, Nome = "Alimentação" },
-                new Categoria { Id = 4, Nome = "Lazer" },
-                new Categoria { Id = 5, Nome = "Educação" },
-                new Categoria { Id = 6, Nome = "Salário" },
-                new Categoria { Id = 7, Nome = "Investimentos" },
-                new Categoria { Id = 8, Nome = "Outros" },
-                new Categoria { Id = 9, Nome = "Vale-Refeição" },
-                new Categoria { Id = 10, Nome = "Vale-Transporte" }
+                new Categoria { Id = 1, Nome = "Moradia", Atribuicao = Enum.Atribuicao.Despesa },
+                new Categoria { Id = 2, Nome = "Transporte", Atribuicao = Enum.Atribuicao.Despesa },
+                new Categoria { Id = 3, Nome = "Alimentação", Atribuicao = Enum.Atribuicao.Despesa },
+                new Categoria { Id = 4, Nome = "Lazer", Atribuicao = Enum.Atribuicao.Despesa },
+                new Categoria { Id = 5, Nome = "Educação", Atribuicao = Enum.Atribuicao.Despesa },
+                new Categoria { Id = 6, Nome = "Salário", Atribuicao = Enum.Atribuicao.Ganho },
+                new Categoria { Id = 7, Nome = "Investimentos", Atribuicao = Enum.Atribuicao.Despesa },
+                new Categoria { Id = 8, Nome = "Outros", Atribuicao = Enum.Atribuicao.Despesa},
+                new Categoria { Id = 9, Nome = "Vale-Refeição", Atribuicao = Enum.Atribuicao.Ganho },
+                new Categoria { Id = 10, Nome = "Vale-Transporte", Atribuicao = Enum.Atribuicao.Ganho }
             );
         }
 

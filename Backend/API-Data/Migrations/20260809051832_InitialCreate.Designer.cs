@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API_Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260802064144_AddTabelaHistoricoFinanceiroAnual")]
-    partial class AddTabelaHistoricoFinanceiroAnual
+    [Migration("20260809051832_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,61 +49,61 @@ namespace API_Data.Migrations
                         new
                         {
                             Id = 1,
-                            Atribuicao = 0,
+                            Atribuicao = 1,
                             Nome = "Moradia"
                         },
                         new
                         {
                             Id = 2,
-                            Atribuicao = 0,
+                            Atribuicao = 1,
                             Nome = "Transporte"
                         },
                         new
                         {
                             Id = 3,
-                            Atribuicao = 0,
+                            Atribuicao = 1,
                             Nome = "Alimentação"
                         },
                         new
                         {
                             Id = 4,
-                            Atribuicao = 0,
+                            Atribuicao = 1,
                             Nome = "Lazer"
                         },
                         new
                         {
                             Id = 5,
-                            Atribuicao = 0,
+                            Atribuicao = 1,
                             Nome = "Educação"
                         },
                         new
                         {
                             Id = 6,
-                            Atribuicao = 0,
+                            Atribuicao = 2,
                             Nome = "Salário"
                         },
                         new
                         {
                             Id = 7,
-                            Atribuicao = 0,
+                            Atribuicao = 1,
                             Nome = "Investimentos"
                         },
                         new
                         {
                             Id = 8,
-                            Atribuicao = 0,
+                            Atribuicao = 1,
                             Nome = "Outros"
                         },
                         new
                         {
                             Id = 9,
-                            Atribuicao = 0,
+                            Atribuicao = 2,
                             Nome = "Vale-Refeição"
                         },
                         new
                         {
                             Id = 10,
-                            Atribuicao = 0,
+                            Atribuicao = 2,
                             Nome = "Vale-Transporte"
                         });
                 });
@@ -133,6 +133,10 @@ namespace API_Data.Migrations
                     b.Property<int>("DiaVencimento")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<decimal>("ValorBase")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
@@ -140,6 +144,8 @@ namespace API_Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoriaId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ContaFixa");
                 });
@@ -174,6 +180,11 @@ namespace API_Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ContaFixaId");
+
+                    b.HasIndex("Status", "DataVencimento", "ContaFixaId")
+                        .HasDatabaseName("IX_ContaFixaParcela_Status_DataVencimento_ContaFixa");
+
+                    NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("Status", "DataVencimento", "ContaFixaId"), new[] { "ValorParcela" });
 
                     b.ToTable("contafixa_parcela", (string)null);
                 });
@@ -234,6 +245,10 @@ namespace API_Data.Migrations
                     b.Property<int>("QtdParcelas")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<decimal>("ValorTotal")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
@@ -241,6 +256,8 @@ namespace API_Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoriaId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Lancamentos");
                 });
@@ -275,6 +292,11 @@ namespace API_Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LancamentoId");
+
+                    b.HasIndex("Status", "DataVencimento", "LancamentoId")
+                        .HasDatabaseName("IX_LancamentoParcela_Status_DataVencimento_Lancamento");
+
+                    NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("Status", "DataVencimento", "LancamentoId"), new[] { "ValorParcela" });
 
                     b.ToTable("lancamento_parcela", (string)null);
                 });
@@ -354,6 +376,39 @@ namespace API_Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("API_Data.src.Model.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("ContaFixaTag", b =>
                 {
                     b.Property<int>("ContasFixasId")
@@ -392,7 +447,15 @@ namespace API_Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("API_Data.src.Model.User", "User")
+                        .WithMany("ContasFixas")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Categoria");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("API_Data.src.Model.ContaFixaParcela", b =>
@@ -414,7 +477,15 @@ namespace API_Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("API_Data.src.Model.User", "User")
+                        .WithMany("Lancamentos")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Categoria");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("API_Data.src.Model.LancamentoParcela", b =>
@@ -473,6 +544,13 @@ namespace API_Data.Migrations
             modelBuilder.Entity("API_Data.src.Model.Lancamento", b =>
                 {
                     b.Navigation("Parcelas");
+                });
+
+            modelBuilder.Entity("API_Data.src.Model.User", b =>
+                {
+                    b.Navigation("ContasFixas");
+
+                    b.Navigation("Lancamentos");
                 });
 #pragma warning restore 612, 618
         }

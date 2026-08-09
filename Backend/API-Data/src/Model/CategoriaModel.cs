@@ -11,6 +11,12 @@ namespace API_Data.src.Model
 
         public Atribuicao Atribuicao { get; set; }
 
+        // Relacionamento Obrigatório com User
+        
+        public string UserId { get; set; } = string.Empty;
+        public User User { get; set; } = null!;
+
+
         // Coleções para navegação inversa
         // Coleções para bater com o .WithMany(...)
         public ICollection<Lancamento> Lancamentos { get; set; } = new List<Lancamento>();
