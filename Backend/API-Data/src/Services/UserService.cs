@@ -1,6 +1,7 @@
 ﻿
 using API_Data.src.DTOs.Result;
 using API_Data.src.Model;
+using API_Data.src.Repository;
 using API_Data.src.Repository.Interface;
 using API_Data.src.Services.Interface;
 using API_Data.src.Utils;
@@ -12,10 +13,15 @@ namespace API_Data.src.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IJwtService _jwtService;
+        private readonly ICategoriaRepository _categoriaRepository;
+        private readonly ITagRepository _tagRepository;
+       
 
-        public UserService(IUserRepository userRepository, IJwtService jwtService)
+        public UserService(IUserRepository userRepository, ICategoriaRepository categoriaRepository, ITagRepository tagRepository, IJwtService jwtService)
         {
             _jwtService = jwtService;
+            _categoriaRepository = categoriaRepository;
+            _tagRepository = tagRepository;
             _userRepository = userRepository;
         }
 
@@ -169,7 +175,7 @@ namespace API_Data.src.Services
             return Results.Ok(data);
         }
         
-        public async Task<IResult> PostAuthenticationUserAsync(LoginRequest req)
+        public async Task<IResult> AuthenticationUserAsync(LoginRequest req)
         {
             // Validar o email
             if (string.IsNullOrWhiteSpace(req.Email))
@@ -199,14 +205,24 @@ namespace API_Data.src.Services
             return Results.Ok(new AuthResponse(token));
         }
 
-        public async Task<IResult> PostRegisterUserAsync(RegisterRequest User)
+        public async Task<IResult> RegisterUserAsync(RegisterRequest User)
         {
             // Registrar o usuário no repositório
             var result = await _userRepository.RegisterUserAsync(User);
 
             // Verificar se o registro foi bem-sucedido
-            if (!result.Success)
-                return Results.BadRequest(new { message = result.Message });
+            if (!result.Item1.Success)
+                return Results.BadRequest(new { message = result.Item1.Message });
+
+
+            // gera uma lista 
+            var ListCategoria = CategoriaDefaults.ObterCategoriasPadrao(result.User.Id);
+            var Listag = TagDefaults.ObterTagsPadrao(result.User.Id);
+            
+            // Grava as Tags e Categorias padão do usuario
+            var CategoryResult = await _categoriaRepository.CriarListCategoriaAsync(ListCategoria);
+            var TagResult = await _tagRepository.CriarListTag(Listag);
+
 
             return Results.Created(); // 201 Created
         }

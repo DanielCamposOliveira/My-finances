@@ -254,34 +254,34 @@ namespace API_Data.src.Data
             });
 
             
-            // Carga inicial de Tags padrão (Seed Data)
-            modelBuilder.Entity<Tag>().HasData(
-                new Tag { Id = 1, Nome = "Casa" },
-                new Tag { Id = 2, Nome = "Carro" },
-                new Tag { Id = 3, Nome = "Gastos" },
-                new Tag { Id = 4, Nome = "Mercado" },
-                new Tag { Id = 5, Nome = "Energia" },
-                new Tag { Id = 6, Nome = "Agua" },
-                new Tag { Id = 7, Nome = "Internet" },
-                new Tag { Id = 8, Nome = "Outros" },
-                new Tag { Id = 9, Nome = "Facudade" },
-                new Tag { Id = 10, Nome = "Emprestimo" },
-                new Tag { Id = 11, Nome = "Streaming" }
+            //// Carga inicial de Tags padrão (Seed Data)
+            //modelBuilder.Entity<Tag>().HasData(
+            //    new Tag { Id = 1, Nome = "Casa" },
+            //    new Tag { Id = 2, Nome = "Carro" },
+            //    new Tag { Id = 3, Nome = "Gastos" },
+            //    new Tag { Id = 4, Nome = "Mercado" },
+            //    new Tag { Id = 5, Nome = "Energia" },
+            //    new Tag { Id = 6, Nome = "Agua" },
+            //    new Tag { Id = 7, Nome = "Internet" },
+            //    new Tag { Id = 8, Nome = "Outros" },
+            //    new Tag { Id = 9, Nome = "Facudade" },
+            //    new Tag { Id = 10, Nome = "Emprestimo" },
+            //    new Tag { Id = 11, Nome = "Streaming" }
 
-            );
+            //);
 
-            modelBuilder.Entity<Categoria>().HasData(
-                new Categoria { Id = 1, Nome = "Moradia", Atribuicao = Enum.Atribuicao.Despesa },
-                new Categoria { Id = 2, Nome = "Transporte", Atribuicao = Enum.Atribuicao.Despesa },
-                new Categoria { Id = 3, Nome = "Alimentação", Atribuicao = Enum.Atribuicao.Despesa },
-                new Categoria { Id = 4, Nome = "Lazer", Atribuicao = Enum.Atribuicao.Despesa },
-                new Categoria { Id = 5, Nome = "Educação", Atribuicao = Enum.Atribuicao.Despesa },
-                new Categoria { Id = 6, Nome = "Salário", Atribuicao = Enum.Atribuicao.Ganho },
-                new Categoria { Id = 7, Nome = "Investimentos", Atribuicao = Enum.Atribuicao.Despesa },
-                new Categoria { Id = 8, Nome = "Outros", Atribuicao = Enum.Atribuicao.Despesa},
-                new Categoria { Id = 9, Nome = "Vale-Refeição", Atribuicao = Enum.Atribuicao.Ganho },
-                new Categoria { Id = 10, Nome = "Vale-Transporte", Atribuicao = Enum.Atribuicao.Ganho }
-            );
+            //modelBuilder.Entity<Categoria>().HasData(
+            //    new Categoria { Id = 1, Nome = "Moradia", Atribuicao = Enum.Atribuicao.Despesa },
+            //    new Categoria { Id = 2, Nome = "Transporte", Atribuicao = Enum.Atribuicao.Despesa },
+            //    new Categoria { Id = 3, Nome = "Alimentação", Atribuicao = Enum.Atribuicao.Despesa },
+            //    new Categoria { Id = 4, Nome = "Lazer", Atribuicao = Enum.Atribuicao.Despesa },
+            //    new Categoria { Id = 5, Nome = "Educação", Atribuicao = Enum.Atribuicao.Despesa },
+            //    new Categoria { Id = 6, Nome = "Salário", Atribuicao = Enum.Atribuicao.Ganho },
+            //    new Categoria { Id = 7, Nome = "Investimentos", Atribuicao = Enum.Atribuicao.Despesa },
+            //    new Categoria { Id = 8, Nome = "Outros", Atribuicao = Enum.Atribuicao.Despesa},
+            //    new Categoria { Id = 9, Nome = "Vale-Refeição", Atribuicao = Enum.Atribuicao.Ganho },
+            //    new Categoria { Id = 10, Nome = "Vale-Transporte", Atribuicao = Enum.Atribuicao.Ganho }
+            //);
         }
 
     }

@@ -166,18 +166,21 @@ namespace API_Data.src.Repository
             }
         }
 
-        public async Task<OperationResult> RegisterUserAsync(RegisterRequest user)
+        public async Task<(OperationResult, User? User)> RegisterUserAsync(RegisterRequest user)
         {
             try
             {
                 // Verifica se o e-mail já está cadastrado no banco de dados
                 if (await _db.Users.AnyAsync(u => u.Email == user.Email))
                 {
-                    return new OperationResult
-                    {
-                        Success = false,
-                        Message = "E-mail já cadastrado."
-                    };
+                    return (
+                        new OperationResult
+                        {
+                            Success = false,
+                            Message = "E-mail já cadastrado."
+                        },
+                        null
+                    );
                 }
 
                 // Cria um novo usuário com os dados fornecidos e o hash da senha
@@ -189,23 +192,30 @@ namespace API_Data.src.Repository
                 };
 
                 // Adiciona o usuário ao banco de dados
-                _db.Users.Add(newUser);
+                _db.Users.AddAsync(newUser);
+
                 //salva as alterações
                 await _db.SaveChangesAsync();
 
-                return new OperationResult
-                {
-                    Success = true,
-                    Message = "Usuário cadastrado com sucesso."
-                };
+                return (
+                    new OperationResult
+                    {
+                        Success = true,
+                        Message = $"{newUser.Id} cadastrado com sucesso."
+                    },
+                    newUser
+                );
             }
             catch (Exception ex)
             {
-                return new OperationResult
-                {
-                    Success = false,
-                    Message = ex.Message
-                };
+                return (
+                    new OperationResult
+                    {
+                        Success = false,
+                        Message = ex.Message
+                    },
+                    null
+                );
             }
         }
 

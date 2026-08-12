@@ -49,7 +49,7 @@ namespace API_Data.src.Repository
         {
             try
             {
-                _db.Set<ContaFixa>().Add(contaFixa);
+                _db.Set<ContaFixa>().AddAsync(contaFixa);
                 await _db.SaveChangesAsync();
                 return contaFixa;
             }
@@ -159,7 +159,7 @@ namespace API_Data.src.Repository
         {
             try
             {
-                _db.ContaFixaParcelas.Add(parcela);
+                _db.ContaFixaParcelas.AddAsync(parcela);
                 await _db.SaveChangesAsync();
                 return parcela;
             }

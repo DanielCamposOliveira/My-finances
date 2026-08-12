@@ -48,7 +48,7 @@ public class LancamentosRepository : ILancamentosRepository
     {
         try
         {
-            _db.Lancamentos.Add(lancamento);
+            _db.Lancamentos.AddAsync(lancamento);
             await _db.SaveChangesAsync();
             return lancamento;
         }

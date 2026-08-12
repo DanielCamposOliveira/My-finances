@@ -8,7 +8,7 @@ namespace API_Data.src.Repository.Interface
     {
         Task<User?> GetUserByIdAsync(string id);
 
-        Task<OperationResult> RegisterUserAsync(RegisterRequest user);
+        Task<(OperationResult, User? User)> RegisterUserAsync(RegisterRequest user);
 
         Task<User?> GetUserByEmailAsync(string email);
 

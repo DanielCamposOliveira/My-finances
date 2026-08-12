@@ -19,7 +19,7 @@ namespace API_Data.src.Repository
         {
             try
             {               
-                _db.Tags.Add(_tag);
+                _db.Tags.AddAsync(_tag);
                 await _db.SaveChangesAsync();
 
                 return _tag;
@@ -27,6 +27,21 @@ namespace API_Data.src.Repository
             catch
             {
                 return null;
+            }
+        }
+
+        public async Task<bool> CriarListTag(List<Tag> _tag)
+        {
+            try
+            {
+                _db.Tags.AddRangeAsync(_tag);
+                await _db.SaveChangesAsync();
+
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 

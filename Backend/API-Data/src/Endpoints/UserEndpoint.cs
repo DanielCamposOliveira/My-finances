@@ -17,7 +17,7 @@ namespace API_Data.src.Endpoints
 
             Endpoint.MapPost("/auth/register", async ([FromBody] RegisterRequest dto, IUserService service) =>
             {
-                var response = await service.PostRegisterUserAsync(dto);
+                var response = await service.RegisterUserAsync(dto);
                 return response;
             })
             .WithSummary("Register")
@@ -25,15 +25,15 @@ namespace API_Data.src.Endpoints
             .WithDescription("Registra um novo usuário")
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces<TagResponseDto>(StatusCodes.Status204NoContent)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .RequireRateLimiting("IpLimitPolicy");
 
 
             // ==========================================
             // ROTAS: LOGIN USUARIO
             // ==========================================
-            Endpoint.MapPost("/auth/login", async ([FromBody] RegisterRequest dto, IUserService service) =>
+            Endpoint.MapPost("/auth/login", async ([FromBody] LoginRequest dto, IUserService service) =>
             {
-                var response = await service.PostRegisterUserAsync(dto);
+                var response = await service.AuthenticationUserAsync(dto);
                 return response;
             })
             .WithSummary("login")
@@ -41,7 +41,7 @@ namespace API_Data.src.Endpoints
             .WithDescription("Autentica o usuário e retorna um token JWT")
             .Produces(StatusCodes.Status400BadRequest)
             .Produces<TagResponseDto>(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .RequireRateLimiting("IpLimitPolicy");
 
 
             // ==========================================

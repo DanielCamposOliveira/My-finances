@@ -19,7 +19,7 @@ namespace API_Data.src.Repository
             try
             {
                 // Salva a entidade completa no banco
-                _db.Categorias.Add(categoria);
+                _db.Categorias.AddAsync(categoria);
                 await _db.SaveChangesAsync();
 
                return true;
@@ -30,7 +30,23 @@ namespace API_Data.src.Repository
             }
         }
 
- 
+        public async Task<bool?> CriarListCategoriaAsync(List<Categoria> categoria)
+        {
+            try
+            {
+                // Salva a entidade completa no banco
+                _db.Categorias.AddRangeAsync(categoria);
+                await _db.SaveChangesAsync();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
         public async Task<List<CategoriaResponseDto>> ListaCategoriaAsync()
         {
             try

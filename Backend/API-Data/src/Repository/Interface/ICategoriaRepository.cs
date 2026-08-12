@@ -7,6 +7,8 @@ namespace API_Data.src.Repository.Interface
     {
         public Task<bool?> CriarCategoriaAsync(Categoria categoria);
 
+        public Task<bool?> CriarListCategoriaAsync(List<Categoria> categoria);
+
         public Task<List<CategoriaResponseDto>> ListaCategoriaAsync();
     }
 }
