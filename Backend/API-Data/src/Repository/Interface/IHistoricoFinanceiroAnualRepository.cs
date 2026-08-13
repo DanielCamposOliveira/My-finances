@@ -5,11 +5,11 @@ namespace API_Data.src.Repository.Interface
 {
     public interface IHistoricoFinanceiroAnualRepository
     {
-        public Task<List<HistoricoFinanceiroAnual>> ObterTodosHistoricosAsync(int ano);
+        public Task<List<HistoricoFinanceiroAnual>> ObterTodosHistoricosAsync(int ano, string userId);
 
-        public Task<Boolean> AtualizarHistoricoMesAsync(HistoricoMesRequest request);
+        public Task<Boolean> AtualizarHistoricoMesAsync(HistoricoMesRequest request, string userId);
 
-        public Task<List<HistoricoFinanceiroAnual>> ObterHistoricosMesAsync(int mes, int ano);
+        public Task<List<HistoricoFinanceiroAnual>> ObterHistoricosMesAsync(int mes, int ano, string userId);
 
 
     }

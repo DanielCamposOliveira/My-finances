@@ -19,10 +19,10 @@ namespace API_Data.src.Services
         /// </summary>
         /// <param name="ano"></param>
         /// <returns></returns>
-        public async Task<IResult> ListaHistoricoAsync(int ano)
+        public async Task<IResult> ListaHistoricoAsync(int ano, string userId)
         {
             // 1. Busca no repositório
-            var registrosBanco = await _Repo.ObterTodosHistoricosAsync(ano);
+            var registrosBanco = await _Repo.ObterTodosHistoricosAsync(ano, userId);
 
             // Se o repositório capturou uma exceção e retornou null (Erro no banco)
             if (registrosBanco == null)
@@ -79,9 +79,9 @@ namespace API_Data.src.Services
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public async Task<IResult> UpdateHistoricoMesAsync(HistoricoMesRequest request)
+        public async Task<IResult> UpdateHistoricoMesAsync(HistoricoMesRequest request, string userId)
         {
-           var response = await _Repo.AtualizarHistoricoMesAsync(request);
+           var response = await _Repo.AtualizarHistoricoMesAsync(request, userId);
            if(response == false)
            {
                 return Results.Problem(
@@ -99,7 +99,7 @@ namespace API_Data.src.Services
         /// RASCUNHO: Este método é chamado para gerar o histórico do mês anterior, verificando se já existe um registro para o mês e ano correspondentes.
         /// </summary>
         /// <returns></returns>
-        public async Task<IResult> GerarHistoricoMesAsync()
+        public async Task<IResult> GerarHistoricoMesAsync(string userId)
         {
      
             int ano = DateTime.Today.Year;
@@ -113,7 +113,7 @@ namespace API_Data.src.Services
 
 
             //verifica se já existe um registro para o mês atual
-            var Valor = await _Repo.ObterHistoricosMesAsync(mes, ano);
+            var Valor = await _Repo.ObterHistoricosMesAsync(mes, ano, userId);
 
             // se tiver null deu erro
             if (Valor == null)
@@ -142,7 +142,7 @@ namespace API_Data.src.Services
                 novaDivida = Convert.ToInt32(_TotalDivida)
             };
 
-            var response = await _Repo.AtualizarHistoricoMesAsync(HistoricoMesRequest);
+            bool response = await _Repo.AtualizarHistoricoMesAsync(HistoricoMesRequest, userId);
             if (response == false)
             {
                 return Results.Problem(

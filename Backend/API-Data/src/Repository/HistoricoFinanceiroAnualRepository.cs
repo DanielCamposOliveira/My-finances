@@ -15,13 +15,13 @@ namespace API_Data.src.Repository
             _db = db;
         }
 
-        public async Task<List<HistoricoFinanceiroAnual>> ObterTodosHistoricosAsync(int ano)
+        public async Task<List<HistoricoFinanceiroAnual>> ObterTodosHistoricosAsync(int ano, string userId)
         {      
             try 
             {
                 return await _db.HistoricosFinanceiros
                 .AsNoTracking()
-                .Where(h => h.Ano == ano)
+                .Where(h => h.Ano == ano && h.UserId == userId)
                 .ToListAsync();
             } catch 
             {
@@ -30,13 +30,13 @@ namespace API_Data.src.Repository
 
         }
 
-        public async Task<List<HistoricoFinanceiroAnual>> ObterHistoricosMesAsync(int mes, int ano)
+        public async Task<List<HistoricoFinanceiroAnual>> ObterHistoricosMesAsync(int mes, int ano, string userId)
         {
             try
             {
                 return await _db.HistoricosFinanceiros
                 .AsNoTracking()
-                .Where(h => h.Ano == ano && h.Mes == mes)
+                .Where(h => h.Ano == ano && h.Mes == mes && h.UserId == userId)
                 .ToListAsync();
             }
             catch (Exception ex) 
@@ -48,13 +48,13 @@ namespace API_Data.src.Repository
 
 
         // Implementação do método AtualizarHistoricoMesAsync
-        public async Task<Boolean> AtualizarHistoricoMesAsync(HistoricoMesRequest request)
+        public async Task<Boolean> AtualizarHistoricoMesAsync(HistoricoMesRequest request, string userId)
         {
             try
             {
                 // Verifica se já existe um registro para o mês e ano fornecidos
                 var registro = await _db.HistoricosFinanceiros
-                .FirstOrDefaultAsync(h => h.Ano == request.ano && h.Mes == request.mes);
+                .FirstOrDefaultAsync(h => h.Ano == request.ano && h.Mes == request.mes && h.UserId == userId);
 
                 // Se não existir, cria um novo registro; caso contrário, atualiza o existente
                 if (registro == null)
@@ -64,7 +64,8 @@ namespace API_Data.src.Repository
                         Ano = request.ano,
                         Mes = request.mes,
                         TotalSaldo = request.novoSaldo,
-                        TotalDivida = request.novaDivida
+                        TotalDivida = request.novaDivida,
+                        UserId = userId
                     };
                     _db.HistoricosFinanceiros.Add(registro);
                 }
