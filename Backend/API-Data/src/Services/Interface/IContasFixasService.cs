@@ -1,23 +1,22 @@
 ﻿using API_Data.src.DTOs.ContasFixas;
-using API_Data.src.Enum;
 
 namespace API_Data.src.Services.Interface
 {
     public interface IContasFixasService
     {
 
-        public Task<IResult> CriarContaFixaAsync(Create Dados);
+        public Task<IResult> CriarContaFixaAsync(Create Dados, string userId);
 
-        public Task<IResult> GerarFaturasMesAsync();
+        public Task<IResult> GerarFaturasMesAsync(string userId);
 
-        public Task<IResult> ListaTodasContasFixa();
+        public Task<IResult> ListaTodasContasFixa(string userId);
 
-        public Task<IResult> ListFaturaPendenteAsync();
+        public Task<IResult> ListFaturaPendenteAsync(string userId);
 
-        public Task<IResult> UpdateStatusParcela(int Id_Parcela, StatusParcela status);
+        public Task<IResult> UpdateStatusParcela(ParcelaUpdateStatus dto, string userId);
 
-        public Task<IResult> UpdateValorParcela(int Id_Parcela, decimal ValorParcela);
+        public Task<IResult> UpdateValorParcela(ParcelaUpdateValor dto, string userId);
 
-        public Task<IResult> UpdateStatusContaFixa(int Id_ContaFixa, bool status);
+        public Task<IResult> UpdateStatusContaFixa(ContaFixaUpdateStatus dto, string userId);
     }
 }
