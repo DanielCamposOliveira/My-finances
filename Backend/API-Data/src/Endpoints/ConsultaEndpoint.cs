@@ -1,4 +1,5 @@
 ﻿using API_Data.src.Services.Interface;
+using System.Security.Claims;
 
 namespace API_Data.src.Endpoints
 {
@@ -15,9 +16,16 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: VALOR TOTAL DE CONTAS A RECEBER
             // ==========================================
-            EndpointValores.MapGet("/receber", async (IConsultaService service) =>
+            EndpointValores.MapGet("/receber", async (IConsultaService service, ClaimsPrincipal userClaims) =>
             {
-                var soma = await service.TotalReceber();
+                // Recupera o ID do usuário logado a partir das claims do token JWT
+                var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Se não houver ID de usuário, retorna 401 Unauthorized
+                if (string.IsNullOrEmpty(userId))
+                    return Results.Unauthorized();
+
+                var soma = await service.TotalReceber(userId);
                 return Results.Ok(soma);
             })
             .WithSummary("Obter soma das Contas a Receber")
@@ -28,9 +36,16 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: VALOR TOTAL DE SALDO
             // ==========================================
-            EndpointValores.MapGet("/saldo", async (IConsultaService service) =>
+            EndpointValores.MapGet("/saldo", async (IConsultaService service, ClaimsPrincipal userClaims) =>
             {
-                var soma = await service.TotalSaldo();
+                // Recupera o ID do usuário logado a partir das claims do token JWT
+                var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Se não houver ID de usuário, retorna 401 Unauthorized
+                if (string.IsNullOrEmpty(userId))
+                    return Results.Unauthorized();
+
+                var soma = await service.TotalSaldo(userId);
                 return Results.Ok(soma);
             })
             .WithSummary("Obter soma das Contas em Saldo")
@@ -44,9 +59,16 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: VALOR TOTAL DE DIVIDAS PAGAS E REALIZADAS NO MÊS
             // ==========================================
-            EndpointDividas.MapGet("/Quitadas", async (IConsultaService service) =>
+            EndpointDividas.MapGet("/Quitadas", async (IConsultaService service, ClaimsPrincipal userClaims) =>
             {
-                var soma = await service.TotalQuitadasDoMes();
+                // Recupera o ID do usuário logado a partir das claims do token JWT
+                var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Se não houver ID de usuário, retorna 401 Unauthorized
+                if (string.IsNullOrEmpty(userId))
+                    return Results.Unauthorized();
+
+                var soma = await service.TotalQuitadasDoMes(userId);
                 return Results.Ok(soma);
             })
             .WithSummary("Obter soma das Contas Quitadas do Mês")
@@ -57,9 +79,16 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: VALOR TOTAL DE DIVIDAS REALIZADAS NO MÊS
             // ==========================================
-            EndpointDividas.MapGet("/Mes", async (IConsultaService service) =>
+            EndpointDividas.MapGet("/Mes", async (IConsultaService service, ClaimsPrincipal userClaims) =>
             {
-                var soma = await service.TotalDividasMes();
+                // Recupera o ID do usuário logado a partir das claims do token JWT
+                var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Se não houver ID de usuário, retorna 401 Unauthorized
+                if (string.IsNullOrEmpty(userId))
+                    return Results.Unauthorized();
+
+                var soma = await service.TotalDividasMes(userId);
                 return Results.Ok(soma);
             })
             .WithSummary("Obter soma das Contas Dividas do Mês")
@@ -71,9 +100,16 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: VALOR TOTAL DE DIVIDAS PENDENTES
             // ==========================================
-            EndpointDividas.MapGet("/pendentes", async (IConsultaService service) =>
+            EndpointDividas.MapGet("/pendentes", async (IConsultaService service, ClaimsPrincipal userClaims) =>
             {
-                var soma = await service.TotalContasPendentes();
+                // Recupera o ID do usuário logado a partir das claims do token JWT
+                var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Se não houver ID de usuário, retorna 401 Unauthorized
+                if (string.IsNullOrEmpty(userId))
+                    return Results.Unauthorized();
+
+                var soma = await service.TotalContasPendentes(userId);
                 return Results.Ok(soma);
             })
             .WithSummary("Obter soma das Contas Pendentes")

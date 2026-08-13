@@ -21,25 +21,27 @@ namespace API_Data.src.Repository
         /// Que tenham atribuição "Ganho"
         /// RASCUNHO: Soma tudo que estejam com vencimento até o mês/ano informado e seja com status "Aberto" e atribuição "Ganho"
         /// </summary>
-        public async Task<decimal> TotalReceber(int ano, int mes)
+        public async Task<decimal> TotalReceber(int ano, int mes, string userId)
         {
             try
             {
                 // Define o primeiro dia do próximo mês para filtrar vencimentos anteriores a ele
                 var limiteData = new DateTime(ano, mes, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(1);
 
-                // Query 1: Contas Fixas a Receber
+                // Query 1: Contas Fixas a Receber filtradas pelo Usuário
                 var fixas = _db.ContaFixaParcelas
                     .AsNoTracking()
-                    .Where(cfp => cfp.Status == StatusParcela.Aberto
+                    .Where(cfp => cfp.ContaFixa.UserId == userId // <--- Filtro adicionado
+                               && cfp.Status == StatusParcela.Aberto
                                && cfp.ContaFixa.Categoria.Atribuicao == Atribuicao.Ganho
                                && cfp.DataVencimento < limiteData)
                     .Select(cfp => (decimal?)cfp.ValorParcela);
 
-                // Query 2: Lançamentos Variáveis a Receber
+                // Query 2: Lançamentos Variáveis a Receber filtrados pelo Usuário
                 var variaveis = _db.LancamentoParcelas
                     .AsNoTracking()
-                    .Where(lp => lp.Status == StatusParcela.Aberto // Fix: alterado de Pago para Aberto
+                    .Where(lp => lp.Lancamento.UserId == userId // <--- Filtro adicionado
+                              && lp.Status == StatusParcela.Aberto
                               && lp.Lancamento.Categoria.Atribuicao == Atribuicao.Ganho
                               && lp.DataVencimento < limiteData)
                     .Select(lp => (decimal?)lp.ValorParcela);
@@ -63,7 +65,7 @@ namespace API_Data.src.Repository
         /// Que a DataPagamento estejam dentro do mês e ano especificados.
         /// RASCUNHO: Isso significa que vai buscar todas as dividas que foram pagas no mês
         /// </summary>
-        public async Task<Decimal> TotalSaldo(int ano, int mes)
+        public async Task<Decimal> TotalSaldo(int ano, int mes, string userId)
         {
             try
             {
@@ -76,7 +78,8 @@ namespace API_Data.src.Repository
                 // Query 1: Contas Fixas pagas do mês
                 var fixas = _db.ContaFixaParcelas
                     .AsNoTracking()
-                    .Where(cfp => cfp.Status == StatusParcela.Pago
+                    .Where(cfp => cfp.ContaFixa.UserId == userId 
+                               && cfp.Status == StatusParcela.Pago
                                && cfp.ContaFixa.Categoria.Atribuicao == Atribuicao.Ganho
                                && cfp.DataPagamento >= inicioMes
                                && cfp.DataPagamento < fimMes)
@@ -85,7 +88,8 @@ namespace API_Data.src.Repository
                 // Query 2: Lançamentos pagos do mês
                 var variaveis = _db.LancamentoParcelas
                     .AsNoTracking()
-                    .Where(lp => lp.Status == StatusParcela.Pago // Alterado para buscar apenas PAGO
+                    .Where(lp => lp.Lancamento.UserId == userId 
+                              && lp.Status == StatusParcela.Pago // Alterado para buscar apenas PAGO
                               && lp.Lancamento.Categoria.Atribuicao == Atribuicao.Ganho
                               && lp.DataPagamento >= inicioMes
                               && lp.DataPagamento < fimMes)
@@ -109,7 +113,7 @@ namespace API_Data.src.Repository
         /// Desconsidera parcelas de meses anteriores (atrasadas) e meses futuros.
         /// </summary>
         /// RASCUNHO: Isso significa que vai buscar todas as dividas que foram criadas no mês, independente de estarem pagas ou não.
-        public async Task<Decimal> TotalDividasMes(int ano, int mes)
+        public async Task<Decimal> TotalDividasMes(int ano, int mes, string userId)
         {
             try
             {
@@ -123,7 +127,8 @@ namespace API_Data.src.Repository
                 // Query 1: Contas Fixas Pagas no Mês
                 var fixasPagas = _db.ContaFixaParcelas
                     .AsNoTracking()
-                    .Where(cfp => cfp.ContaFixa.Categoria.Atribuicao == Atribuicao.Despesa
+                    .Where(cfp => cfp.ContaFixa.UserId == userId 
+                               && cfp.ContaFixa.Categoria.Atribuicao == Atribuicao.Despesa
                                && cfp.DataVencimento >= inicioMes
                                && cfp.DataVencimento < fimMes)
                     .Select(cfp => (decimal?)cfp.ValorParcela);
@@ -131,7 +136,8 @@ namespace API_Data.src.Repository
                 // Query 2: Lançamentos Variáveis Pagos no Mês
                 var variaveisPagas = _db.LancamentoParcelas
                     .AsNoTracking()
-                    .Where(lp => lp.Lancamento.Categoria.Atribuicao == Atribuicao.Despesa
+                    .Where(lp => lp.Lancamento.UserId == userId 
+                              && lp.Lancamento.Categoria.Atribuicao == Atribuicao.Despesa
                               && lp.DataVencimento >= inicioMes
                               && lp.DataVencimento < fimMes)
                     .Select(lp => (decimal?)lp.ValorParcela);
@@ -156,7 +162,7 @@ namespace API_Data.src.Repository
         /// RASCUNHO: Retorna o valor total das todas dividas que foram criadas no mês que esta em aberto e as contas Atrasado dos meses anteriores
         /// </summary>
 
-        public async Task<Decimal> TotalContasPendentes(int ano, int mes)
+        public async Task<Decimal> TotalContasPendentes(int ano, int mes, string userId)
         {
             try
             {
@@ -166,7 +172,8 @@ namespace API_Data.src.Repository
                 // Query 1: Contas Fixas
                 var fixas = _db.ContaFixaParcelas
                     .AsNoTracking()
-                    .Where(cfp => cfp.Status != StatusParcela.Pago
+                    .Where(cfp => cfp.ContaFixa.UserId == userId 
+                               && cfp.Status != StatusParcela.Pago
                                && cfp.ContaFixa.Categoria.Atribuicao == Atribuicao.Despesa
                                && cfp.DataVencimento < limiteData)
                     .Select(cfp => (decimal?)cfp.ValorParcela); // Cast para decimal? evita exceção se não houver registros
@@ -174,7 +181,8 @@ namespace API_Data.src.Repository
                 // Query 2: Lançamentos
                 var variaveis = _db.LancamentoParcelas
                     .AsNoTracking()
-                    .Where(lp => lp.Status != StatusParcela.Pago
+                    .Where(lp => lp.Lancamento.UserId == userId 
+                              && lp.Status != StatusParcela.Pago
                               && lp.Lancamento.Categoria.Atribuicao == Atribuicao.Despesa
                               && lp.DataVencimento < limiteData)
                     .Select(lp => (decimal?)lp.ValorParcela);
@@ -198,7 +206,7 @@ namespace API_Data.src.Repository
         /// Desconsidera parcelas de meses anteriores (atrasadas) e meses futuros.
         /// RASCUNHO: Isso significa que vai buscar todas as dividas que foram pagas no mês
         /// </summary>
-        public async Task<Decimal> TotalQuitadasDoMes(int ano, int mes)
+        public async Task<Decimal> TotalQuitadasDoMes(int ano, int mes, string userId)
         {
             try
             {
@@ -212,7 +220,8 @@ namespace API_Data.src.Repository
                 // Query 1: Contas Fixas Pagas no Mês
                 var fixasPagas = _db.ContaFixaParcelas
                     .AsNoTracking()
-                    .Where(cfp => cfp.Status == StatusParcela.Pago
+                    .Where(cfp => cfp.ContaFixa.UserId == userId 
+                               && cfp.Status == StatusParcela.Pago
                                && cfp.ContaFixa.Categoria.Atribuicao == Atribuicao.Despesa
                                && cfp.DataPagamento >= inicioMes
                                && cfp.DataPagamento < fimMes)
@@ -221,7 +230,8 @@ namespace API_Data.src.Repository
                 // Query 2: Lançamentos Variáveis Pagos no Mês
                 var variaveisPagas = _db.LancamentoParcelas
                     .AsNoTracking()
-                    .Where(lp => lp.Status == StatusParcela.Pago
+                    .Where(lp => lp.Lancamento.UserId == userId 
+                              && lp.Status == StatusParcela.Pago
                               && lp.Lancamento.Categoria.Atribuicao == Atribuicao.Despesa
                               && lp.DataPagamento >= inicioMes
                               && lp.DataPagamento < fimMes)

@@ -130,8 +130,8 @@ namespace API_Data.src.Services
             }
 
 
-            var _TotalDivida = await _service.TotalDividasMes();
-            var _TotalSaldo = await _service.TotalSaldo();
+            var _TotalDivida = await _service.TotalDividasMes(userId);
+            var _TotalSaldo = await _service.TotalSaldo(userId);
 
             // Monta o pacote de dados para o histórico do mês
             var HistoricoMesRequest = new HistoricoMesRequest
