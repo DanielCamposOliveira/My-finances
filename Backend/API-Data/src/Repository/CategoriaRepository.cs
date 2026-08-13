@@ -47,12 +47,13 @@ namespace API_Data.src.Repository
         }
 
 
-        public async Task<List<CategoriaResponseDto>> ListaCategoriaAsync()
+        public async Task<List<CategoriaResponseDto>> ListaCategoriaAsync(string userId)
         {
             try
             {
                 var categorias = await _db.Categorias
                     .AsNoTracking() // Dica: excelente para performance em consultas de leitura
+                    .Where(c => c.UserId == userId)
                     .Select(c => new CategoriaResponseDto
                     {
                         Id = c.Id,

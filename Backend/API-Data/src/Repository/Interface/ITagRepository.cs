@@ -9,6 +9,6 @@ namespace API_Data.src.Repository.Interface
 
         public Task<bool> CriarListTag(List<Tag> _tag);
 
-        public Task<List<TagResponseDto>> ListaTags();
+        public Task<List<TagResponseDto>> ListaTags(string userId);
     }
 }

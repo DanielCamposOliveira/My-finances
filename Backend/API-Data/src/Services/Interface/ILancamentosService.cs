@@ -5,13 +5,13 @@ namespace API_Data.src.Services.Interface
 {
     public interface ILancamentosService
     {
-        public Task<IResult> ListarLancamentosAsync();
+        public Task<IResult> ListarLancamentosAsync(string userId);
 
-        public Task<IResult> ListFaturaPendenteAsync();
+        public Task<IResult> ListFaturaPendenteAsync(string userId);
 
-        public Task<IResult> CriarLancamentoAsync(Create dto);
+        public Task<IResult> CriarLancamentoAsync(Create dto, string userId);
 
-        public Task<IResult> UptateStatusLancamentoParcela(int id, StatusParcela status);
+        public Task<IResult> UptateStatusLancamentoParcela(int id, StatusParcela status, string userId);
 
        
 

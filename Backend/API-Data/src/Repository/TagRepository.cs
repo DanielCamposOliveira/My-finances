@@ -45,16 +45,17 @@ namespace API_Data.src.Repository
             }
         }
 
-        public async Task<List<TagResponseDto>> ListaTags()
+        public async Task<List<TagResponseDto>> ListaTags(string userId)
         {
             try
             {
                 var tags = await _db.Tags
-                    .AsNoTracking() // Dica: excelente para performance em consultas de leitura
-                    .Select(c => new TagResponseDto
+                    .AsNoTracking()
+                    .Where(t => t.UserId == userId)
+                    .Select(t => new TagResponseDto
                     {
-                        Id = c.Id,
-                        Nome = c.Nome
+                        Id = t.Id,
+                        Nome = t.Nome
                     })
                     .ToListAsync();
 
@@ -64,7 +65,6 @@ namespace API_Data.src.Repository
             {
                 return null;
             }
-
         }
 
     }

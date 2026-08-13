@@ -4,9 +4,9 @@ namespace API_Data.src.Services.Interface
 {
     public interface ITagService
     {
-        public Task<IResult> CriarTag(CriarTagDto tag);
+        public Task<IResult> CriarTag(CriarTagDto tag, string userId);
 
-        public Task<IResult> ListaTags();
+        public Task<IResult> ListaTags(string userId);
 
     }
 }

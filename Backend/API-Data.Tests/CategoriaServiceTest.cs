@@ -38,14 +38,15 @@ namespace API_Data.Tests
             var Dados = new CriarCategoriaDto
             {
                 Nome = $"CategoriaTest_{Guid.NewGuid():N}",
-                Atribuicao = Atribuicao.Ganho
+                Atribuicao = Atribuicao.Ganho,
+                userId = "21c8c222-6811-467e-8c1b-18f941349411"
             };
 
 
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.CriarCategoria(Dados);
+            var resultado = await service.CriarCategoria(Dados, "21c8c222-6811-467e-8c1b-18f941349411");
 
 
             //=============================================================
@@ -71,7 +72,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.ListaCategoria();
+            var resultado = await service.ListaCategoria("21c8c222-6811-467e-8c1b-18f941349411");
 
 
             //=============================================================

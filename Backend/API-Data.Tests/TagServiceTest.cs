@@ -49,7 +49,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.CriarTag(dto);
+            var resultado = await service.CriarTag(dto, "21c8c222-6811-467e-8c1b-18f941349411");
 
             //=============================================================
             // 3. ASSERT (Validação no resultado e no BANCO)
@@ -83,7 +83,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.ListaTags();
+            var resultado = await service.ListaTags("21c8c222-6811-467e-8c1b-18f941349411");
 
 
             //=============================================================

@@ -14,12 +14,13 @@ namespace API_Data.src.Services
             _categoriaRepository = repo;
         }
 
-        public async Task<IResult> CriarCategoria(CriarCategoriaDto dto)
+        public async Task<IResult> CriarCategoria(CriarCategoriaDto dto, string userId)
         {
             var Dados = new Categoria
             {
                 Nome = dto.Nome,
                 Atribuicao = dto.Atribuicao,
+                UserId = userId,
             };
 
             var retorno = await _categoriaRepository.CriarCategoriaAsync(Dados);
@@ -34,9 +35,9 @@ namespace API_Data.src.Services
             return Results.Created();
         }
 
-        public async Task<IResult> ListaCategoria()
+        public async Task<IResult> ListaCategoria(string userId)
         {
-            var retorno = await _categoriaRepository.ListaCategoriaAsync();
+            var retorno = await _categoriaRepository.ListaCategoriaAsync(userId);
            
             if(retorno == null)
             { 

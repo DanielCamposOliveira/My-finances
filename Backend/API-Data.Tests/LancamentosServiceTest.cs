@@ -39,7 +39,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.ListarLancamentosAsync();
+            var resultado = await service.ListarLancamentosAsync("21c8c222-6811-467e-8c1b-18f941349411");
 
             //=============================================================
             // 3. ASSERT (Validação no resultado e no BANCO)
@@ -70,7 +70,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.ListFaturaPendenteAsync();
+            var resultado = await service.ListFaturaPendenteAsync("21c8c222-6811-467e-8c1b-18f941349411");
 
             //=============================================================
             // 3. ASSERT (Validação no resultado e no BANCO)
@@ -110,7 +110,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.CriarLancamentoAsync(_lancamento);
+            var resultado = await service.CriarLancamentoAsync(_lancamento, "21c8c222-6811-467e-8c1b-18f941349411");
 
 
             //=============================================================
@@ -139,7 +139,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.UptateStatusLancamentoParcela(ID_Parcela, Status_Parcela);
+            var resultado = await service.UptateStatusLancamentoParcela(ID_Parcela, Status_Parcela, "21c8c222-6811-467e-8c1b-18f941349411");
 
 
             //=============================================================

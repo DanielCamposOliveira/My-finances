@@ -14,11 +14,12 @@ namespace API_Data.src.Services
             _tagRepository = tag;
         }
 
-        public async Task<IResult>CriarTag(CriarTagDto tag)
+        public async Task<IResult>CriarTag(CriarTagDto tag, string userId)
         {
             var Dados = new Tag
             {
                 Nome = tag.Nome,
+                UserId = userId,
             };
 
             var retorno = await _tagRepository.CriarTag(Dados);
@@ -34,9 +35,9 @@ namespace API_Data.src.Services
         }
 
         //public async Task<List<TagResponseDto>> ListaTags()
-        public async Task<IResult> ListaTags()
+        public async Task<IResult> ListaTags(string userId)
         {
-           var retorno = await _tagRepository.ListaTags();
+           var retorno = await _tagRepository.ListaTags(userId);
            if(retorno == null)
            {
                 return Results.Problem(

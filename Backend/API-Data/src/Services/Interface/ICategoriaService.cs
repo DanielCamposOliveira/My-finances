@@ -4,8 +4,8 @@ namespace API_Data.src.Services.Interface
 {
     public interface ICategoriaService
     {
-        public Task<IResult> CriarCategoria(CriarCategoriaDto dto);
+        public Task<IResult> CriarCategoria(CriarCategoriaDto dto, string userId);
 
-        public Task<IResult> ListaCategoria();
+        public Task<IResult> ListaCategoria(string userId);
     }
 }

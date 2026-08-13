@@ -16,9 +16,9 @@ public class LancamentosService : ILancamentosService
     }
 
     //Lista todos os lançamentos
-    public async Task<IResult> ListarLancamentosAsync()
+    public async Task<IResult> ListarLancamentosAsync(string userId)
     {
-        var retorno = await _repository.ListaTodosLancamentosAsync();
+        var retorno = await _repository.ListaTodosLancamentosAsync(userId);
         if (retorno == null)
         {
             return Results.Problem(
@@ -31,9 +31,9 @@ public class LancamentosService : ILancamentosService
 
     //## Obter faturas com Status Aberto(Mes recorent) ou Vencida(Ano recorrent) 
  
-    public async Task<IResult> ListFaturaPendenteAsync()
+    public async Task<IResult> ListFaturaPendenteAsync(string userId)
     {
-        var LancamentosAtivos = await _repository.ListaLancamentosAsync();
+        var LancamentosAtivos = await _repository.ListaLancamentosAsync(userId);
         if (LancamentosAtivos == null)
         {
             return Results.Problem(
@@ -71,10 +71,10 @@ public class LancamentosService : ILancamentosService
     }
 
     // Cria um lançamento
-    public async Task<IResult> CriarLancamentoAsync(Create dto)
+    public async Task<IResult> CriarLancamentoAsync(Create dto, string userId)
     {
         // Verifica se existe a categoria
-        var categoriaExiste = await _repository.CategoriaExisteAsync(dto.CategoriaId);
+        var categoriaExiste = await _repository.CategoriaExisteAsync(dto.CategoriaId, userId);
 
         if (!categoriaExiste)
         {
@@ -84,7 +84,7 @@ public class LancamentosService : ILancamentosService
         }
 
         // Busca das tags informadas
-        var ListTags = await _repository.ObterTagsPorIdsAsync(dto.TagIds);
+        var ListTags = await _repository.ObterTagsPorIdsAsync(dto.TagIds, userId);
 
         // Definição da quantidade de parcelas
         // int quantidadeEfetivaParcelas = dto.Tipo == TipoLancamento.Parcelado ? dto.QtdParcelas : 1;
@@ -96,6 +96,7 @@ public class LancamentosService : ILancamentosService
             ValorTotal = dto.ValorTotal,
             QtdParcelas = dto.QtdParcelas,
             CategoriaId = dto.CategoriaId,
+            UserId = userId,
             Tags = ListTags
         };
 
@@ -127,19 +128,41 @@ public class LancamentosService : ILancamentosService
     }
 
 
-    // Atualiza o status de uma parcela
-    public async Task<IResult> UptateStatusLancamentoParcela(int id, StatusParcela status)
+    // Atualiza o status de uma parcela se pertencer ao usuario
+    public async Task<IResult> UptateStatusLancamentoParcela(int id, StatusParcela status, string userId)
     {
+
+        // Busca Parcela do Lancamento
         var parcela = await _repository.BuscaLancamentoParcelasync(id);
         if (parcela == null)
         {
             return Results.Problem(
-            "Parcela não encontrada !",
-            statusCode: StatusCodes.Status404NotFound
-            );
+                "Parcela não encontrada !",
+                statusCode: StatusCodes.Status404NotFound
+                );
         }
 
-        // Altera dados
+        // Busca Lancamento
+        var _lancamento = await _repository.BuscaLancamentoasync(parcela.LancamentoId);
+        if (_lancamento == null)
+        {
+            return Results.Problem(
+                "Lancamento não encontrada !",
+                statusCode: StatusCodes.Status404NotFound
+                );
+        }
+
+        // verifica se o Lancamento é do Usuario
+        if(_lancamento.UserId != userId)
+        {
+            return Results.Problem(
+                "Parcela não Pertence ao usuario !",
+                 statusCode: StatusCodes.Status403Forbidden
+                );
+        }
+
+
+        // Altera dados da parcela
         parcela.Status = status;
         parcela.DataPagamento = status == StatusParcela.Pago ? DateTime.UtcNow : null;
 

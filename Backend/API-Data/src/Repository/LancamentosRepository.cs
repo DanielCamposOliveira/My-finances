@@ -17,24 +17,27 @@ public class LancamentosRepository : ILancamentosRepository
     }
 
     // ## verificar se existe uma categoria
-    public async Task<bool> CategoriaExisteAsync(int categoriaId)
+    public async Task<bool> CategoriaExisteAsync(int categoriaId, string userId)
     {
         try
         {
-            return await _db.Categorias.AnyAsync(c => c.Id == categoriaId);
+            return await _db.Categorias
+                .AnyAsync(c => c.Id == categoriaId && c.UserId == userId);
         }
         catch
         {
             return false;
-        }        
+        }
     }
 
     //## Obtem a lista de Tag
-    public async Task<List<Tag>> ObterTagsPorIdsAsync(List<int> tagIds)
+    public async Task<List<Tag>> ObterTagsPorIdsAsync(List<int> tagIds, string userId)
     {
         try
         {
-            return await _db.Tags.Where(t => tagIds.Contains(t.Id)).ToListAsync();
+            return await _db.Tags
+                .Where(t => tagIds.Contains(t.Id) && t.UserId == userId)
+                .ToListAsync();
         }
         catch
         {
@@ -59,12 +62,13 @@ public class LancamentosRepository : ILancamentosRepository
     }
 
     // ## Lista todas as Contas
-    public async Task<List<Lancamento>?> ListaLancamentosAsync()
+    public async Task<List<Lancamento>?> ListaLancamentosAsync(string userId)
     {
         try
         {
             return await _db.Set<Lancamento>()
             .AsNoTracking()
+            .Where(l => l.UserId == userId)
             .Include(cf => cf.Categoria)
             .Include(cf => cf.Tags)
             .ToListAsync();
@@ -77,12 +81,13 @@ public class LancamentosRepository : ILancamentosRepository
 
 
     // Lista todos os lançamentos com suas categorias, tags e parcelas
-    public async Task<List<LancamentoResponse>?> ListaTodosLancamentosAsync()
+    public async Task<List<LancamentoResponse>?> ListaTodosLancamentosAsync(string userId)
     {
         try
         {
             return await _db.Lancamentos
                 .AsNoTracking()
+                .Where(l => l.UserId == userId)
                 .Select(l => new LancamentoResponse
                 {
                     Id = l.Id,
@@ -171,20 +176,38 @@ public class LancamentosRepository : ILancamentosRepository
     {
         try
         {
-            return await _db.LancamentoParcelas.FindAsync(id);
+            return await _db.LancamentoParcelas.FirstOrDefaultAsync(p => p.Id == id);
+
+
+            //return await _db.LancamentoParcelas.FindAsync(id);
+
+            //var lancamento = await _db.Lancamentos.FirstOrDefaultAsync(l => l.Id == parcela.LancamentoId &&l.UserId == userId);
+
         }
         catch
         {
             return null;
         }
+    }
 
+    public async Task<Lancamento?> BuscaLancamentoasync(int LancamentoId)
+    {
+        try
+        {
+          
+            return await _db.Lancamentos.FirstOrDefaultAsync(l => l.Id == LancamentoId);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
 
 
 
 
- 
+
 
 
 
