@@ -1,5 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { combineLatest } from 'rxjs';
+
 import { MoneyCard } from '../../components/card/money-card/money-card';
 import { MoneyChart } from '../../components/graphic/money-chart/money-chart';
 import { DashboardServe } from '../../service/Dashboard/dashboard-serve';
@@ -41,160 +43,110 @@ export class Dashboard implements OnInit {
   Categorias?: CategoriaModel;
   private categoriaService = inject(CategoriaService);
 
+
+  
   ngOnInit(): void {
 
-    // Busta todas as Tags
-    this.tagService.GetTag().subscribe({
-      next: (resposta) => {
-        console.log("Tags:", resposta);
+    this.ObterSaldo();
+    this.ObterValorReceber();
+    this.ObterValorDividaPendente();
+    this.ObterValorDeficitReativo();
+  }
 
-        this.cdr.detectChanges(); //serve para forçar o Angular a atualizar a tela (HTML)
-      },
-      error: (err) => {
-        console.error('Erro ao carregar Tags:', err);
-      }
-    });
-
-    // cadastro Tag
-  //  this.tagService.PostTag({
- //     nome: this.TagNome
- //   }).subscribe({
- //     next: () => {
-  //      console.log("Tag castrada ");
-  //    },
- //     error: (err) => {
- //       if (err.status >= 400 && err.status < 500) { 
- //         console.error('[Tag] Erro:', err);
- //       }
- //       else
- //       {
-   //       console.error('[Tag] Ocorreu algum erro:', err);
-  //      }
- //      
- //     }
- //   });
-
-
-    this.categoriaService.getCategoria().subscribe({
-      next: (resposta) => {
-        if (resposta && resposta.length > 0) {
-         console.log("Categoria" , resposta);
-        }
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Erro ao carregar Categoria:', error);
-      }
-    });
-
-      
-      
-      
-    // 1. Carrega o histórico financeiro da API
-    this.dashboardService.getHistoricoFinanceiroAnual(2026).subscribe({
-      next: (resposta) => {
-        if (resposta && resposta.length > 0) {
-          const [dados] = resposta;
-
-          this.historicoFinanceiro = {
-            chartCategories: dados.chartCategories,
-            chartSeries: dados.chartSeries,
-          };
-
-          this.cdr.detectChanges();
-        }
-      },
-      error: (err) => {
-        console.error('Erro ao carregar histórico financeiro:', err);
-      },
-    });
-
-    // 2. Dívidas Pendentes
-    this.dashboardService.getDividaPendente().subscribe({
-      next: (resposta) => {
-        if (resposta) {
-          this.cardDividaPendente = {
-            title: 'Conta a Pagar',
-            value: resposta,
-            iconClass: 'fa-solid fa-hand-holding-dollar', // Do seu mock
-            typeClass: 'bills-to-pay', // Do seu mock
-          };
-
-          this.atualizarDeficit(); // Recalcula o déficit
-          this.cdr.detectChanges();
-        }
-      },
-      error: (err) => {
-        console.error('Erro ao carregar dívida pendente:', err);
-      },
-    });
-
-    // 3. Valor a Receber
-    this.dashboardService.getValorReceber().subscribe({
-      next: (resposta) => {
-        if (resposta) {
-          this.cardValorReceber = {
-            title: 'Receber',
-            value: resposta,
-            iconClass: 'fa-solid fa-coins', // Do seu mock
-            typeClass: 'extra-income', // Do seu mock
-          };
-          this.cdr.detectChanges();
-        }
-      },
-      error: (err) => {
-        console.error('Erro ao carregar valor a receber:', err);
-      },
-    });
-
-    // 4. Valor em Saldo
+  ObterSaldo(): void {
     this.dashboardService.getValorSaldo().subscribe({
       next: (resposta: any) => {
-        console.log('Dado vindo do backend:', resposta); // Imprime 660
+           
+        // Atualiza o objeto do card
+        this.cardValorSaldo = {
+          title: 'Saldo',
+          value: resposta,
+          iconClass: 'fa-solid fa-wallet',
+          typeClass: 'salary',
+        };
 
-        if (resposta) {
-          this.cardValorSaldo = {
-            title: 'Saldo',
-            value: resposta, // Usa 'resposta' direto
-            iconClass: 'fa-solid fa-wallet',
-            typeClass: 'salary',
-          };
-          this.atualizarDeficit(); // Recalcula o déficit
-          this.cdr.detectChanges();
-        }
+        this.cdr.markForCheck(); // Marca para atualização visual        
       },
       error: (err) => {
         console.error('Erro ao carregar valor em saldo:', err);
-      },
+      }
     });
+  }
 
-    // 5. Carrega a lista de contas pendentes unificadas
-    this.dashboardService.getContasPendentesUnificadas().subscribe({
-      next: (dados) => {
-        console.log('atribuicao:', dados); // Verifica os dados recebidos
-        this.contasPendentes = dados;
-        this.cdr.detectChanges();
+  ObterValorReceber(): void {
+    this.dashboardService.getValorReceber().subscribe({
+      next: (resposta: any) => {
+ 
+        // Atualiza o objeto do card
+        this.cardValorReceber = {
+          title: 'Receber',
+          value: resposta,
+          iconClass: 'fa-solid fa-coins',
+          typeClass: 'extra-income',
+        };
+        
+        this.cdr.markForCheck(); // Marca para atualização visual        
       },
       error: (err) => {
-        console.error('Erro ao carregar contas pendentes:', err);
-      },
+        console.error('Erro ao carregar valor a receber:', err);
+      }
     });
   }
 
-  
-
-  // Função auxiliar para calcular o déficit quando ambas as APIs retornarem dados
-  private atualizarDeficit(): void {
-    if (this.cardValorSaldo && this.cardDividaPendente) {
-      const valorCalculado = this.cardValorSaldo.value - this.cardDividaPendente.value;
-
-      this.cardDeficit = {
-        title: 'Déficit',
-        value: valorCalculado,
-        iconClass: 'fa-solid fa-credit-card',
-        typeClass: 'deficit',
-      };
-    }
-
+  ObterValorDividaPendente(): void {
+    this.dashboardService.getDividaPendente().subscribe({
+      next: (resposta: any) => {
+       
+        // Atualiza o objeto do card
+        this.cardDividaPendente = {
+          title: 'Conta a Pagar',
+          value: resposta,
+          iconClass: 'fa-solid fa-hand-holding-dollar',
+          typeClass: 'bills-to-pay',
+        };
+        this.cdr.markForCheck(); // Marca para atualização visual        
+      },
+      error: (err) => {
+        console.error('Erro ao carregar valor a receber:', err);
+      }
+    });
   }
+
+
+  // Adicione este método:
+  ObterValorDeficitReativo(): void {
+    combineLatest([
+      this.dashboardService.getValorSaldo(),
+      this.dashboardService.getDividaPendente()
+    ]).subscribe({
+      next: ([saldo, divida]) => {
+        this.cardDeficit = {
+          title: 'Déficit',
+          value: (saldo ?? 0) - (divida ?? 0),
+          iconClass: 'fa-solid fa-credit-card',
+          typeClass: 'deficit',
+        };
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //Evento disparado pelo clique do botão
+  onAtualizarClique(): void {
+    this.ObterSaldo();
+  }
+
 }

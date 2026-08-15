@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, map } from 'rxjs';
+import { Observable, startWith, forkJoin, map } from 'rxjs';
 import { ContaPendenteItemModel } from '../../models/InterfaceModel';
 import {HistoricoFinanceiroAnualModel } from '../../models/InterfaceModel';
 // Interfaces para os dados do histórico financeiro
@@ -12,35 +12,41 @@ import {HistoricoFinanceiroAnualModel } from '../../models/InterfaceModel';
 export class DashboardServe {
   private http = inject(HttpClient);
 
-  // URLs das APIs
-  private readonly HistoricoFinanceiroAnual =
-    'http://localhost:5000/api/v1/HistoricoFinanceiroAnual';
-  private readonly baseUrlDividaPendente =
-    'http://localhost:5000/api/v1/Consulta/Dividas/pendentes';
-  private readonly baseUrlValorReceber = 'http://localhost:5000/api/v1/Consulta/Valores/receber';
-  private readonly baseUrlValorSaldo = 'http://localhost:5000/api/v1/Consulta/Valores/saldo';
-
+    private readonly EndPoint =
+    'http://localhost:5000/api/v1';
+  
   private readonly baseUrlContasFixas =
     'http://localhost:5000/api/v1/ContasFixas/parcela/pendentes';
+  
   private readonly baseUrlLancamentos =
     'http://localhost:5000/api/v1/lancamentos/parcela/pendentes';
 
   // Métodos para consumir as APIs
   getHistoricoFinanceiroAnual(ano: number = 2026): Observable<HistoricoFinanceiroAnualModel[]> {
-    return this.http.get<HistoricoFinanceiroAnualModel[]>(`${this.HistoricoFinanceiroAnual}/${ano}`);
+    const Url = `${this.EndPoint}/HistoricoFinanceiroAnual`;
+    return this.http.get<HistoricoFinanceiroAnualModel[]>(`${Url}/${ano}`);
   }
 
   getDividaPendente(): Observable<number> {
-    return this.http.get<number>(`${this.baseUrlDividaPendente}`);
-  }
+    const Url = `${this.EndPoint}/Consulta/Dividas/pendentes`;
+  return this.http.get<number>(Url).pipe(
+    startWith(0) // Emite 0 imediatamente até a API responder
+  );
+}
 
   getValorReceber(): Observable<number> {
-    return this.http.get<number>(`${this.baseUrlValorReceber}`);
-  }
+     const Url = `${this.EndPoint}/Consulta/Valores/receber`;
+  return this.http.get<number>(Url).pipe(
+    startWith(0) // Emite 0 imediatamente até a API responder
+  );
+}
 
-  getValorSaldo(): Observable<number> {
-    return this.http.get<number>(`${this.baseUrlValorSaldo}`);
-  }
+getValorSaldo(): Observable<number> {
+  const Url = `${this.EndPoint}/Consulta/Valores/saldo`;
+  return this.http.get<number>(Url).pipe(
+    startWith(0) // Emite 0 imediatamente até a API responder
+  );
+}
 
   getContasPendentesUnificadas(): Observable<ContaPendenteItemModel[]> {
     return forkJoin({

@@ -1,1 +1,17 @@
-<p>main-layout works!</p>
+<header>
+  <app-header
+    [titulo]="'My finances'"
+    [Name]="Name"
+    [IsActive]="IsActive"
+    [IsAdmin]="IsAdmin"
+    [isDarkMode]="isDarkMode"
+    (isDarkModeChange)="onThemeChange($event)"
+    (logout)="deslogar()"
+  >
+  </app-header>
+</header>
+
+<main>
+  <!-- As páginas filhas são exibidas aqui -->
+  <router-outlet></router-outlet>
+</main>

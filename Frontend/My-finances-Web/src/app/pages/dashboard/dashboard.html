@@ -4,7 +4,6 @@
     @if (cardValorSaldo) {
       <app-money-card [card]="cardValorSaldo"></app-money-card>
     }
-
     @if (cardValorReceber) {
       <app-money-card [card]="cardValorReceber"></app-money-card>
     }
@@ -12,13 +11,12 @@
     @if (cardDividaPendente) {
       <app-money-card [card]="cardDividaPendente"></app-money-card>
     }
-
     @if (cardDeficit) {
       <app-money-card [card]="cardDeficit"></app-money-card>
     }
   </div>
 
-  <!-- Seção do Gráfico (mantida conforme o historicoFinanceiro) -->
+  <!-- Seção do Gráfico (mantida conforme o historicoFinanceiro) 
   @if (historicoFinanceiro) {
     <div class="chart-container">
       <app-money-chart
@@ -28,9 +26,11 @@
       </app-money-chart>
     </div>
   }
-
+-->
   <!-- Tabela de Contas Pendentes -->
+  <!--
   <div class="table-container">
     <app-money-table [links]="contasPendentes"></app-money-table>
   </div>
+  -->
 </div>
