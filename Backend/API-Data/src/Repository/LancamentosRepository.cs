@@ -176,13 +176,7 @@ public class LancamentosRepository : ILancamentosRepository
     {
         try
         {
-            return await _db.LancamentoParcelas.FirstOrDefaultAsync(p => p.Id == id);
-
-
-            //return await _db.LancamentoParcelas.FindAsync(id);
-
-            //var lancamento = await _db.Lancamentos.FirstOrDefaultAsync(l => l.Id == parcela.LancamentoId &&l.UserId == userId);
-
+            return await _db.LancamentoParcelas.FindAsync(id);
         }
         catch
         {

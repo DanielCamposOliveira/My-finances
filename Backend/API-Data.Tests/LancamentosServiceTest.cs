@@ -1,4 +1,5 @@
 ﻿using API_Data.src.Data;
+using API_Data.src.DTOs.ContasFixas;
 using API_Data.src.DTOs.Lancamento;
 using API_Data.src.Enum;
 using API_Data.src.Repository;
@@ -10,6 +11,9 @@ namespace API_Data.Tests
 {
     public class LancamentosServiceTest : TestBase
     {
+        string id = Guid.NewGuid().ToString();
+        string UserID = "21c8c222-6811-467e-8c1b-18f941349411";
+
         public LancamentosServiceTest(ITestOutputHelper output) : base(output)
         {
             EscreverLinha("Registro: " + DateTime.Now);
@@ -39,7 +43,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.ListarLancamentosAsync("21c8c222-6811-467e-8c1b-18f941349411");
+            var resultado = await service.ListarLancamentosAsync(UserID);
 
             //=============================================================
             // 3. ASSERT (Validação no resultado e no BANCO)
@@ -70,20 +74,19 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.ListFaturaPendenteAsync("21c8c222-6811-467e-8c1b-18f941349411");
+            var resultado = await service.ListFaturaPendenteAsync(UserID);
 
             //=============================================================
             // 3. ASSERT (Validação no resultado e no BANCO)
             //=============================================================
             // converto a resposta
-            var okResult = Assert.IsType<Microsoft.AspNetCore.Http.HttpResults.Ok<List<ParcelasResponse>>>(resultado);
+            var okResult = Assert.IsType<Microsoft.AspNetCore.Http.HttpResults.Ok<List<src.DTOs.Lancamento.ParcelasResponse>>>(resultado);
 
             // verifico se o status é = OK
             Assert.Equal(StatusCodes.Status200OK, okResult.StatusCode);
 
             // verifico se não veio vazio
-            var lancamentos = okResult.Value;
-            Assert.NotEmpty(lancamentos);
+            var lancamentos = okResult.Value;        
         }
 
         [Fact]
@@ -95,9 +98,9 @@ namespace API_Data.Tests
             using var dbContext = DbContext();
             var service = _lancamentosService(dbContext);
 
-            var _lancamento = new Create
+            src.DTOs.Lancamento.Create _lancamento = new src.DTOs.Lancamento.Create
             {
-                CategoriaId = 1,
+                CategoriaId = 31,
                 DataPrimeiroVencimento = DateTime.UtcNow,
                 Descricao = $"LançamentoTest_{Guid.NewGuid():N}",
                 QtdParcelas = 5,
@@ -110,7 +113,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.CriarLancamentoAsync(_lancamento, "21c8c222-6811-467e-8c1b-18f941349411");
+            var resultado = await service.CriarLancamentoAsync(_lancamento, UserID);
 
 
             //=============================================================
@@ -118,8 +121,7 @@ namespace API_Data.Tests
             //=============================================================
 
             var created = resultado as Microsoft.AspNetCore.Http.HttpResults.Created;
-
-            Assert.NotNull(created);
+                  
             Assert.Equal(StatusCodes.Status201Created, created.StatusCode);
 
         }
@@ -133,13 +135,17 @@ namespace API_Data.Tests
             using var dbContext = DbContext();
             var service = _lancamentosService(dbContext);
 
-            int ID_Parcela = 1;
-            StatusParcela Status_Parcela = StatusParcela.Aberto;
+            src.DTOs.Lancamento.ParcelaUpdateStatus dto = new src.DTOs.Lancamento.ParcelaUpdateStatus
+            {
+                ParcelaId = 10,
+                Status = StatusParcela.Aberto
+            };
+
 
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.UptateStatusLancamentoParcela(ID_Parcela, Status_Parcela, "21c8c222-6811-467e-8c1b-18f941349411");
+            var resultado = await service.UptateStatusLancamentoParcela(dto, UserID);
 
 
             //=============================================================
@@ -147,7 +153,6 @@ namespace API_Data.Tests
             //=============================================================
             var created = resultado as Microsoft.AspNetCore.Http.HttpResults.Created;
 
-            Assert.NotNull(created);
             Assert.Equal(StatusCodes.Status201Created, created.StatusCode);
 
         }

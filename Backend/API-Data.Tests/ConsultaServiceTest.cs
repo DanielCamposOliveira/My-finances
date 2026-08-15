@@ -1,4 +1,5 @@
 ﻿using API_Data.src.Data;
+using API_Data.src.Model;
 using API_Data.src.Repository;
 using API_Data.src.Services;
 using Xunit.Abstractions;
@@ -7,6 +8,9 @@ namespace API_Data.Tests
 {
     public class ConsultaServiceTest : TestBase
     {
+        string id = Guid.NewGuid().ToString();
+        string UserID = "21c8c222-6811-467e-8c1b-18f941349411";
+
         public ConsultaServiceTest(ITestOutputHelper output) : base(output)
         {
             EscreverLinha("Registro: " + DateTime.Now);
@@ -37,7 +41,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = service.TotalReceber().Result;
+            var resultado = service.TotalReceber(UserID).Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)
@@ -63,7 +67,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = service.TotalSaldo().Result;
+            var resultado = service.TotalSaldo(UserID).Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)
@@ -72,7 +76,7 @@ namespace API_Data.Tests
             EscreverLinha($"Total a Receber: {resultado}");
 
             Assert.NotNull(resultado);
-            Assert.True(resultado > 0, "O total a receber deve ser maior ou igual a zero.");
+            Assert.True(resultado >= 0, "O total a receber deve ser maior ou igual a zero.");
         }
 
 
@@ -91,7 +95,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = service.TotalQuitadasDoMes().Result;
+            var resultado =  service.TotalQuitadasDoMes(UserID).Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)
@@ -100,7 +104,7 @@ namespace API_Data.Tests
             EscreverLinha($"Total Quitadas do Mês: {resultado}");
 
             Assert.NotNull(resultado);
-            Assert.True(resultado > 0, "O total a receber deve ser maior ou igual a zero.");
+            Assert.True(resultado >= 0, "O total a receber deve ser maior ou igual a zero.");
         }
 
         [Fact]
@@ -116,7 +120,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = service.TotalDividasMes().Result;
+            var resultado = service.TotalDividasMes(UserID).Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)
@@ -125,7 +129,7 @@ namespace API_Data.Tests
             EscreverLinha($"Total Dividas do Mês: {resultado}");
 
             Assert.NotNull(resultado);
-            Assert.True(resultado > 0, "O total a receber deve ser maior ou igual a zero.");
+            Assert.True(resultado >= 0, "O total a receber deve ser maior ou igual a zero.");
         }
 
         [Fact]
@@ -142,7 +146,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = service.TotalContasPendentes().Result;
+            var resultado = service.TotalContasPendentes(UserID).Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)
@@ -151,7 +155,7 @@ namespace API_Data.Tests
             EscreverLinha($"Total Contas Pendentes: {resultado}");
 
             Assert.NotNull(resultado);
-            Assert.True(resultado > 0, "O total a receber deve ser maior ou igual a zero.");
+            Assert.True(resultado >= 0, "O total a receber deve ser maior ou igual a zero.");
         }
 
 

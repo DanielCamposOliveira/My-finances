@@ -129,11 +129,11 @@ public class LancamentosService : ILancamentosService
 
 
     // Atualiza o status de uma parcela se pertencer ao usuario
-    public async Task<IResult> UptateStatusLancamentoParcela(int id, StatusParcela status, string userId)
+    public async Task<IResult> UptateStatusLancamentoParcela(ParcelaUpdateStatus dto, string userId)
     {
 
         // Busca Parcela do Lancamento
-        var parcela = await _repository.BuscaLancamentoParcelasync(id);
+        var parcela = await _repository.BuscaLancamentoParcelasync(dto.ParcelaId);
         if (parcela == null)
         {
             return Results.Problem(
@@ -163,8 +163,8 @@ public class LancamentosService : ILancamentosService
 
 
         // Altera dados da parcela
-        parcela.Status = status;
-        parcela.DataPagamento = status == StatusParcela.Pago ? DateTime.UtcNow : null;
+        parcela.Status = dto.Status;
+        parcela.DataPagamento = dto.Status == StatusParcela.Pago ? DateTime.UtcNow : null;
 
         //Grava no banco de dados
         var retorno = await _repository.UpdateLancamentoParcela(parcela);

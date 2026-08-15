@@ -11,7 +11,7 @@ namespace API_Data.src.Services.Interface
 
         public Task<IResult> CriarLancamentoAsync(Create dto, string userId);
 
-        public Task<IResult> UptateStatusLancamentoParcela(int id, StatusParcela status, string userId);
+        public Task<IResult> UptateStatusLancamentoParcela(ParcelaUpdateStatus dto, string userId);
 
        
 

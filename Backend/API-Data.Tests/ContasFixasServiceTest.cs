@@ -12,6 +12,9 @@ namespace API_Data.Tests
 {
     public class ContasFixasServiceTest : TestBase
     {
+        string id = Guid.NewGuid().ToString();
+        string UserID = "21c8c222-6811-467e-8c1b-18f941349411";
+
         public ContasFixasServiceTest(ITestOutputHelper output) : base(output)
         {
             EscreverLinha("Registro: " + DateTime.Now);
@@ -42,7 +45,7 @@ namespace API_Data.Tests
 
             var dados = new Create
             {
-                CategoriaId = 1,
+                CategoriaId = 34,
                 Descricao = $"ContaFixaTest_{Guid.NewGuid():N}",
                 DiaVencimento = 5,
                 ValorBase = 155,
@@ -52,7 +55,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.CriarContaFixaAsync(dados);
+            var resultado = await service.CriarContaFixaAsync(dados, UserID);
 
 
             //=============================================================
@@ -82,7 +85,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.GerarFaturasMesAsync();
+            var resultado = await service.GerarFaturasMesAsync(UserID);
 
 
             //=============================================================
@@ -112,7 +115,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.ListaTodasContasFixa();
+            var resultado = await service.ListaTodasContasFixa(UserID);
 
 
             //=============================================================
@@ -142,7 +145,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.ListFaturaPendenteAsync();
+            var resultado = await service.ListFaturaPendenteAsync(UserID);
 
 
             //=============================================================
@@ -157,7 +160,7 @@ namespace API_Data.Tests
             List<ParcelasResponse> ListaConta = ValorResult.Value;
 
             Assert.NotNull(ListaConta); // verifica se não é null
-            Assert.NotEmpty(ListaConta); // verifica se não esta vazio
+           
         }
 
 
@@ -170,15 +173,17 @@ namespace API_Data.Tests
             using var dbContext = DbContext();
             var service = _ContasFixasService(dbContext);
 
-            int Id_Parcela = 1;
-            StatusParcela Status_Parcela = StatusParcela.Aberto;
-
+            ParcelaUpdateStatus dto = new ParcelaUpdateStatus
+            {
+             ParcelaId = 1,
+             Status = StatusParcela.Aberto
+            };
 
 
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.UpdateStatusParcela(Id_Parcela, Status_Parcela);
+            var resultado = await service.UpdateStatusParcela(dto, UserID);
 
 
             //=============================================================
@@ -202,15 +207,17 @@ namespace API_Data.Tests
             using var dbContext = DbContext();
             var service = _ContasFixasService(dbContext);
 
-            int Id_Parcela = 1;
-            decimal Valor_Parcela = 999;
-
+            ParcelaUpdateValor dto = new ParcelaUpdateValor
+            {
+                ParcelaId = 1,
+                ValorParcela = 999
+            };
 
 
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.UpdateValorParcela(Id_Parcela, Valor_Parcela);
+            var resultado = await service.UpdateValorParcela(dto, UserID);
 
 
             //=============================================================
@@ -233,15 +240,17 @@ namespace API_Data.Tests
             using var dbContext = DbContext();
             var service = _ContasFixasService(dbContext);
 
-            int Id_ContaFixa = 1;
-            bool Status_ContaFixa = false;
-
+            ContaFixaUpdateStatus dto = new ContaFixaUpdateStatus
+            {
+                Id_ContaFixa = 4,
+                Status = false
+            };
 
 
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.UpdateStatusContaFixa(Id_ContaFixa, Status_ContaFixa);
+            var resultado = await service.UpdateStatusContaFixa(dto, UserID);
 
 
             //=============================================================

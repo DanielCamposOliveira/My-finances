@@ -93,7 +93,7 @@ namespace API_Data.src.Endpoints
                 if (string.IsNullOrEmpty(userId))
                     return Results.Unauthorized();
 
-                var result = await service.UptateStatusLancamentoParcela(dto.ParcelaId, dto.Status, userId);
+                var result = await service.UptateStatusLancamentoParcela(dto, userId);
                 return result;
             })
             .WithSummary("Atualiza Status da parcela")

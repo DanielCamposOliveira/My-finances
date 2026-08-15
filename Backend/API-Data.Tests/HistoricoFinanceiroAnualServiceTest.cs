@@ -9,6 +9,9 @@ namespace API_Data.Tests
 {
     public class HistoricoFinanceiroAnualServiceIntegrationTests : TestBase
     {
+        string id = Guid.NewGuid().ToString();
+        string UserID = "21c8c222-6811-467e-8c1b-18f941349411";
+
         public HistoricoFinanceiroAnualServiceIntegrationTests(ITestOutputHelper output) : base(output)
         {
             EscreverLinha("Registro: " + DateTime.Now);
@@ -51,7 +54,7 @@ namespace API_Data.Tests
             int anoAtual = DateTime.Today.Year;
 
             // 2. ACT
-            IResult resultado = await service.ListaHistoricoAsync(anoAtual);
+            IResult resultado = await service.ListaHistoricoAsync(anoAtual, UserID);
 
             // 3. ASSERT
             Assert.NotNull(resultado);
@@ -94,7 +97,7 @@ namespace API_Data.Tests
 
 
             // 2. ACT
-            IResult resultado = await serviceHistorico.UpdateHistoricoMesAsync(request);
+            IResult resultado = await serviceHistorico.UpdateHistoricoMesAsync(request, UserID);
 
 
             // 3. ASSERT
@@ -115,7 +118,7 @@ namespace API_Data.Tests
             var serviceHistorico = CriarHistoricoService(dbContext);
 
             // 2. ACT
-            IResult resultado = await serviceHistorico.GerarHistoricoMesAsync();
+            IResult resultado = await serviceHistorico.GerarHistoricoMesAsync(UserID);
 
             // 3. ASSERT
             Assert.NotNull(resultado);

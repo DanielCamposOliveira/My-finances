@@ -9,6 +9,8 @@ namespace API_Data.Tests
 {
     public class TagServiceTest : TestBase
     {
+        string id = Guid.NewGuid().ToString();
+        string UserID = "21c8c222-6811-467e-8c1b-18f941349411";
 
         public TagServiceTest(ITestOutputHelper output) : base(output)
         {
@@ -49,7 +51,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.CriarTag(dto, "21c8c222-6811-467e-8c1b-18f941349411");
+            var resultado = await service.CriarTag(dto, UserID);
 
             //=============================================================
             // 3. ASSERT (Validação no resultado e no BANCO)
@@ -83,7 +85,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = await service.ListaTags("21c8c222-6811-467e-8c1b-18f941349411");
+            var resultado = await service.ListaTags(UserID);
 
 
             //=============================================================
