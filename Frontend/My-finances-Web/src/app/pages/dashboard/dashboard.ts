@@ -51,6 +51,30 @@ export class Dashboard implements OnInit {
     this.ObterValorReceber();
     this.ObterValorDividaPendente();
     this.ObterValorDeficitReativo();
+
+    this.ObterGrafico();
+
+    this.ObterListaContaPendente();
+  }
+
+  ObterGrafico(): void {
+    this.dashboardService.getHistoricoFinanceiroAnual(2026).subscribe({
+      next: (resposta) => {
+        if (resposta && resposta.length > 0) {
+          const [dados] = resposta;
+
+          this.historicoFinanceiro = {
+            chartCategories: dados.chartCategories,
+            chartSeries: dados.chartSeries,
+          };
+
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao carregar histórico financeiro:', err);
+      },
+    });
   }
 
   ObterSaldo(): void {
@@ -112,8 +136,6 @@ export class Dashboard implements OnInit {
     });
   }
 
-
-  // Adicione este método:
   ObterValorDeficitReativo(): void {
     combineLatest([
       this.dashboardService.getValorSaldo(),
@@ -131,7 +153,18 @@ export class Dashboard implements OnInit {
     });
   }
 
-
+  ObterListaContaPendente(): void {
+    this.dashboardService.getContasPendentesUnificadas().subscribe({
+      next: (dados) => {
+        console.log('atribuicao:', dados); // Verifica os dados recebidos
+        this.contasPendentes = dados;
+        this.cdr.markForCheck(); // Marca para atualização visual   
+      },
+      error: (err) => {
+        console.error('Erro ao carregar contas pendentes:', err);
+      },
+    });
+  }
 
 
 

@@ -14,6 +14,7 @@ export class MoneyTable {
   // Recebe a lista direta vinda do forkJoin/API
   @Input() links: ContaPendenteItemModel[] = [];
 
+  
   // Mapeia o número retornado para o texto na tela
   getStatusLabel(status: number): string {
     switch (status) {

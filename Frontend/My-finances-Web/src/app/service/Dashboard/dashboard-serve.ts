@@ -21,12 +21,36 @@ export class DashboardServe {
   private readonly baseUrlLancamentos =
     'http://localhost:5000/api/v1/lancamentos/parcela/pendentes';
 
+  
+  // Valor repassado para front enquanto a API responde
+  HistoricoFinanceiroBase: HistoricoFinanceiroAnualModel[] = [
+      {
+        chartCategories: [ 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+        chartSeries: [
+          {
+            type: 'line',
+            name: 'Saldo',
+            color: '#0097FF',
+            data: Array(12).fill(0)
+          },
+          {
+            type: 'line',
+            name: 'Dívidas',
+            color: '#E74C3C',
+            data: Array(12).fill(0)
+          }
+        ]
+      }
+  ];
+
   // Métodos para consumir as APIs
   getHistoricoFinanceiroAnual(ano: number = 2026): Observable<HistoricoFinanceiroAnualModel[]> {
     const Url = `${this.EndPoint}/HistoricoFinanceiroAnual`;
-    return this.http.get<HistoricoFinanceiroAnualModel[]>(`${Url}/${ano}`);
+    return this.http.get<HistoricoFinanceiroAnualModel[]>(`${Url}/${ano}`).pipe(startWith(this.HistoricoFinanceiroBase));
   }
 
+
+  
   getDividaPendente(): Observable<number> {
     const Url = `${this.EndPoint}/Consulta/Dividas/pendentes`;
   return this.http.get<number>(Url).pipe(
@@ -48,7 +72,7 @@ getValorSaldo(): Observable<number> {
   );
 }
 
-  getContasPendentesUnificadas(): Observable<ContaPendenteItemModel[]> {
+getContasPendentesUnificadas(): Observable<ContaPendenteItemModel[]> {
     return forkJoin({
       contasFixas: this.http.get<any[]>(this.baseUrlContasFixas),
       lancamentos: this.http.get<any[]>(this.baseUrlLancamentos),
