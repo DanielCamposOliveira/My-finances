@@ -60,8 +60,8 @@ public class LancamentosService : ILancamentosService
                     ValorParcela = parcela.ValorParcela,
                     DataVencimento = parcela.DataVencimento,
                     Status = parcela.Status,
-                    Lancamento_Descricao = parcela.Lancamento.Descricao,
-                    Lancamento_Id = parcela.LancamentoId,
+                    descricao = parcela.Lancamento.Descricao,
+                    dependence_id = parcela.LancamentoId,
                     Atribuicao = parcela.Lancamento.Categoria.Atribuicao,
                 });
             }

@@ -167,13 +167,13 @@ namespace API_Data.src.Services
                     faturasGeradas.Add(new ParcelasResponse
                     {
                         Id = parcela.Id,
-                        ContaFixaId = conta.Id,
+                        dependence_id = conta.Id,
                         Descricao = conta.Descricao,    
                         ValorParcela = parcela.ValorParcela,
-                        DataVencimento = parcela.DataVencimento,
-                        DataPagamento = parcela.DataPagamento,
+                        DataVencimento = parcela.DataVencimento,                       
                         Status = parcela.Status,
-                        Atribuicao = parcela.ContaFixa.Categoria.Atribuicao
+                        Atribuicao = parcela.ContaFixa.Categoria.Atribuicao,
+                        NumeroParcela = parcela.NumeroParcela
                     });
                 }
             }
