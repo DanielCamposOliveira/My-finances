@@ -23,6 +23,8 @@ namespace API_Data.src.Repository.Interface
 
         public Task<Lancamento?> BuscaLancamentoasync(int LancamentoId);
 
+        public Task<List<ParcelasResponse>?> ListaTodasParcelasAsync(string userId);
+
 
 
     }

@@ -35,6 +35,26 @@ namespace API_Data.src.Endpoints
 
 
 
+
+            //Endpoint.MapGet("/parcela", async (ILancamentosService ILancamentosService, ClaimsPrincipal userClaims) =>
+            //{
+            //    // Recupera o ID do usuário logado a partir das claims do token JWT
+            //    var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            //    // Se não houver ID de usuário, retorna 401 Unauthorized
+            //    if (string.IsNullOrEmpty(userId))
+            //        return Results.Unauthorized();
+
+            //    var lancamentos = await ILancamentosService.ListarLancamentosAsync(userId);
+            //    return lancamentos;
+            //})
+            //.WithName("Lista todo os Lancamento")
+            //.WithSummary("Lista todo os Lancamento")
+            //.WithDescription("Lista todas as parcelas de todos os Lancamentos")
+            //.Produces<List<LancamentoResponse>>(StatusCodes.Status200OK)
+            //.RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+
+
             // ==========================================
             // ROTAS: LISTAR PARCELAS
             // ==========================================
@@ -50,12 +70,11 @@ namespace API_Data.src.Endpoints
                 var lancamentos = await ILancamentosService.ListarLancamentosAsync(userId);
                 return lancamentos;
             })
-            .WithName("Lista todo os Lancamento")
-            .WithSummary("Lista todo os Lancamento")
-            .WithDescription("Lista todas as parcelas de todos os Lancamentos")
-            .Produces<List<LancamentoResponse>>(StatusCodes.Status200OK)
+            .WithName("Lista todas as Parcelas")
+            .WithSummary("Lista todas as Parcelas")
+            .WithDescription("Lista todas as parcelas do usuário de forma linear")
+            .Produces<List<ParcelasResponse>>(StatusCodes.Status200OK)
             .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
-
 
 
             // ==========================================

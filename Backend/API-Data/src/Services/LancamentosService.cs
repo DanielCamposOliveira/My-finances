@@ -16,7 +16,7 @@ public class LancamentosService : ILancamentosService
     }
 
     //Lista todos os lançamentos
-    public async Task<IResult> ListarLancamentosAsync(string userId)
+    public async Task<IResult> ListarLancamentosAsyncOld(string userId)
     {
         var retorno = await _repository.ListaTodosLancamentosAsync(userId);
         if (retorno == null)
@@ -29,8 +29,21 @@ public class LancamentosService : ILancamentosService
         return Results.Ok(retorno);
     }
 
+    public async Task<IResult> ListarLancamentosAsync(string userId)
+    {
+        var retorno = await _repository.ListaTodasParcelasAsync(userId);
+        if (retorno == null)
+        {
+            return Results.Problem(
+                "Ocorreu um Erro ao Listar Parcelas",
+                statusCode: StatusCodes.Status500InternalServerError);
+        }
+
+        return Results.Ok(retorno);
+    }
+
     //## Obter faturas com Status Aberto(Mes recorent) ou Vencida(Ano recorrent) 
- 
+
     public async Task<IResult> ListFaturaPendenteAsync(string userId)
     {
         var LancamentosAtivos = await _repository.ListaLancamentosAsync(userId);

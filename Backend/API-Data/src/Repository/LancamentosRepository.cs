@@ -79,6 +79,32 @@ public class LancamentosRepository : ILancamentosRepository
         }
     }
 
+    public async Task<List<ParcelasResponse>?> ListaTodasParcelasAsync(string userId)
+    {
+        try
+        {
+            return await _db.LancamentoParcelas
+                .AsNoTracking()
+                .Where(p => p.Lancamento.UserId == userId)
+                .OrderBy(p => p.DataVencimento)
+                .Select(p => new ParcelasResponse
+                {
+                    Id = p.Id,
+                    dependence_id = p.LancamentoId,
+                    descricao = p.Lancamento.Descricao,
+                    ValorParcela = p.ValorParcela,
+                    DataVencimento = p.DataVencimento,
+                    Status = p.Status,
+                    Atribuicao = p.Lancamento.Categoria.Atribuicao,
+                    NumeroParcela = p.NumeroParcela
+                })
+                .ToListAsync();
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
     // Lista todos os lançamentos com suas categorias, tags e parcelas
     public async Task<List<LancamentoResponse>?> ListaTodosLancamentosAsync(string userId)
