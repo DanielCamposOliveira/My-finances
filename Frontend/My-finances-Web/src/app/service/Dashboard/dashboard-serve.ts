@@ -13,13 +13,13 @@ export class DashboardServe {
   private http = inject(HttpClient);
 
     private readonly EndPoint =
-    'http://localhost:5000/api/v1';
+    'http://192.168.0.5:5000/api/v1';
   
   private readonly baseUrlContasFixas =
-    'http://localhost:5000/api/v1/ContasFixas/parcela/pendentes';
+    'http://192.168.0.5:5000/api/v1/ContasFixas/parcela/pendentes';
   
   private readonly baseUrlLancamentos =
-    'http://localhost:5000/api/v1/lancamentos/parcela/pendentes';
+    'http://192.168.0.5:5000/api/v1/lancamentos/parcela/pendentes';
 
   
   // Valor repassado para front enquanto a API responde

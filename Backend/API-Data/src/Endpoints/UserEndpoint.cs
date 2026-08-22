@@ -31,7 +31,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: LOGIN USUARIO
             // ==========================================
-            Endpoint.MapPost("/auth/login", async ([FromBody] LoginRequest dto, IUserService service) =>
+            Endpoint.MapPost("/auth/sign-in", async ([FromBody] LoginRequest dto, IUserService service) =>
             {
                 var response = await service.AuthenticationUserAsync(dto);
                 return response;

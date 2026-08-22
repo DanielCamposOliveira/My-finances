@@ -28,8 +28,8 @@ export class AuthService {
   // Injeta o cliente HTTP do Angular para realizar requisições web
   private http = inject(HttpClient); 
   
-  private EndPoint_Login = 'http://localhost:5000/api/v1/user/auth/login';
-  private EndPoint_Register = 'http://localhost:5000/api/v1/user/auth/register';
+  private EndPoint_Login = 'http://192.168.0.5:5000/api/v1/user/auth/login';
+  private EndPoint_Register = 'http://192.168.0.5:5000/api/v1/user/auth/register';
 
 
  // Um Signal para expor o estado de autenticação (se o usuário possui um token válido)

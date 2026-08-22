@@ -1,0 +1,433 @@
+.table-container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-container);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  overflow: hidden;
+
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.1rem;
+    text-align: center;
+  }
+}
+
+.filtros-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &.search-wrapper {
+    flex: 1;
+    max-width: 80px;
+  }
+
+  &.select-wrapper {
+    width: 180px;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    pointer-events: none;
+  }
+
+  input,
+  select {
+    width: 100%;
+    height: 36px;
+    padding: 0 1rem 0 2.3rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: inherit;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+  }
+
+  select {
+    appearance: none; // Remove a seta nativa feia do navegador
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 2rem;
+    cursor: pointer;
+
+    option {
+      background-color: var(--bg-container);
+      color: var(--text-primary);
+    }
+  }
+}
+
+/* Cabeçalho e Filtros */
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 12px 0;
+  gap: 1rem;
+
+  .filtros-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+  }
+}
+
+/* Inputs e Selects Padronizados (Mesma Altura: 36px) */
+.input-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  &.search-wrapper {
+    flex: 1;
+    max-width: 280px;
+  }
+
+  &.select-wrapper {
+    width: 180px;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    pointer-events: none;
+  }
+
+  input,
+  select {
+    width: 100%;
+    height: 36px;
+    box-sizing: border-box;
+    padding: 0 1rem 0 2.3rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: inherit;
+    line-height: normal;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 2rem;
+    cursor: pointer;
+
+    option {
+      background-color: var(--bg-container);
+      color: var(--text-primary);
+    }
+  }
+}
+
+/* Botão Principal de Cadastro */
+/* Botão Cadastrar (Alinhado na mesma altura: 36px) */
+.btn-cadastrar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px !important;
+  gap: 0.5rem;
+  padding: 0 1.25rem !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  border: none !important;
+  background-color: var(--accent-color) !important;
+  color: #ffffff !important;
+  cursor: pointer;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition:
+    opacity 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+
+  i {
+    font-size: 0.8rem;
+  }
+
+  &:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 10px var(--shadow-color);
+  }
+
+  &:active {
+    filter: brightness(0.95);
+  }
+}
+
+.table-scroll {
+  max-height: 480px;
+  overflow: auto;
+
+  table {
+    width: 100%;
+    min-width: 530px;
+    background-color: transparent;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 2px 5px;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background-color: var(--bg-container);
+      color: var(--text-primary);
+    }
+
+    td {
+      color: var(--text-primary);
+    }
+
+    tr.mat-mdc-row {
+      transition: background-color 0.2s ease;
+      height: 36px !important;
+      min-height: 36px !important;
+      &:hover {
+        background-color: var(--hover-color);
+      }
+    }
+
+    .mat-mdc-no-data-row td {
+      padding: 32px 16px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    /* Reduz padding interno das células */
+    th.mat-mdc-header-cell,
+    td.mat-mdc-cell {
+      padding: 2px 8px !important;
+      font-size: 0.8rem;
+    }
+
+    th.mat-mdc-header-cell {
+      font-size: 0.72rem;
+    }
+  }
+}
+
+/* Badges de Status */
+.badge-status {
+  display: inline-block;
+  padding: 8px 6px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+
+  &.status-pago {
+    color: var(--bg-status-pago-cor);
+    background-color: var(--bg-status-pago-background-color);
+    border: var(--bg-status-pago-border);
+  }
+
+  &.status-aberto {
+    color: var(--bg-status-aberto-cor);
+    background-color: var(--bg-status-aberto-background-color);
+    border: var(--bg-status-aberto-border);
+  }
+
+  &.status-atrasado {
+    color: var(--bg-status-atrasado-cor);
+    background-color: var(--bg-status-atrasado-background-color);
+    border: var(--bg-status-atrasado-border);
+  }
+
+  &.status-cancelado {
+    color: var(--bg-status-cancelado-cor);
+    background-color: var(--bg-status-cancelado-background-color);
+    border: var(--bg-status-cancelado-border);
+  }
+}
+
+/* Ações e Botões */
+.acoes-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-acao {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem !important;
+  font-size: 0.72rem !important;
+  border-radius: 4px !important;
+  gap: 0.25rem;
+  min-width: auto !important;
+  line-height: normal !important;
+
+  font-weight: 600 !important;
+
+  border: 1px solid transparent !important;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  i {
+    font-size: 0.68rem;
+  }
+
+  /* Estado Pagar */
+  &.btn-pagar {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+
+    &:hover {
+      border-color: var(--accent-color) !important;
+      color: var(--accent-color) !important;
+      box-shadow: 0 2px 6px var(--shadow-color);
+    }
+  }
+
+  /* Estado Editar */
+  &.btn-editar {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+
+    &:hover {
+      border-color: var(--accent-color) !important;
+      color: var(--accent-color) !important;
+      box-shadow: 0 2px 6px var(--shadow-color);
+    }
+  }
+
+  &.btn-liquidado,
+  &[disabled] {
+    background-color: var(--bg-status-pago-background-color) !important;
+    color: var(--bg-status-pago-cor) !important;
+    border: var(--bg-status-pago-border) !important;
+    opacity: 0.75;
+    cursor: not-allowed;
+  }
+}
+
+/* Utilitários */
+.text-center {
+  text-align: center;
+}
+
+.text-td {
+  text-align: left;
+}
+
+.displayNone {
+  display: none;
+}
+
+.text-color {
+  color: var(--text-secondary);
+}
+
+mat-paginator {
+  background-color: transparent !important;
+  color: var(--text-secondary) !important;
+  border-top: 1px solid var(--border-color);
+  margin-top: 8px;
+  font-size: 0.8rem;
+
+  ::ng-deep {
+    .mat-mdc-paginator-container {
+      min-height: 40px !important;
+      padding: 0 8px;
+    }
+
+    .mat-mdc-paginator-page-size-label,
+    .mat-mdc-paginator-range-label {
+      color: var(--text-primary) !important;
+      font-size: 0.8rem;
+    }
+
+    /* Cores dos botões de navegação */
+    .mat-mdc-icon-button {
+      color: var(--text-primary) !important;
+
+      &[disabled] {
+        color: var(--text-primary) !important;
+        opacity: 0.4;
+      }
+    }
+
+    /* Select de quantidade por página */
+    .mat-mdc-select-value {
+      color: var(--text-primary) !important;
+    }
+
+    .mat-mdc-select-arrow svg {
+      fill: var(--text-primary) !important;
+    }
+  }
+}

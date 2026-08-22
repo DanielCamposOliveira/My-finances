@@ -19,7 +19,7 @@ export class MainLayoutComponent implements OnInit {
   Name: string = '';
   IsActive: boolean = false;
   IsAdmin: boolean = false;
-  isDarkMode: boolean = false;
+  isDarkMode: boolean = true;
 
   ngOnInit(): void {
     // Esta requisição agora SÓ roda quando o usuário entra no Layout (área logada)

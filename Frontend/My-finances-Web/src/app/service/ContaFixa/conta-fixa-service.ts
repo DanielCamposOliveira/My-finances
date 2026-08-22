@@ -9,7 +9,7 @@ import { ContaFixaCadastroModel, ContaFixaStatusModel, ContaFixaStatusParcelaMod
 
 export class ContaFixaService {
     private http = inject(HttpClient);
-    private readonly EndPoint_ContaFixa = "http://localhost:5000/api/v1/ContasFixas";
+    private readonly EndPoint_ContaFixa = "http://192.168.0.5:5000/api/v1/ContasFixas";
 
     Post_ContaFixa(Dados: ContaFixaCadastroModel): Observable<void> {
         return this.http.post<void>(this.EndPoint_ContaFixa, Dados);

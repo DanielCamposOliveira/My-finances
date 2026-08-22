@@ -9,7 +9,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 2rem;
+  padding: 0.3rem 4rem;
 
   /* Variáveis Dinâmicas do Tema */
   background-color: var(--bg-container);
@@ -174,7 +174,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 1rem;
 
   /* Cores reativas usando transparência e tons vermelhos */
   background-color: rgba(220, 38, 38, 0.08);

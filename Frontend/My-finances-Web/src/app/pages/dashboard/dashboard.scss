@@ -5,7 +5,7 @@
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 10px;
 
   // Grid de Cards Responsivo
   .cards-grid {
@@ -14,15 +14,5 @@
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 8px;
     width: 100%;
-  }
-
-  // Seção do Gráfico
-  .chart-section {
-    width: 100%;
-   
-    border-radius: 12px;
-    padding: 16px;
-
-    box-sizing: border-box;
   }
 }

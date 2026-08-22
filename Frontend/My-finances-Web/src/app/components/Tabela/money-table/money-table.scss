@@ -4,7 +4,6 @@
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 4px 12px var(--shadow-color);
-  margin-top: 20px;
 
   .table-header-title {
     margin-bottom: 20px;
@@ -46,6 +45,7 @@
   thead th {
     position: sticky;
     top: 0;
+    text-transform: uppercase;
     background-color: var(--bg-container);
     color: var(--text-secondary);
     font-weight: 500;

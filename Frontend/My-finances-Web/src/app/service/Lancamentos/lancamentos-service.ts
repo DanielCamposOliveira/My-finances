@@ -9,7 +9,7 @@ import { LancamentosModel, LancamentoParcelaModel } from '../../models/lancament
     
 export class LancamentosService {
     private http = inject(HttpClient);
-    private readonly EndPoint_Lancamento = "http://localhost:5000/api/v1/lancamentos";
+    private readonly EndPoint_Lancamento = "http://192.168.0.5:5000/api/v1/lancamentos";
 
     Post_Lancamento(Dados: LancamentosModel): Observable<void>{
         return this.http.post<void>(this.EndPoint_Lancamento, Dados);

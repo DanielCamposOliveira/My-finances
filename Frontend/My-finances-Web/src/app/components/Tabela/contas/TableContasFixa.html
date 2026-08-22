@@ -1,0 +1,165 @@
+<div class="table-container">
+  <h3>Lançamentos</h3>
+
+  <div class="table-header">
+    <!-- Container dos filtros para aplicar o SCSS correto -->
+    <div class="filtros-wrapper">
+      <!-- Input de Pesquisa -->
+      <div class="input-wrapper search-wrapper">
+        <i class="fa-solid fa-magnifying-glass input-icon"></i>
+        <input type="text" (keyup)="applyFilter($event)" placeholder="Ex. Notebook" #input />
+      </div>
+
+      <!-- Select Customizado idêntico ao Input -->
+      <div class="input-wrapper select-wrapper">
+        <i class="fa-solid fa-filter input-icon"></i>
+        <select [value]="filtroStatus" (change)="onStatusChange($event)">
+          <option [value]="null">Todos os status</option>
+          @for (option of statusOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+        <i class="fa-solid fa-chevron-down select-arrow"></i>
+      </div>
+    </div>
+
+    <!-- Botão Cadastrar -->
+    <button mat-flat-button class="btn-cadastrar" (click)="abrirModalCadastro()">
+      <i class="fa-solid fa-plus"></i>
+      Cadastrar
+    </button>
+  </div>
+
+  <div class="table-scroll text-td">
+    <table mat-table [dataSource]="dataSource">
+      <!-- ID -->
+      <ng-container matColumnDef="id">
+        <th *matHeaderCellDef class="col-id displayNone">ID</th>
+        <td mat-cell *matCellDef="let element" class="col-id displayNone">
+          <span>#{{ element.id }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Parcela -->
+      <ng-container matColumnDef="numeroParcela">
+        <th *matHeaderCellDef class="col-parcela">Parcelas</th>
+        <td mat-cell *matCellDef="let element">
+          <span
+            [class.text-color]="
+              element.status === StatusParcelaEnum.Pago ||
+              element.status === StatusParcelaEnum.Cancelado
+            "
+          >
+            {{ element.numeroParcela }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Descrição -->
+      <ng-container matColumnDef="lancamento_Descricao">
+        <th *matHeaderCellDef>Descrição</th>
+        <td mat-cell *matCellDef="let element">
+          <span
+            [class.text-color]="
+              element.status === StatusParcelaEnum.Pago ||
+              element.status === StatusParcelaEnum.Cancelado
+            "
+          >
+            {{ element.lancamento_Descricao }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Valor -->
+      <ng-container matColumnDef="valorParcela">
+        <th *matHeaderCellDef>Valor</th>
+        <td mat-cell *matCellDef="let element">
+          <span
+            [class.text-color]="
+              element.status === StatusParcelaEnum.Pago ||
+              element.status === StatusParcelaEnum.Cancelado
+            "
+          >
+            {{ element.valorParcela }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Vencimento -->
+      <ng-container matColumnDef="dataVencimento">
+        <th *matHeaderCellDef>Vencimento</th>
+        <td mat-cell *matCellDef="let element">
+          <span
+            [class.text-color]="
+              element.status === StatusParcelaEnum.Pago ||
+              element.status === StatusParcelaEnum.Cancelado
+            "
+          >
+            {{ element.dataVencimento }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Status (Classes corrigidas com Enum) -->
+      <ng-container matColumnDef="status">
+        <th *matHeaderCellDef class="col-status">Status</th>
+        <td mat-cell *matCellDef="let element" class="col-status">
+          <span
+            class="badge-status"
+            [class.status-aberto]="element.status === StatusParcelaEnum.Aberto"
+            [class.status-pago]="element.status === StatusParcelaEnum.Pago"
+            [class.status-atrasado]="element.status === StatusParcelaEnum.Atrasado"
+            [class.status-cancelado]="element.status === StatusParcelaEnum.Cancelado"
+          >
+            @switch (element.status) {
+              @case (StatusParcelaEnum.Aberto) {
+                Aberto
+              }
+              @case (StatusParcelaEnum.Pago) {
+                Pago
+              }
+              @case (StatusParcelaEnum.Atrasado) {
+                Atrasado
+              }
+              @case (StatusParcelaEnum.Cancelado) {
+                Cancelado
+              }
+            }
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Ações -->
+      <ng-container matColumnDef="acoes">
+        <th *matHeaderCellDef class="text-center">Ações</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="acoes-wrapper">
+            @if (
+              element.status === StatusParcelaEnum.Aberto ||
+              element.status === StatusParcelaEnum.Atrasado
+            ) {
+              <button mat-button class="btn-acao btn-pagar" (click)="pagar(element)">
+                <i class="fa-solid fa-check"></i>
+                Pagar
+              </button>
+
+              <button mat-button class="btn-acao btn-editar" (click)="editar(element)">
+                <i class="fa-solid fa-pen-to-square"></i>
+                Editar
+              </button>
+            }
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <tr class="mat-mdc-no-data-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          Nenhum dado encontrado para "{{ input.value }}"
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

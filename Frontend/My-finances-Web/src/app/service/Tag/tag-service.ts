@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 
 export class TagService {
     private http = inject(HttpClient);
-    private readonly EndPoint_Tag = "http://localhost:5000/api/v1/tags";
+    private readonly EndPoint_Tag = "http://192.168.0.5:5000/api/v1/tags";
 
      // Métodos para consumir as APIs
     GetTag(): Observable<TagModel[]>{
