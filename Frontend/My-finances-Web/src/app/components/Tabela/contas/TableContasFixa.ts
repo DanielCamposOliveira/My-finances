@@ -5,9 +5,13 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { StatusParcelaEnum } from '../../../enums/status-parcela-enum'
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
+
+import { StatusParcelaEnum } from '../../../enums/status-parcela-enum'
+import { returnParcelaModel } from "../../../models/lancamentos"
+
+
 
 
 export interface Parcela {

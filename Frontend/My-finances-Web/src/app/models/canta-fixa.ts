@@ -30,3 +30,16 @@ export interface ContaFixaValorParcelaModel
   parcelaId: number;
   valorParcela: number;
 }
+
+
+// interface para as parcelas dos lancamentos
+export interface returnParcelaModel {
+  id: number;
+  dependence_id: number;
+  descricao: string;
+  valorParcela: number;
+  dataVencimento: number;
+  status: StatusParcelaEnum;
+  atribuicao: number;
+  numeroParcela: number[];
+}

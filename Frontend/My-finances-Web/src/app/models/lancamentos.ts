@@ -17,3 +17,19 @@ export interface LancamentoParcelaModel
   parcelaId: number;
   status: StatusParcelaEnum
 }
+
+
+
+
+
+
+export interface returnParcelaModel {
+  id: number;
+  dependence_id: number;
+  descricao: string;
+  valorParcela: number;
+  dataVencimento: number;
+  status: StatusParcelaEnum;
+  atribuicao: number;
+  numeroParcela: number[];
+}

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ContaFixaCadastroModel, ContaFixaStatusModel, ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel } from '../../models/canta-fixa';
+import { ContaFixaCadastroModel, ContaFixaStatusModel, ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel, returnParcelaModel } from '../../models/canta-fixa';
 
 @Injectable({
     providedIn: 'root',
@@ -20,14 +20,24 @@ export class ContaFixaService {
         return this.http.patch<void>(Url, Dados);
     }
 
-    Patch_ParcelaStatus(Dados: ContaFixaStatusParcelaModel): Observable<void> {
+
+    //Atualiza o status
+    Status(Dados: ContaFixaStatusParcelaModel): Observable<void> {
         const Url = `${this.EndPoint_ContaFixa}/parcela/update/status`
         return this.http.patch<void>(Url, Dados);
     }
 
-    Patch_ParcelaValor(Dados: ContaFixaValorParcelaModel): Observable<void> {
+    //Atualiza o valor
+    Valor(Dados: ContaFixaValorParcelaModel): Observable<void> {
         const Url = `${this.EndPoint_ContaFixa}/parcela/update/valor`;
         return this.http.patch<void>(Url, Dados);
     }
+
+    // Obtem todas as parcelas pendentes
+    Parcelas(): Observable<returnParcelaModel[]>{
+        const url = `${this.EndPoint_ContaFixa}/parcela/pendentes`;
+        return this.http.get<returnParcelaModel[]>(url);
+    }
+
 
 }
