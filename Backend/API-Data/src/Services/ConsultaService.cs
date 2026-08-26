@@ -66,7 +66,18 @@ namespace API_Data.src.Services
             return retorno;
         }
 
-  
+
+        // RASCUNHO: Retorna o valor total das todas dividas que foram criadas no mês e as contas Atrasado dos meses anteriores
+        public async Task<Decimal> TotalContasMesFull(string userId)
+        {
+            int ano = DateTime.Today.Year;
+            int mes = DateTime.Today.Month;
+
+            var retorno = await _repository.TotalContasMesFull(ano, mes, userId);
+            return retorno;
+        }
+
+
     }
 }
 

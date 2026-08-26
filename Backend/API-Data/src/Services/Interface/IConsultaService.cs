@@ -7,6 +7,8 @@
         public Task<Decimal> TotalSaldo(string userId);
 
         public Task<Decimal> TotalQuitadasDoMes(string userId);
-        public Task<Decimal> TotalDividasMes(string userId); 
+        public Task<Decimal> TotalDividasMes(string userId);
+
+        public Task<Decimal> TotalContasMesFull(string userId);
     }
 }

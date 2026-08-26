@@ -199,6 +199,170 @@ namespace API_Data.src.Repository
         }
 
 
+        /// <summary>
+        /// Calcula o valor total do campo "ValorParcela" das tabelas "ContaFixaParcelas" e "LancamentoParcelas" 
+        /// Que tenham atribuição "Despesa"
+        /// Que estejam com vencimento até o mês/ano informado.
+        /// RASCUNHO: Retorna o valor total das todas dividas que foram criadas no mês e as contas Atrasado dos meses anteriores
+        /// </summary>
+
+        //public async Task<decimal> TotalContasMesFull(int ano, int mes, string userId)
+        //{
+        //    try
+        //    {
+        //        var inicioMes = new DateTime(ano, mes, 1, 0, 0, 0, DateTimeKind.Utc);
+        //        var limiteData = inicioMes.AddMonths(1);
+
+        //        // Query 1: Contas Fixas
+        //        var fixas = _db.ContaFixaParcelas
+        //            .AsNoTracking()
+        //            .Where(cfp =>
+        //                cfp.ContaFixa.UserId == userId
+        //                && cfp.ContaFixa.Categoria.Atribuicao == Atribuicao.Despesa
+        //                && cfp.DataVencimento < limiteData
+        //                && (
+        //                    // Mês atual: pega tudo, pago ou não
+        //                    cfp.DataVencimento >= inicioMes
+
+        //                    // Meses anteriores: somente não pagos
+        //                    || cfp.Status != StatusParcela.Pago
+        //                ))
+        //            .Select(cfp => (decimal?)cfp.ValorParcela);
+
+        //        // Query 2: Lançamentos
+        //        var variaveis = _db.LancamentoParcelas
+        //            .AsNoTracking()
+        //            .Where(lp =>
+        //                lp.Lancamento.UserId == userId
+        //                && lp.Lancamento.Categoria.Atribuicao == Atribuicao.Despesa
+        //                && lp.DataVencimento < limiteData
+        //                && (
+        //                    // Mês atual: pega tudo, pago ou não
+        //                    lp.DataVencimento >= inicioMes
+
+        //                    // Meses anteriores: somente não pagos
+        //                    || lp.Status != StatusParcela.Pago
+        //                ))
+        //            .Select(lp => (decimal?)lp.ValorParcela);
+
+        //        var total = await fixas
+        //            .Concat(variaveis)
+        //            .SumAsync();
+
+        //        return total ?? 0;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return 0;
+        //    }
+        //}
+
+
+        /// <summary>
+        /// Calcula o valor total das parcelas das tabelas "ContaFixaParcelas" e "LancamentoParcelas"
+        /// que possuem atribuição "Despesa", considerando as seguintes regras:
+        /// - Parcelas com vencimento no mês/ano informado, independentemente do status;
+        /// - Parcelas de meses anteriores que ainda não foram pagas;
+        /// - Parcelas de meses anteriores que foram pagas dentro do mês/ano informado.
+        /// OBS.
+        /// Com isso conseguimos fazer um calculo e aparti daí da para sabe se o valor atual consegue ter defit ou saldo
+        /// </summary>
+
+        //| Vencimento | Pagamento | Status | Entra? |
+        //| ---------- | --------- | ------ | ------ |
+        //| 10/07      | null      | Aberto | ✅     |
+        //| 10/07      | 15/08     | Pago   | ✅     |
+        //| 10/07      | 10/07     | Pago   | ❌     |
+        //| 10/07      | 20/09     | Pago   | ❌     |
+        //| 10/08      | null      | Aberto | ✅     |
+        //| 10/08      | 15/08     | Pago   | ✅     |
+
+
+        public async Task<decimal> TotalContasMesFull(int ano, int mes, string userId)
+        {
+            try
+            {
+                var inicioMes = new DateTime(ano, mes, 1, 0, 0, 0, DateTimeKind.Utc);
+                var limiteData = inicioMes.AddMonths(1);
+
+                // Query 1: Contas Fixas
+                var fixas = _db.ContaFixaParcelas
+                .AsNoTracking()
+                .Where(cfp =>
+                    cfp.ContaFixa.UserId == userId
+                    && cfp.ContaFixa.Categoria.Atribuicao == Atribuicao.Despesa
+                    && (
+                        // 1. Vencimento no mês atual
+                        (
+                            cfp.DataVencimento >= inicioMes
+                            && cfp.DataVencimento < limiteData
+                        )
+
+                        ||
+
+                        // 2. Vencimento anterior e não pago
+                        (
+                            cfp.DataVencimento < inicioMes
+                            && cfp.Status != StatusParcela.Pago
+                        )
+
+                        ||
+
+                        // 3. Vencimento anterior, mas pago no mês atual
+                        (
+                            cfp.DataVencimento < inicioMes
+                            && cfp.Status == StatusParcela.Pago
+                            && cfp.DataPagamento >= inicioMes
+                            && cfp.DataPagamento < limiteData
+                        )
+                    ))
+                .Select(cfp => (decimal?)cfp.ValorParcela);
+
+                // Query 2: Lançamentos
+                var variaveis = _db.LancamentoParcelas
+                    .AsNoTracking()
+                    .Where(lp =>
+                        lp.Lancamento.UserId == userId
+                        && lp.Lancamento.Categoria.Atribuicao == Atribuicao.Despesa
+                        && (
+                            // 1. Vencimento no mês atual
+                            (
+                                lp.DataVencimento >= inicioMes
+                                && lp.DataVencimento < limiteData
+                            )
+
+                            ||
+
+                            // 2. Vencimento anterior e não pago
+                            (
+                                lp.DataVencimento < inicioMes
+                                && lp.Status != StatusParcela.Pago
+                            )
+
+                            ||
+
+                            // 3. Vencimento anterior, mas pago no mês atual
+                            (
+                                lp.DataVencimento < inicioMes
+                                && lp.Status == StatusParcela.Pago
+                                && lp.DataPagamento >= inicioMes
+                                && lp.DataPagamento < limiteData
+                            )
+                        ))
+                    .Select(lp => (decimal?)lp.ValorParcela);
+
+                var total = await fixas
+                    .Concat(variaveis)
+                    .SumAsync();
+
+                return total ?? 0;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
 
         /// <summary>
         /// Calcula o valor total do campo "ValorParcela" das tabelas "ContaFixaParcelas" e "LancamentoParcelas"

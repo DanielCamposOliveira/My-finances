@@ -116,6 +116,27 @@ namespace API_Data.src.Endpoints
             .WithDescription("Retorna o valor total das todas dividas que foram criadas no mês que esta em aberto e as contas Atrasado dos meses anteriores")
             .Produces<decimal>(StatusCodes.Status200OK);
 
+
+            // - Dashboard
+            // ==========================================
+            // ROTAS: VALOR TOTAL DE DIVIDAS PENDENTES
+            // ==========================================
+            EndpointDividas.MapGet("/total", async (IConsultaService service, ClaimsPrincipal userClaims) =>
+            {
+                // Recupera o ID do usuário logado a partir das claims do token JWT
+                var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Se não houver ID de usuário, retorna 401 Unauthorized
+                if (string.IsNullOrEmpty(userId))
+                    return Results.Unauthorized();
+
+                var soma = await service.TotalContasMesFull(userId);
+                return Results.Ok(soma);
+            })
+            .WithSummary("Obter soma das Contas Pendentes")
+            .WithDescription("Retorna o valor total das todas dividas que foram criadas no mês que esta em aberto e as contas Atrasado dos meses anteriores")
+            .Produces<decimal>(StatusCodes.Status200OK);
+
         }
     }
 }
