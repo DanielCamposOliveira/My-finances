@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CategoriaModel,CategoriaCadastroModel } from '../../models/categoria';
 
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,7 @@ import { CategoriaModel,CategoriaCadastroModel } from '../../models/categoria';
 export class CategoriaService {
      
   private http = inject(HttpClient);
-  private readonly Url = "http://192.168.0.5:5000/api/v1/categorias";
+  private readonly Url = `${environment.apiUrl}/categorias`;
 
   getCategoria(): Observable<CategoriaModel[]> {
     return this.http.get<CategoriaModel[]>(this.Url);

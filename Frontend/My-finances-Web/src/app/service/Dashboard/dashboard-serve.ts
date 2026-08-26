@@ -5,6 +5,7 @@ import { ContaPendenteItemModel } from '../../models/InterfaceModel';
 import {HistoricoFinanceiroAnualModel } from '../../models/InterfaceModel';
 // Interfaces para os dados do histórico financeiro
 
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -12,14 +13,9 @@ import {HistoricoFinanceiroAnualModel } from '../../models/InterfaceModel';
 export class DashboardServe {
   private http = inject(HttpClient);
 
-    private readonly EndPoint =
-    'http://192.168.0.5:5000/api/v1';
-  
-  private readonly baseUrlContasFixas =
-    'http://192.168.0.5:5000/api/v1/ContasFixas/parcela/pendentes';
-  
-  private readonly baseUrlLancamentos =
-    'http://192.168.0.5:5000/api/v1/lancamentos/parcela/pendentes';
+  private readonly EndPoint = `${environment.apiUrl}`;  
+  private readonly baseUrlContasFixas = `${environment.apiUrl}/ContasFixas/parcela/pendentes`;  
+  private readonly baseUrlLancamentos = `${environment.apiUrl}/lancamentos/parcela/pendentes`;
 
   
   // Valor repassado para front enquanto a API responde

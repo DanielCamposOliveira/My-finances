@@ -4,13 +4,15 @@ import { Observable, startWith } from 'rxjs';
 import { LancamentoStatusParcelaModel } from '../../models/lancamentos';
 import { returnParcela } from '../../models/parcela-model';
 
+import { environment } from '../../../environments/environment';
+
 @Injectable({
     providedIn: 'root',
 })
     
 export class LancamentosService {
     private http = inject(HttpClient);
-    private readonly EndPoint_Lancamento = "http://192.168.0.5:5000/api/v1/lancamentos";
+    private readonly EndPoint_Lancamento = `${environment.apiUrl}/lancamentos`;
 
     //Atualiza o status
     Status(Dados: LancamentoStatusParcelaModel): Observable<void> {

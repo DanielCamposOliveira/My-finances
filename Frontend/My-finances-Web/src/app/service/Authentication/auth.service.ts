@@ -3,6 +3,8 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
+
 // Interface que define o corpo da requisição que a API 2 espera
 export interface LoginRequest {
   email: string;
@@ -28,8 +30,10 @@ export class AuthService {
   // Injeta o cliente HTTP do Angular para realizar requisições web
   private http = inject(HttpClient); 
   
-  private EndPoint_Login = 'http://192.168.0.5:5000/api/v1/user/auth/sign-in';
-  private EndPoint_Register = 'http://192.168.0.5:5000/api/v1/user/auth/register';
+  private readonly EndPoint = `${environment.apiUrl}`;  
+
+  private EndPoint_Login = `${environment.apiUrl}/user/auth/sign-in`;
+  private EndPoint_Register = `${environment.apiUrl}/user/auth/register`;
 
 
  // Um Signal para expor o estado de autenticação (se o usuário possui um token válido)

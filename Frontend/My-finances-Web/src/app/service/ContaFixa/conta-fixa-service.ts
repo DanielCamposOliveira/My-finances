@@ -4,12 +4,14 @@ import { Observable, startWith } from 'rxjs';
 import { ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel } from '../../models/canta-fixa';
 import { returnParcela } from '../../models/parcela-model';
 
+import { environment } from '../../../environments/environment';
+
 @Injectable({
   providedIn: 'root',
 })
 export class ContaFixaService {
   private http = inject(HttpClient);
-  private readonly EndPoint_ContaFixa = "http://192.168.0.5:5000/api/v1/ContasFixas";
+  private readonly EndPoint_ContaFixa = `${environment.apiUrl}/ContasFixas`;
 
   Status(Dados: ContaFixaStatusParcelaModel): Observable<void> {
     const Url = `${this.EndPoint_ContaFixa}/parcela/update/status`;
