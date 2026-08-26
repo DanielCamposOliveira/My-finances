@@ -24,6 +24,7 @@
   .icon-wrapper {
     width: 48px;
     height: 48px;
+    margin-bottom: 10px;
     background-color: var(--bg-secondary);
     border-radius: 10px;
     display: flex;
@@ -32,14 +33,14 @@
     margin-bottom: 16px;
 
     i {
-      font-size: 20px;
+      font-size: 18px;
       color: var(--accent-color);
     }
   }
 
   .card-title {
     margin: 0 0 8px 0;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-secondary);
     font-weight: 500;
     letter-spacing: 0.3px;

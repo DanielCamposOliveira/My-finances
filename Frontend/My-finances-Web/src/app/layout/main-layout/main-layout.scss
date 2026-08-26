@@ -7,15 +7,22 @@
 
 header {
   width: 100%;
-  position: sticky; // ou fixed, se preferir o header sempre visível no scroll
-  top: 0;
+  position: relative; // Não precisa de sticky se o filho navbar-header já for fixed
   z-index: 1000;
 }
 
 main {
   flex: 1;
   width: 100%;
-  padding: 4rem 5rem;
   box-sizing: border-box;
-  background-color: var(--bg-secondary); // Ajuste conforme suas variáveis de tema
+  background-color: var(--bg-secondary);
+
+  // Desktop: Espaço superior para compensar o header fixo + margem visual
+  padding: 6rem 5rem 4rem 5rem;
+
+  // Mobile / Tablets
+  @media (max-width: 768px) {
+    // Como a barra pode ter duas linhas no mobile, aumentamos o padding do topo
+    padding: 7rem 1rem 2rem 1rem;
+  }
 }
