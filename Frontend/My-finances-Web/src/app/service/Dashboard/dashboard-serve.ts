@@ -63,10 +63,17 @@ export class DashboardServe {
   return this.http.get<number>(Url).pipe(
     startWith(0) // Emite 0 imediatamente até a API responder
   );
-}
-
+  }
+  
 getValorSaldo(): Observable<number> {
   const Url = `${this.EndPoint}/Consulta/Valores/saldo`;
+  return this.http.get<number>(Url).pipe(
+    startWith(0) // Emite 0 imediatamente até a API responder
+  );
+  }
+  
+  getDividaTotal(): Observable<number> {
+    const Url = `${this.EndPoint}/Consulta/Dividas/total`;
   return this.http.get<number>(Url).pipe(
     startWith(0) // Emite 0 imediatamente até a API responder
   );
@@ -87,7 +94,7 @@ getContasPendentesUnificadas(): Observable<ContaPendenteItemModel[]> {
           dataVencimento: item.dataVencimento,
           dataPagamento: item.dataPagamento,
           status: item.status, // Número vindo da API
-          tipo: 'CONTA_FIXA',
+         // tipo: 'CONTA_FIXA',
           atribuicao: item.atribuicao, // Número vindo da API
         }));
 
@@ -95,12 +102,12 @@ getContasPendentesUnificadas(): Observable<ContaPendenteItemModel[]> {
         const lancamentosMapeados: ContaPendenteItemModel[] = lancamentos.map((item) => ({
           id: item.id,
           origemId: item.lancamento_Id,
-          descricao: item.lancamento_Descricao,
+          descricao: item.descricao,
           valorParcela: item.valorParcela,
           dataVencimento: item.dataVencimento,
           numeroParcela: item.numeroParcela,
           status: item.status, // Número vindo da API
-          tipo: 'LANCAMENTO',
+         // tipo: 'LANCAMENTO',
           atribuicao: item.atribuicao, // Número vindo da API
         }));
 

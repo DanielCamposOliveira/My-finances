@@ -25,7 +25,7 @@ export class HeaderComponent {
   @Input()
   set isDarkMode(value: boolean) {
     this._isDarkMode = value;
-    console.log(value);
+    //console.log(value);
     // Aplica/Remove a classe no body automaticamente quando o dado chega
    // document.body.classList.toggle('dark-theme', value);
 

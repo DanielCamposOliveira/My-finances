@@ -139,15 +139,37 @@ export class Dashboard implements OnInit {
   ObterValorDeficitReativo(): void {
     combineLatest([
       this.dashboardService.getValorSaldo(),
-      this.dashboardService.getDividaPendente()
+      this.dashboardService.getDividaTotal()
     ]).subscribe({
       next: ([saldo, divida]) => {
-        this.cardDeficit = {
-          title: 'Déficit',
-          value: (saldo ?? 0) - (divida ?? 0),
-          iconClass: 'fa-solid fa-credit-card',
-          typeClass: 'deficit',
-        };
+        const valorSaldo = saldo ?? 0;
+        const valorDivida = divida ?? 0;
+
+        const resultado = valorSaldo - valorDivida;
+
+        if (resultado < 0) {
+          this.cardDeficit = {
+            title: 'Déficit',
+            value: Math.abs(resultado),
+            iconClass: 'fa-solid fa-credit-card',
+            typeClass: 'deficit',
+          };
+        } else if (resultado > 0) {
+          this.cardDeficit = {
+            title: 'Saldo restante',
+            value: resultado,
+            iconClass: 'fa-solid fa-wallet',
+            typeClass: 'saldo',
+          };
+        } else {
+          this.cardDeficit = {
+            title: 'Saldo zerado',
+            value: 0,
+            iconClass: 'fa-solid fa-equals',
+            typeClass: 'neutro',
+          };
+        }
+
         this.cdr.markForCheck();
       }
     });
@@ -156,7 +178,7 @@ export class Dashboard implements OnInit {
   ObterListaContaPendente(): void {
     this.dashboardService.getContasPendentesUnificadas().subscribe({
       next: (dados) => {
-        console.log('atribuicao:', dados); // Verifica os dados recebidos
+        //console.log('atribuicao:', dados); // Verifica os dados recebidos
         this.contasPendentes = dados;
         this.cdr.markForCheck(); // Marca para atualização visual   
       },

@@ -8,7 +8,7 @@ export interface ContaPendenteItemModel {
   valorParcela: number;
   dataVencimento: string;
   status: StatusParcelaEnum | number; // Recebe o número da API (1, 2, 3, 4)
-  tipo: 'CONTA_FIXA' | 'LANCAMENTO';
+  //tipo: 'CONTA_FIXA' | 'LANCAMENTO';
   numeroParcela?: number;
   dataPagamento?: string | null;
   atribuicao : AtribuicaoEnum | number; // Recebe o número da API (1, 2)

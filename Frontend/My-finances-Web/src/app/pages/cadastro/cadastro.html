@@ -1,3 +1,17 @@
 <div class="cadastro-container">
-  <app-TableContasFixa></app-TableContasFixa>
+  <!-- 1º Tabela: Lançamentos -->
+  <app-TableContasFixa
+    titulo="Lançamentos"
+    [parcelas]="parcelasLancamentos"
+    (onPagar)="pagarLancamento($event)"
+  >
+  </app-TableContasFixa>
+
+  <!-- 2º Tabela: Contas Fixas -->
+  <app-TableContasFixa
+    titulo="Contas Fixas"
+    [parcelas]="parcelasContaFixa"
+    (onPagar)="pagarContaFixa($event)"
+  >
+  </app-TableContasFixa>
 </div>
