@@ -6,10 +6,11 @@ import { LancamentosService } from '../../service/Lancamentos/lancamentos-servic
 import { ContaFixaService } from '../../service/ContaFixa/conta-fixa-service';
 
 import { LancamentoStatusParcelaModel } from '../../models/lancamentos';
-import { ContaFixaStatusParcelaModel } from '../../models/canta-fixa';
+import { ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel } from '../../models/canta-fixa';
 
 import { StatusParcelaEnum } from '../../enums/status-parcela-enum';
 import { returnParcela } from '../../models/parcela-model';
+
 
 
 
@@ -28,6 +29,7 @@ export class Cadastro implements OnInit {
   parcelasLancamentos: returnParcela[] = [];
   parcelasContaFixa: returnParcela[] = [];
 
+  contaFixaValorParcela: ContaFixaValorParcelaModel[] = [];
   
   ngOnInit(): void {
     this.obterLancamentos();
@@ -82,4 +84,21 @@ export class Cadastro implements OnInit {
       error: (err) => console.error('Erro ao pagar parcela de conta fixa:', err)
     });
   }
+
+  ValorContaFixa(parcela: ContaFixaValorParcelaModel): void{
+    
+    const payload: ContaFixaValorParcelaModel = {
+      parcelaId: parcela.parcelaId,
+      valorParcela: parcela.valorParcela
+    };
+    this.contaFixaService.Valor(payload).subscribe({
+      next: () => {
+        this.obterContasFixas();
+      },
+      error: (err) => console.error('Erro ao altera o valor da parcela de conta fixa:', err)
+    });
+  }
+
+
+
 }

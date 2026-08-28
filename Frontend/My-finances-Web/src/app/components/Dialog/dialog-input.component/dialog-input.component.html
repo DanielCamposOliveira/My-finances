@@ -1,0 +1,36 @@
+<div class="dialog-container">
+  <!-- Cabeçalho Centralizado -->
+  <div mat-dialog-title class="dialog-header">
+    <h2>{{ data.titulo }}</h2>
+  </div>
+
+  <!-- Conteúdo -->
+  <mat-dialog-content class="dialog-content">
+    @if (data.label) {
+      <label class="input-label">{{ data.label }}</label>
+    }
+
+    <div class="input-wrapper search-wrapper">
+      <i class="fa-solid fa-coins input-icon"></i>
+      <input
+        type="text"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        [value]="valorFormatado"
+        (input)="onInputMoeda($event)"
+        placeholder="R$ 0,00"
+        cdkFocusInitial
+      />
+    </div>
+  </mat-dialog-content>
+
+  <!-- Botões de Ação -->
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button class="btn-cancelar" [mat-dialog-close]="undefined">
+      {{ data.textoCancelar || 'Cancelar' }}
+    </button>
+    <button mat-flat-button class="btn-confirmar" [mat-dialog-close]="valorNumerico">
+      {{ data.textoConfirmar || 'Atualizar' }}
+    </button>
+  </mat-dialog-actions>
+</div>

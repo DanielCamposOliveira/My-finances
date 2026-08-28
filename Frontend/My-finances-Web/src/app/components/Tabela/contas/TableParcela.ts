@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject, ChangeDetectorRef, signal } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -6,12 +6,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 
+//
 import { PopUp } from '../../Dialog/pop-up/pop-up'
 
+//
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SnackBarCustomComponent } from '../../SnackBar/snack-bar-info/snack-bar-info';
 
-
+//
+import { DialogEditarValorData, DialogInputComponent } from '../../Dialog/dialog-input.component/dialog-input.component';
 
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
@@ -21,6 +24,8 @@ import { AtribuicaoEnum } from '../../../enums/atribuicao-enum';
 import { StatusParcelaEnum } from '../../../enums/status-parcela-enum';
 import { returnParcela } from "../../../models/parcela-model";
 
+
+import {ContaFixaValorParcelaModel} from '../../../models/canta-fixa'
 import {
   MatDialog,
 } from '@angular/material/dialog';
@@ -57,10 +62,14 @@ export class TableParcela implements OnInit, OnChanges {
 
   @Output() onPagar = new EventEmitter<returnParcela>();
 
+  @Output() onValor = new EventEmitter<ContaFixaValorParcelaModel>();
+
+
   readonly StatusParcelaEnum = StatusParcelaEnum;
 
   readonly dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
+
 
   
   displayedColumns: string[] = [
@@ -189,7 +198,6 @@ export class TableParcela implements OnInit, OnChanges {
         this.abrirSnackBar(`${acao} confirmado com sucesso!`, 5, 'fa-solid fa-circle-check', Snack);
       }
       else {
-        const Snack = tipo === AtribuicaoEnum.Ganho ? 'receita' : 'despesa';
         const acao = tipo === AtribuicaoEnum.Ganho ? 'Recebimento' : 'Pagamento';
         this.abrirSnackBar(`${acao} Não confirmado`, 5, 'fa-solid fa-ban', 'info')
       }
@@ -219,6 +227,48 @@ export class TableParcela implements OnInit, OnChanges {
 
 
 
+
+
+  abrirModalEditar(element: returnParcela): void {
+    const valorParcela = Number(element.valorParcela);
+    const descricao = String(element.descricao);
+    const tipo = Number(element.atribuicao);
+
+    const TipoAtribuicao = tipo === AtribuicaoEnum.Ganho ? 'recebimento' : 'despesa';
+    
+    const configData: DialogEditarValorData = {
+      titulo: descricao,
+      label: `Valor ${TipoAtribuicao}`,
+      valorInicial: valorParcela,
+      textoConfirmar: 'Atualizar',
+      textoCancelar: 'Cancelar'
+    };
+
+    const dialogRef = this.dialog.open(DialogInputComponent, {
+      width: '400px',
+      panelClass: 'custom-dialog-container',
+      data: configData
+    });
+
+    dialogRef.afterClosed().subscribe((novoValor: Number) => {
+      // Se não for cancelado/undefined e houver alteração
+      if (novoValor !== undefined) {
+        const valor = Number(novoValor);
+
+        const pacote: ContaFixaValorParcelaModel = {
+          parcelaId: element.id,
+          valorParcela: valor
+        }
+
+        this.onValor.emit(pacote);
+
+        this.abrirSnackBar(`Valor ${TipoAtribuicao} alterado`, 5, 'fa-solid fa-ban', 'info')
+      }
+      else {     
+        this.abrirSnackBar(`Valor ${TipoAtribuicao} não alterado`, 5, 'fa-solid fa-ban', 'info')
+      }
+    });
+  }
 
 
 

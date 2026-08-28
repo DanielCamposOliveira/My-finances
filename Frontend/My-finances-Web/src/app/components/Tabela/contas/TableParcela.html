@@ -165,7 +165,12 @@
               >
                 <i class="fa-solid fa-check"></i>
               </button>
-              <button mat-icon-button class="btn-icon-acao btn-editar" title="Editar">
+              <button
+                mat-icon-button
+                class="btn-icon-acao btn-editar"
+                title="Editar"
+                (click)="abrirModalEditar(element)"
+              >
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
             }

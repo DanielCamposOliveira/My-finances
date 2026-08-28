@@ -187,3 +187,20 @@ body {
 .snack-receita {
   --snack-highlight: var(--Card-extra-income-color); /* #ff6384 (rosa) */
 }
+
+/* Base para todos os dialog-container usando as variáveis do sistema */
+.custom-dialog-container {
+  .mat-mdc-dialog-container .mdc-dialog__surface {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+}
+
+.custom-dialog-container {
+  .mat-mdc-dialog-container .mdc-dialog__surface {
+    padding: 0 !important;
+  }
+}
