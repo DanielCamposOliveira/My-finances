@@ -18,7 +18,7 @@ main {
   background-color: var(--bg-secondary);
 
   // Desktop: Espaço superior para compensar o header fixo + margem visual
-  padding: 6rem 5rem 4rem 5rem;
+  padding: 2rem 5rem 4rem 5rem;
 
   // Mobile / Tablets
   @media (max-width: 768px) {

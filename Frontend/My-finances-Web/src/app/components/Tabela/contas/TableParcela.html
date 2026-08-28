@@ -1,112 +1,105 @@
 <div class="table-container">
-  <h3>{{ titulo }}</h3>
-
-  <div class="table-header">
-    <div class="filtros-wrapper">
-      <div class="input-wrapper search-wrapper">
-        <i class="fa-solid fa-magnifying-glass input-icon"></i>
-        <input type="text" (keyup)="applyFilter($event)" placeholder="Pesquisar..." #input />
-      </div>
-
-      <div class="input-wrapper select-wrapper">
-        <i class="fa-solid fa-filter input-icon"></i>
-        <select [value]="filtroStatus" (change)="onStatusChange($event)">
-          <option [value]="null">Todos os status</option>
-          @for (option of statusOptions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-          }
-        </select>
-        <i class="fa-solid fa-chevron-down select-arrow"></i>
-      </div>
+  <div class="table-top-bar">
+    <div class="title-section">
+      <span class=""></span>
+      <h3>{{ titulo }}</h3>
     </div>
 
-    <button mat-flat-button class="btn-cadastrar">
-      <i class="fa-solid fa-plus"></i>
-      Cadastrar
-    </button>
+    <div class="table-header">
+      <div class="filtros-wrapper">
+        <div class="input-wrapper search-wrapper">
+          <i class="fa-solid fa-magnifying-glass input-icon"></i>
+          <input
+            type="text"
+            (keyup)="applyFilter($event)"
+            placeholder="Pesquisar descrição..."
+            #input
+          />
+        </div>
+
+        <div class="input-wrapper select-wrapper">
+          <i class="fa-solid fa-filter input-icon"></i>
+          <select [value]="filtroStatus" (change)="onStatusChange($event)">
+            <option [value]="null">Todos os status</option>
+            @for (option of statusOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+          <i class="fa-solid fa-chevron-down select-arrow"></i>
+        </div>
+      </div>
+
+      <button mat-flat-button class="btn-cadastrar">
+        <i class="fa-solid fa-plus"></i>
+        Cadastrar
+      </button>
+    </div>
   </div>
 
-  <div class="table-scroll text-td">
+  <div class="table-scroll">
     <table mat-table [dataSource]="dataSource">
-      <!-- ID -->
+      <!-- ID (Oculto) -->
       <ng-container matColumnDef="id">
-        <th *matHeaderCellDef class="col-id displayNone">ID</th>
-        <td mat-cell *matCellDef="let element" class="col-id displayNone">
-          <span>#{{ element.id }}</span>
-        </td>
+        <th *matHeaderCellDef class="displayNone">ID</th>
+        <td mat-cell *matCellDef="let element" class="displayNone">#{{ element.id }}</td>
       </ng-container>
 
       <!-- Parcela -->
       <ng-container matColumnDef="numeroParcela">
-        <th *matHeaderCellDef class="col-parcela">Parcelas</th>
-        <td mat-cell *matCellDef="let element">
-          <span
-            [class.text-color]="
-              element.status === StatusParcelaEnum.Pago ||
-              element.status === StatusParcelaEnum.Cancelado
-            "
-          >
-            {{ element.numeroParcela }}
-          </span>
+        <th *matHeaderCellDef>
+          <span class="th-content"><i class="fa-solid fa-hashtag"></i> Parcela</span>
+        </th>
+        <td mat-cell *matCellDef="let element" class="">
+          <span class="badge-parcela">{{ element.numeroParcela }}</span>
         </td>
       </ng-container>
 
       <!-- Descrição -->
       <ng-container matColumnDef="descricao">
-        <th *matHeaderCellDef>Descrição</th>
-        <td mat-cell *matCellDef="let element">
-          <span
-            [class.text-color]="
-              element.status === StatusParcelaEnum.Pago ||
-              element.status === StatusParcelaEnum.Cancelado
-            "
-          >
-            {{ element.descricao }}
-          </span>
+        <th *matHeaderCellDef>
+          <span class="th-content"><i class="fa-solid fa-circle-info"></i> Descrição</span>
+        </th>
+        <td mat-cell *matCellDef="let element" class="">
+          <div class="descricao-cell">
+            <span class="icon-avatar"><i class="fa-solid fa-cart-shopping"></i></span>
+            <span class="text-strong">{{ element.descricao }}</span>
+          </div>
         </td>
       </ng-container>
 
       <!-- Valor -->
       <ng-container matColumnDef="valorParcela">
-        <th *matHeaderCellDef>Valor</th>
-        <td mat-cell *matCellDef="let element">
-          <span
-            [class.text-color]="
-              element.status === StatusParcelaEnum.Pago ||
-              element.status === StatusParcelaEnum.Cancelado
-            "
-          >
-            {{ element.valorParcela | currency: 'BRL' }}
-          </span>
+        <th *matHeaderCellDef>
+          <span class="th-content"><i class="fa-solid fa-dollar-sign"></i> Valor</span>
+        </th>
+        <td mat-cell *matCellDef="let element" class="">
+          {{ element.valorParcela | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
         </td>
       </ng-container>
 
       <!-- Vencimento -->
       <ng-container matColumnDef="dataVencimento">
-        <th *matHeaderCellDef>Vencimento</th>
-        <td mat-cell *matCellDef="let element">
-          <span
-            [class.text-color]="
-              element.status === StatusParcelaEnum.Pago ||
-              element.status === StatusParcelaEnum.Cancelado
-            "
-          >
-            {{ element.dataVencimento }}
-          </span>
+        <th *matHeaderCellDef>
+          <span class="th-content"><i class="fa-solid fa-calendar-days"></i> Vencimento</span>
+        </th>
+        <td mat-cell *matCellDef="let element" class="">
+          {{ element.dataVencimento | date: 'dd/MM/yyyy' }}
         </td>
       </ng-container>
 
       <!-- Status -->
       <ng-container matColumnDef="status">
-        <th *matHeaderCellDef class="col-status">Status</th>
-        <td mat-cell *matCellDef="let element" class="col-status">
+        <th *matHeaderCellDef>
+          <span class="th-content"><i class="fa-solid fa-circle-dot"></i> Status</span>
+        </th>
+        <td mat-cell *matCellDef="let element" class="">
           <span
-            class="badge-status"
-            [class.status-aberto]="element.status === StatusParcelaEnum.Aberto"
-            [class.status-pago]="element.status === StatusParcelaEnum.Pago"
-            [class.status-atrasado]="element.status === StatusParcelaEnum.Atrasado"
-            [class.status-cancelado]="element.status === StatusParcelaEnum.Cancelado"
+            class="pill-tag"
+            [class.pill-pago]="element.status === StatusParcelaEnum.Pago"
+            [class.pill-aberto]="element.status === StatusParcelaEnum.Aberto"
+            [class.pill-atrasado]="element.status === StatusParcelaEnum.Atrasado"
           >
+            <span class="status-dot"></span>
             @switch (element.status) {
               @case (StatusParcelaEnum.Aberto) {
                 Aberto
@@ -125,23 +118,55 @@
         </td>
       </ng-container>
 
+      <!-- Atribuição -->
+      <ng-container matColumnDef="atribuicao">
+        <th *matHeaderCellDef>
+          <span class="th-content"> <i class="fa-solid fa-tag"></i> Atribuição </span>
+        </th>
+
+        <td mat-cell *matCellDef="let element">
+          <span
+            class="pill-tag"
+            [class.atribuicao-despesa]="element.atribuicao === 1"
+            [class.atribuicao-receita]="element.atribuicao === 2"
+            [class.atribuicao-desconhecido]="element.atribuicao !== 1 && element.atribuicao !== 2"
+          >
+            <i
+              class="fa-solid"
+              [ngClass]="{
+                'fa-hand-holding-dollar': element.atribuicao === 1,
+                'fa-coins': element.atribuicao === 2,
+              }"
+            ></i>
+
+            {{
+              element.atribuicao === 2 ? 'Receita' : element.atribuicao === 1 ? 'Despesa' : 'Outro'
+            }}
+          </span>
+        </td>
+      </ng-container>
+
       <!-- Ações -->
       <ng-container matColumnDef="acoes">
-        <th *matHeaderCellDef class="text-center">Ações</th>
-        <td mat-cell *matCellDef="let element">
+        <th *matHeaderCellDef>
+          <span class="th-content"><i class="fa-solid fa-gear"></i> Ações</span>
+        </th>
+        <td mat-cell *matCellDef="let element" class="">
           <div class="acoes-wrapper">
             @if (
               element.status === StatusParcelaEnum.Aberto ||
               element.status === StatusParcelaEnum.Atrasado
             ) {
-              <button mat-button class="btn-acao btn-pagar" (click)="pagar(element)">
+              <button
+                mat-icon-button
+                class="btn-icon-acao btn-pagar"
+                title="Pagar"
+                (click)="pagarConfirma(element, '0ms', '0ms')"
+              >
                 <i class="fa-solid fa-check"></i>
-                Pagar
               </button>
-
-              <button mat-button class="btn-acao btn-editar">
+              <button mat-icon-button class="btn-icon-acao btn-editar" title="Editar">
                 <i class="fa-solid fa-pen-to-square"></i>
-                Editar
               </button>
             }
           </div>
@@ -149,10 +174,12 @@
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="tabela-row"></tr>
 
       <tr class="mat-mdc-no-data-row" *matNoDataRow>
-        <td class="mat-cell" [attr.colspan]="displayedColumns.length">Nenhum dado encontrado !</td>
+        <td class="mat-cell empty-msg" [attr.colspan]="displayedColumns.length">
+          Nenhuma conta encontrada
+        </td>
       </tr>
     </table>
   </div>

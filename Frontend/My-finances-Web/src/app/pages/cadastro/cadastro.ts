@@ -11,6 +11,8 @@ import { ContaFixaStatusParcelaModel } from '../../models/canta-fixa';
 import { StatusParcelaEnum } from '../../enums/status-parcela-enum';
 import { returnParcela } from '../../models/parcela-model';
 
+
+
 @Component({
   selector: 'app-cadastro',
   standalone: true,
@@ -26,6 +28,7 @@ export class Cadastro implements OnInit {
   parcelasLancamentos: returnParcela[] = [];
   parcelasContaFixa: returnParcela[] = [];
 
+  
   ngOnInit(): void {
     this.obterLancamentos();
     this.obterContasFixas();
@@ -44,6 +47,7 @@ export class Cadastro implements OnInit {
   obterContasFixas(): void {
     this.contaFixaService.Parcelas().subscribe({
       next: (resposta) => {
+        console.log(resposta);
         this.parcelasContaFixa = [...resposta];
         this.cdr.markForCheck();
       },

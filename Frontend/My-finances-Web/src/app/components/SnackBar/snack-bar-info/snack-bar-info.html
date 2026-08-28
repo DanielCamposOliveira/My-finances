@@ -1,0 +1,9 @@
+<span class="snack-texto" matSnackBarLabel>
+  {{ data.mensagem }}
+</span>
+
+<span matSnackBarActions>
+  @if (data.icone) {
+    <i [class]="data.icone + ' icone-snack'"></i>
+  }
+</span>

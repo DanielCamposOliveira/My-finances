@@ -87,9 +87,16 @@ body {
 
   --Card-bills-to-pay-color: #ff9800;
   --Card-bills-to-pay-background-color: rgba(255, 152, 0, 0.15);
+  --bg-atribuicao-despesa-border: 1px solid rgba(255, 99, 132, 0.3);
 
   --Card-deficit-color: var(--Card-error-color);
   --Card-deficit-background-color: var(--Card-error-bg);
+
+  --btn-confirm: #0066cc;
+  --btn-confirm-hover: #58a6ff;
+
+  --btn-cancel: #8b949e;
+  --btn-cancel-hover: #c9d1d9;
 }
 
 /* Tema Escuro (Ativado quando adicionamos a classe 'dark-theme' no <body>) */
@@ -145,4 +152,38 @@ body {
     background-color 0.3s,
     color 0.3s;
   margin: 0;
+}
+
+/* Base para todos os snacks usando as variáveis do sistema */
+.snack-app-theme {
+  --mat-snack-bar-container-color: var(--bg-container) !important;
+  --mat-mdc-snack-bar-container-color: var(--bg-container) !important;
+
+  .mdc-snackbar__surface {
+    background-color: var(--bg-container) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 16px var(--shadow-color) !important;
+  }
+}
+
+/* Variações por tipo de mensagem */
+.snack-sucesso {
+  --snack-highlight: var(--bg-status-pago-cor); /* #3fb950 */
+}
+
+.snack-erro {
+  --snack-highlight: var(--error-color); /* #ef4444 */
+}
+
+.snack-info {
+  --snack-highlight: var(--accent-color); /* #58a6ff */
+}
+
+.snack-despesa {
+  --snack-highlight: var(--Card-bills-to-pay-color); /* #ff6384 (rosa) */
+}
+
+.snack-receita {
+  --snack-highlight: var(--Card-extra-income-color); /* #ff6384 (rosa) */
 }

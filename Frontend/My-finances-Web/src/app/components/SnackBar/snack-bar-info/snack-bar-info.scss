@@ -1,0 +1,19 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.snack-texto {
+  /* Usa a cor de destaque da variante ou cai para a cor padrão do texto */
+  color: var(--snack-highlight, var(--text-primary));
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.icone-snack {
+  font-size: 1.15rem;
+  color: var(--snack-highlight, var(--text-primary));
+}
