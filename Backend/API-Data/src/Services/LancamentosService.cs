@@ -116,13 +116,16 @@ public class LancamentosService : ILancamentosService
         // Divide o valor total pelo numero de parcelas, a rredonda o resultado para 2 casas decimais
         decimal ValorParcela = Math.Round(dto.ValorTotal / dto.QtdParcelas, 2);
 
+        // Converte a data para Utc caso venha como Unspecified
+        DateTime dataBaseUtc = DateTime.SpecifyKind(dto.DataPrimeiroVencimento, DateTimeKind.Utc);
+
         for (int i = 0; i < dto.QtdParcelas; i++)
         {
             lancamento.Parcelas.Add(new LancamentoParcela
             {
                 NumeroParcela = i + 1,
                 ValorParcela = ValorParcela,
-                DataVencimento = dto.DataPrimeiroVencimento.AddMonths(i),
+                DataVencimento = dataBaseUtc.AddMonths(i),//dto.DataPrimeiroVencimento.AddMonths(i),
                 Status = StatusParcela.Aberto
             });
         }
