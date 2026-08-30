@@ -6,3 +6,13 @@ export interface LancamentoStatusParcelaModel
   parcelaId: number;
   status: StatusParcelaEnum
 }
+
+export interface LancamentoCadastro
+{
+  descricao: string,
+  valorTotal: number,
+  qtdParcelas: number,
+  dataPrimeiroVencimento: string,
+  categoriaId: number,
+  tagIds?: number[]
+}

@@ -36,7 +36,7 @@ registerLocaleData(localePt);
 export type TipoSnack = 'sucesso' | 'erro' | 'info' | 'despesa' | 'receita';
 
 @Component({
-  selector: 'app-TableContasFixa',
+  selector: 'app-TableParcela',
   standalone: true,
   imports: [
     CommonModule,
@@ -64,6 +64,7 @@ export class TableParcela implements OnInit, OnChanges {
 
   @Output() onValor = new EventEmitter<ContaFixaValorParcelaModel>();
 
+  @Output() OpenPageCadastro = new EventEmitter<void>();
 
   readonly StatusParcelaEnum = StatusParcelaEnum;
 
@@ -270,6 +271,9 @@ export class TableParcela implements OnInit, OnChanges {
     });
   }
 
-
+  abrirPageCadastro()
+  {
+    this.OpenPageCadastro.emit();
+  }
 
 }

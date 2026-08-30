@@ -1,0 +1,45 @@
+<div class="custom-multiselect-container">
+  <!-- Trigger Box -->
+  <div class="custom-trigger" [class.focused]="isOpen" (click)="toggleDropdown()">
+    <i class="fa-solid fa-tags custom-input-icon"></i>
+
+    <div class="trigger-text">
+      @if (selectedTagIds.length === 0) {
+        <span class="placeholder-text">Selecione as tags...</span>
+      } @else {
+        <span class="main-selected-tag">{{ getFirstSelectedTagName() }}</span>
+        @if (selectedTagIds.length > 1) {
+          <span class="extra-count-badge">
+            (+{{ selectedTagIds.length - 1 }}
+            {{ selectedTagIds.length === 2 ? 'outro' : 'outros' }})
+          </span>
+        }
+      }
+    </div>
+
+    <i class="fa-solid fa-chevron-down custom-select-arrow" [class.rotated]="isOpen"></i>
+  </div>
+
+  <!-- Painel de Opções com Fundo Sólido -->
+  @if (isOpen) {
+    <div class="custom-dropdown-panel">
+      @for (tag of tags; track tag.id) {
+        <div
+          class="dropdown-option"
+          [class.selected]="isSelected(tag.id)"
+          (click)="toggleTag(tag.id, $event)"
+        >
+          <div class="custom-checkbox" [class.checked]="isSelected(tag.id)">
+            @if (isSelected(tag.id)) {
+              <i class="fa-solid fa-check"></i>
+            }
+          </div>
+          <span class="option-label">{{ tag.nome }}</span>
+        </div>
+      }
+      @if (tags.length === 0) {
+        <div class="empty-options">Nenhuma tag cadastrada</div>
+      }
+    </div>
+  }
+</div>

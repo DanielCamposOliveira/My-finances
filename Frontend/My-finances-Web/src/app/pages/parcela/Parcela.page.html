@@ -1,18 +1,19 @@
 <div class="cadastro-container">
   <!-- 1º Tabela: Lançamentos -->
-  <app-TableContasFixa
+  <app-TableParcela
     titulo="Lançamentos"
     [parcelas]="parcelasLancamentos"
     (onPagar)="pagarLancamento($event)"
+    (OpenPageCadastro)="onPageCadastro()"
   >
-  </app-TableContasFixa>
+  </app-TableParcela>
 
   <!-- 2º Tabela: Contas Fixas -->
-  <app-TableContasFixa
+  <app-TableParcela
     titulo="Contas Fixas"
     [parcelas]="parcelasContaFixa"
     (onPagar)="pagarContaFixa($event)"
     (onValor)="ValorContaFixa($event)"
   >
-  </app-TableContasFixa>
+  </app-TableParcela>
 </div>

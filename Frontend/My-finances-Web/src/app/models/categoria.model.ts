@@ -1,14 +1,14 @@
 import { AtribuicaoEnum } from '../enums/atribuicao-enum';
 
 
-export interface CategoriaModel
+export interface Categoria
 {
   id: number;
   nome: string;
   atribuicao: AtribuicaoEnum;
 }
 
-export interface CategoriaCadastroModel
+export interface CategoriaCadastro
 {
   nome: string;
   atribuicao: AtribuicaoEnum;

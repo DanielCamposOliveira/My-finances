@@ -1,0 +1,86 @@
+<div class="table-container cadastro-container">
+  <!-- Barra Superior de Título -->
+  <div class="table-top-bar">
+    <div class="title-section">
+      <i class="fa-solid fa-file-invoice-dollar title-icon"></i>
+      <h3>Novo Lançamento</h3>
+    </div>
+  </div>
+
+  <!-- Formulário de Cadastro -->
+  <form [formGroup]="formCadastro" (ngSubmit)="salvar()" class="form-wrapper">
+    <div class="form-grid">
+      <!-- Descrição -->
+      <div class="form-group col-full">
+        <label class="form-label"> <i class="fa-solid fa-circle-info"></i> Descrição </label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-file-pen input-icon"></i>
+          <input
+            type="text"
+            formControlName="descricao"
+            placeholder="Ex: Pagamento de Fornecedor"
+          />
+        </div>
+      </div>
+
+      <!-- Valor Total -->
+      <div class="form-group">
+        <label class="form-label"> <i class="fa-solid fa-dollar-sign"></i> Valor Total </label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-brazilian-real-sign input-icon"></i>
+          <input type="number" step="0.01" formControlName="valorTotal" placeholder="0,00" />
+        </div>
+      </div>
+
+      <!-- Qtd. Parcelas -->
+      <div class="form-group">
+        <label class="form-label"> <i class="fa-solid fa-hashtag"></i> Qtd. Parcelas </label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-list-ol input-icon"></i>
+          <input type="number" formControlName="qtdParcelas" placeholder="1" />
+        </div>
+      </div>
+
+      <!-- Primeiro Vencimento -->
+      <div class="form-group col-full">
+        <label class="form-label">
+          <i class="fa-solid fa-calendar-days"></i> Data do 1º Vencimento
+        </label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-calendar input-icon"></i>
+          <input type="date" formControlName="dataPrimeiroVencimento" />
+        </div>
+      </div>
+
+      <!-- Componente Genérico: Categoria -->
+      <div class="form-group col-full">
+        <label class="form-label"> <i class="fa-solid fa-tag"></i> Categoria </label>
+        <app-select-categoria
+          [categorias]="categorias"
+          [selectedValue]="formCadastro.get('categoriaId')?.value"
+          (categoriaChange)="onCategoriaSelecionada($event)"
+        >
+        </app-select-categoria>
+      </div>
+
+      <!-- Componente Genérico: Tags -->
+      <div class="form-group col-full">
+        <label class="form-label"> <i class="fa-solid fa-tags"></i> Tags </label>
+        <app-select-tags [tags]="tags" (tagsChange)="onTagsSelecionadas($event)"> </app-select-tags>
+      </div>
+    </div>
+
+    <!-- Ações Inferiores -->
+    <div class="form-actions">
+      <button type="button" class="btn-cancelar" (click)="voltar()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Voltar
+      </button>
+
+      <button type="submit" class="btn-cadastrar" [disabled]="formCadastro.invalid">
+        <i class="fa-solid fa-check"></i>
+        Salvar Lançamento
+      </button>
+    </div>
+  </form>
+</div>

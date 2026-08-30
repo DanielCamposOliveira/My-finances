@@ -1,0 +1,10 @@
+<div class="custom-input-wrapper">
+  <i class="fa-solid fa-layer-group custom-input-icon"></i>
+  <select [value]="selectedValue ?? ''" (change)="onChange($event)">
+    <option value="" disabled selected>Selecione uma categoria...</option>
+    @for (cat of categorias; track cat.id) {
+      <option [value]="cat.id">{{ cat.nome }}</option>
+    }
+  </select>
+  <i class="fa-solid fa-chevron-down custom-select-arrow"></i>
+</div>

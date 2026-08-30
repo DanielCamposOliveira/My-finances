@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { CategoriaModel,CategoriaCadastroModel } from '../../models/categoria';
+import { Observable, startWith } from 'rxjs';
+import { Categoria,CategoriaCadastro } from '../../models/categoria.model';
 
 import { environment } from '../../../environments/environment';
 
@@ -14,11 +14,11 @@ export class CategoriaService {
   private http = inject(HttpClient);
   private readonly Url = `${environment.apiUrl}/categorias`;
 
-  getCategoria(): Observable<CategoriaModel[]> {
-    return this.http.get<CategoriaModel[]>(this.Url);
+  getCategoria(): Observable<Categoria[]> {
+    return this.http.get<Categoria[]>(this.Url).pipe(startWith([] as Categoria[]));
   };
   
-  PostCategoria(Dados: CategoriaCadastroModel): Observable<void> {
+  PostCategoria(Dados: CategoriaCadastro): Observable<void> {
     return this.http.post<void>(this.Url, Dados);
   }
 

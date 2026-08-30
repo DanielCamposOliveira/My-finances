@@ -9,8 +9,8 @@ import { MoneyTable } from '../../components/Tabela/money-table/money-table';
 import { ContaPendenteItemModel, HistoricoFinanceiroAnualModel, DashboardCardItemModel } from '../../models/InterfaceModel';
 import {TagService} from  '../../service/Tag/tag-service'
 import {CategoriaService} from '../../service/Categoria/categoria-service'
-import { TagModel } from '../../models/tag';
-import { CategoriaModel } from '../../models/categoria';
+import { Tag } from '../../models/tag.model';
+import { Categoria } from '../../models/categoria.model';
 
 
 
@@ -34,13 +34,13 @@ export class Dashboard implements OnInit {
 
   contasPendentes: ContaPendenteItemModel[] = [];
 
-  tags?: TagModel;
+  tags?: Tag;
   private tagService = inject(TagService);
   TagNome = "Tag_Angula";
 
 
 
-  Categorias?: CategoriaModel;
+  Categorias?: Categoria;
   private categoriaService = inject(CategoriaService);
 
 

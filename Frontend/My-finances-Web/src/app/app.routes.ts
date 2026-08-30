@@ -35,9 +35,14 @@ export const routes: Routes = [
         component: Dashboard
       },
       {
+        path: 'parcela',
+        // Exemplo: componente de cadastro
+       loadComponent: () => import('./pages/parcela/Parcela.page').then(m => m.parcelaPage) 
+      },
+      {
         path: 'cadastro',
         // Exemplo: componente de cadastro
-       loadComponent: () => import('./pages/cadastro/cadastro').then(m => m.Cadastro) 
+       loadComponent: () => import('./pages/cadastro/cadastro.page').then(m => m.CadastroPage) 
       }
     ]
   },

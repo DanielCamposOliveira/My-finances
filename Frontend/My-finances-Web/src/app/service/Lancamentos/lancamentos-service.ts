@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith } from 'rxjs';
-import { LancamentoStatusParcelaModel } from '../../models/lancamentos';
+import { LancamentoStatusParcelaModel, LancamentoCadastro } from '../../models/lancamentos.model';
 import { returnParcela } from '../../models/parcela-model';
 
 import { environment } from '../../../environments/environment';
@@ -26,5 +26,12 @@ export class LancamentosService {
         return this.http.get<returnParcela[]>(url).pipe(
             startWith([] as returnParcela[])
         );
+    }
+
+    // cadastra lancamentos
+    Lancamento(Dados: LancamentoCadastro): Observable<void>{
+        console.log("Dados sendo enviados: ", Dados);
+        const url = `${this.EndPoint_Lancamento}`;
+        return this.http.post<void>(url, Dados);
     }
 }
