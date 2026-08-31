@@ -1,21 +1,49 @@
 :host {
   display: block;
   width: 100%;
+  position: relative;
+
+  // Quando o dropdown abrir, eleva o componente inteiro sobre os outros campos
+  &.opened {
+    z-index: 1050;
+  }
 }
 
-.custom-input-wrapper {
+.custom-select-container {
   position: relative;
-  display: inline-flex;
+  width: 100%;
+}
+
+/* Trigger / Campo fechado */
+.custom-trigger {
+  position: relative;
+  display: flex;
   align-items: center;
   width: 100%;
+  height: 38px;
+  box-sizing: border-box;
+  padding: 0 2.2rem 0 2.3rem;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+
+  &.focused {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px var(--hover-color);
+  }
 
   .custom-input-icon {
     position: absolute;
     left: 0.85rem;
     color: var(--text-muted);
     font-size: 0.85rem;
-    pointer-events: none;
-    z-index: 1;
   }
 
   .custom-select-arrow {
@@ -23,40 +51,74 @@
     right: 0.85rem;
     color: var(--text-muted);
     font-size: 0.75rem;
-    pointer-events: none;
-    z-index: 1;
+    transition: transform 0.2s ease;
+
+    &.rotated {
+      transform: rotate(180deg);
+    }
   }
 
-  select {
+  .trigger-text {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     width: 100%;
-    height: 38px;
-    box-sizing: border-box;
-    padding: 0 2.2rem 0 2.3rem;
-    border: 1px solid var(--input-border);
+
+    .placeholder-text {
+      color: var(--text-muted);
+    }
+
+    .selected-value {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+  }
+}
+
+/* Painel Suspenso (Dropdown) com fundo opaco do container */
+.custom-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  max-height: 220px;
+  overflow-y: auto;
+  background-color: var(--bg-container) !important;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px var(--shadow-color);
+  z-index: 1050; // valor elevado
+  padding: 4px;
+  box-sizing: border-box;
+
+  .dropdown-option {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
     border-radius: 6px;
-    background-color: var(--bg-secondary) !important;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
     color: var(--text-primary);
     font-size: 0.85rem;
-    font-family: inherit;
-    line-height: normal;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    cursor: pointer;
-    transition:
-      border-color 0.2s,
-      box-shadow 0.2s;
+    user-select: none;
 
-    &:focus {
-      outline: none;
-      border-color: var(--accent-color);
-      box-shadow: 0 0 0 2px var(--hover-color);
+    &:hover {
+      background-color: var(--hover-color);
     }
 
-    option {
-      background-color: var(--bg-container) !important;
-      color: var(--text-primary);
-      padding: 8px;
+    &.selected {
+      background-color: var(--bg-secondary);
+      color: var(--accent-color);
+      font-weight: 500;
     }
+  }
+
+  .empty-options {
+    padding: 12px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
   }
 }

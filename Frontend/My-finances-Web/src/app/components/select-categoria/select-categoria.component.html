@@ -1,10 +1,33 @@
-<div class="custom-input-wrapper">
-  <i class="fa-solid fa-layer-group custom-input-icon"></i>
-  <select [value]="selectedValue ?? ''" (change)="onChange($event)">
-    <option value="" disabled selected>Selecione uma categoria...</option>
-    @for (cat of categorias; track cat.id) {
-      <option [value]="cat.id">{{ cat.nome }}</option>
-    }
-  </select>
-  <i class="fa-solid fa-chevron-down custom-select-arrow"></i>
+<div class="custom-select-container">
+  <!-- Trigger / Campo fechado -->
+  <div class="custom-trigger" [class.focused]="isOpen" (click)="toggleDropdown()">
+    <i class="fa-solid fa-layer-group custom-input-icon"></i>
+
+    <div class="trigger-text">
+      @if (selectedNome) {
+        <span class="selected-value">{{ selectedNome }}</span>
+      } @else {
+        <span class="placeholder-text">Selecione uma categoria...</span>
+      }
+    </div>
+
+    <i class="fa-solid fa-chevron-down custom-select-arrow" [class.rotated]="isOpen"></i>
+  </div>
+
+  <!-- Painel Suspenso (Dropdown) com fundo opaco do container -->
+  @if (isOpen) {
+    <div class="custom-dropdown-panel">
+      @for (cat of categorias; track cat.id) {
+        <div
+          class="dropdown-option"
+          [class.selected]="cat.id === selectedValue"
+          (click)="selectOption(cat)"
+        >
+          <span>{{ cat.nome }}</span>
+        </div>
+      } @empty {
+        <div class="empty-options">Nenhuma categoria encontrada</div>
+      }
+    </div>
+  }
 </div>

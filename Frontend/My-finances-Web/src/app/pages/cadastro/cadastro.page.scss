@@ -1,10 +1,58 @@
+/* ==========================================================================
+   IMPORTS E MÓDULOS
+   ========================================================================== */
 @use 'sass:color';
 
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/700.css';
+
+/* ==========================================================================
+   CONTAINER PRINCIPAL DO FORMULÁRIO (CARD)
+   ========================================================================== */
 .cadastro-container {
+  font-family: 'Roboto', sans-serif;
   max-width: 680px;
-  margin: 1.5rem auto;
+  margin: 1.5rem auto; /* Centraliza o card horizontalmente na página */
+
+  background-color: var(--bg-container);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 16px var(--shadow-color);
+  color: var(--text-primary);
+  overflow: hidden;
+
+  /* Responsividade para telas menores (smartphones) */
+  @media (max-width: 768px) {
+    padding: 10px 8px;
+  }
 }
 
+/* ==========================================================================
+   CONTROLE DE VISIBILIDADE / OVERFLOW
+   Garante que elementos flutuantes (dropdowns e calendários) não sejam cortados
+   ========================================================================== */
+.table-container.cadastro-container,
+.form-wrapper,
+.form-grid {
+  overflow: visible !important;
+}
+
+/* ==========================================================================
+   WRAPPER DE SELEÇÃO COM ELEVAÇÃO DE CAMADA (Z-INDEX)
+   ========================================================================== */
+.tags-select-wrapper {
+  position: relative;
+
+  // Eleva o wrapper na pilha visual (z-index) quando o select-categoria estiver aberto
+  &:has(app-select-categoria.opened) {
+    z-index: 1000;
+  }
+}
+
+/* ==========================================================================
+   CABEÇALHO DO FORMULÁRIO / BARRA DE TÍTULO
+   ========================================================================== */
 .table-top-bar {
   display: flex;
   flex-direction: column;
@@ -15,13 +63,9 @@
 
   .title-section {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 8px;
-
-    .title-icon {
-      font-size: 1.1rem;
-      color: var(--accent-color);
-    }
 
     h3 {
       margin: 0;
@@ -32,6 +76,9 @@
   }
 }
 
+/* ==========================================================================
+   ESTRUTURA E GRID DO FORMULÁRIO
+   ========================================================================== */
 .form-wrapper {
   display: flex;
   flex-direction: column;
@@ -40,18 +87,22 @@
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr; /* Layout padrão em 2 colunas */
   gap: 1rem;
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* 1 coluna no mobile */
   }
 
+  /* Faz o campo ocupar a largura total das colunas */
   .col-full {
     grid-column: 1 / -1;
   }
 }
 
+/* ==========================================================================
+   GRUPOS DE CAMPOS E LABELS
+   ========================================================================== */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -65,22 +116,151 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: var(--text-secondary);
+    color: var(--text-primary);
 
     i {
       font-size: 0.75rem;
-      color: var(--text-muted);
+      color: var(--text-secondary);
     }
   }
 }
 
-/* Base idêntica aos inputs do seu tema */
+/* ==========================================================================
+   CAMPO DE DATA (DATEPICKER WRAPPER)
+   ========================================================================== */
+.date-picker-wrapper {
+  cursor: pointer;
+
+  input {
+    cursor: pointer;
+  }
+
+  /* Botão/ícone do calendário do Angular Material */
+  .custom-datepicker-toggle {
+    position: absolute;
+    right: 0.5rem;
+    color: var(--text-muted);
+
+    button {
+      color: inherit;
+    }
+  }
+}
+
+/* ==========================================================================
+   ESTILIZAÇÃO DO POPUP DO CALENDÁRIO (ANGULAR MATERIAL DATEPICKER)
+   ========================================================================== */
+::ng-deep .custom-dark-calendar .mat-calendar {
+  background-color: var(--bg-container) !important;
+  color: var(--text-primary) !important;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 24px var(--shadow-color);
+  font-family: inherit;
+
+  /* Seta dropdown de seleção de mês/ano */
+  .mat-calendar-arrow {
+    fill: var(--text-primary);
+  }
+
+  /* Botões de navegação superior (anterior, próximo e mês/ano) */
+  .mat-calendar-period-button,
+  .mat-calendar-previous-button,
+  .mat-calendar-next-button {
+    color: var(--text-primary);
+  }
+
+  /* Cabeçalho dos dias da semana (D, S, T, Q...) */
+  .mat-calendar-table-header th {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+  }
+
+  /* Célula de cada dia */
+  .mat-calendar-body-cell-content {
+    color: var(--text-primary);
+    border-radius: 6px;
+
+    /* Dia selecionado pelo usuário */
+    &.mat-calendar-body-selected {
+      background-color: var(--accent-color) !important;
+      color: #ffffff !important;
+    }
+  }
+
+  /* Dia atual / Hoje (quando não está selecionado) */
+  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: var(--accent-color);
+  }
+
+  /* Efeito de hover ao passar o cursor sobre os dias */
+  .mat-calendar-body-cell:hover:not(.mat-calendar-body-disabled)
+    .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+    background-color: var(--hover-color);
+  }
+}
+
+/* ==========================================================================
+   CAMPO COMBINADO: SELECT + BOTÃO ADICIONAR (+)
+   ========================================================================== */
+.tags-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+
+  app-select-tags {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* Botão de adicionar (+) ao lado dos selects */
+.btn-add-tag {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+
+  background-color: var(--primary-color);
+  color: var(--text-secondary);
+
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+
+  i {
+    font-size: 0.85rem;
+  }
+
+  &:hover {
+    background-color: var(--primary-color-hover, var(--primary-color));
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   INPUTS PADRÃO (TEXTO, NÚMERO, ETC.)
+   ========================================================================== */
 .input-wrapper {
   position: relative;
   display: inline-flex;
   align-items: center;
   width: 100%;
 
+  /* Ícone à esquerda dentro do input */
   .input-icon {
     position: absolute;
     left: 0.85rem;
@@ -94,11 +274,11 @@
     width: 100%;
     height: 38px;
     box-sizing: border-box;
-    padding: 0 1rem 0 2.3rem;
+    padding: 0 1rem 0 2.3rem; /* Espaço para não sobrepor o ícone */
     border: 1px solid var(--input-border);
     border-radius: 6px;
     background-color: var(--bg-secondary);
-    color: var(--text-primary);
+    color: var(--text-secondary);
     font-size: 0.85rem;
     font-family: inherit;
     line-height: normal;
@@ -110,6 +290,7 @@
       color: var(--text-muted);
     }
 
+    /* Estado de foco (destaque ao clicar) */
     &:focus {
       outline: none;
       border-color: var(--accent-color);
@@ -118,7 +299,9 @@
   }
 }
 
-/* Área de botões */
+/* ==========================================================================
+   RODAPÉ DE AÇÕES (BOTÕES VOLTAR / SALVAR)
+   ========================================================================== */
 .form-actions {
   display: flex;
   align-items: center;
@@ -129,7 +312,7 @@
   border-top: 1px solid var(--border-color);
 
   @media (max-width: 768px) {
-    flex-direction: column-reverse;
+    flex-direction: column-reverse; /* Inverte a ordem para facilitar o toque no mobile */
 
     button {
       width: 100%;
@@ -137,6 +320,7 @@
   }
 }
 
+/* Botão Secundário / Cancelar / Voltar */
 .btn-cancelar {
   display: inline-flex;
   align-items: center;
@@ -159,6 +343,7 @@
   }
 }
 
+/* Botão Primário / Salvar Lançamento */
 .btn-cadastrar {
   display: inline-flex;
   align-items: center;
@@ -185,6 +370,7 @@
     box-shadow: 0 4px 10px var(--shadow-color);
   }
 
+  /* Estado desabilitado (quando o formulário está inválido) */
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;

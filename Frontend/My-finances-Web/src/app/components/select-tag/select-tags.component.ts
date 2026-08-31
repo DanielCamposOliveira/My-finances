@@ -14,6 +14,7 @@ private elementRef = inject(ElementRef);
 
   @Input() tags: Tag[] = [];
   @Input() selectedTagIds: number[] = [];
+  
   @Output() tagsChange = new EventEmitter<number[]>();
 
   isOpen = false;

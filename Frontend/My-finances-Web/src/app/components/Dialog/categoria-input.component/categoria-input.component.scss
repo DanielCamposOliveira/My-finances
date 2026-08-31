@@ -1,0 +1,198 @@
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/700.css';
+
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--bg-container);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 4px 16px var(--shadow-color);
+  color: var(--text-primary);
+  overflow: hidden;
+
+  font-family: 'Roboto', sans-serif;
+
+  @media (max-width: 768px) {
+    padding: 12px 10px;
+  }
+}
+
+.dialog-container {
+  padding: 6px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden !important;
+}
+
+/* Cabeçalho centralizado e sem padding nativo */
+.dialog-header {
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100%;
+
+  h2 {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    font-size: 1.15rem;
+    line-height: 1.3;
+    text-align: center;
+  }
+}
+
+/* Remove a folga superior do corpo */
+.dialog-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: none !important;
+
+  overflow: hidden !important;
+  max-height: none !important;
+
+  .input-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  h2 {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    text-align: start;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+
+.radio-group {
+  display: flex;
+  gap: 16px;
+  margin-top: 0px;
+
+  mat-radio-button {
+    color: var(--text-primary);
+  }
+}
+
+/* Estrutura do Input Wrapper */
+.input-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+
+  &.search-wrapper {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  &.select-wrapper {
+    width: 100%;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    pointer-events: none;
+  }
+
+  input,
+  select {
+    width: 100%;
+    height: 38px;
+    box-sizing: border-box;
+    padding: 0 1rem 0 2.3rem;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-family: inherit;
+    line-height: normal;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px var(--hover-color);
+    }
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 2rem;
+    cursor: pointer;
+
+    option {
+      background-color: var(--bg-container);
+      color: var(--text-primary);
+    }
+  }
+}
+
+/* Botões de Ação */
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 4px 0 0 0 !important;
+  margin: 0 !important;
+  min-height: unset !important;
+
+  button {
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0 16px;
+    height: 36px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-cancelar {
+    color: var(--text-primary);
+    background-color: var(--btn-cancel);
+
+    &:hover {
+      background-color: var(--btn-cancel-hover);
+    }
+  }
+
+  .btn-confirmar {
+    background-color: var(--btn-confirm);
+    color: var(--text-primary);
+
+    &:hover {
+      background-color: var(--btn-confirm-hover);
+    }
+  }
+}

@@ -2,8 +2,7 @@
   <!-- Barra Superior de Título -->
   <div class="table-top-bar">
     <div class="title-section">
-      <i class="fa-solid fa-file-invoice-dollar title-icon"></i>
-      <h3>Novo Lançamento</h3>
+      <h3>Lançamento</h3>
     </div>
   </div>
 
@@ -46,27 +45,63 @@
         <label class="form-label">
           <i class="fa-solid fa-calendar-days"></i> Data do 1º Vencimento
         </label>
-        <div class="input-wrapper">
+        <div class="input-wrapper date-picker-wrapper" (click)="picker.open()">
           <i class="fa-solid fa-calendar input-icon"></i>
-          <input type="date" formControlName="dataPrimeiroVencimento" />
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="dataPrimeiroVencimento"
+            placeholder="dd/mm/aaaa"
+            readonly
+          />
+          <mat-datepicker-toggle
+            [for]="picker"
+            class="custom-datepicker-toggle"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker panelClass="custom-dark-calendar"></mat-datepicker>
         </div>
       </div>
 
       <!-- Componente Genérico: Categoria -->
       <div class="form-group col-full">
         <label class="form-label"> <i class="fa-solid fa-tag"></i> Categoria </label>
-        <app-select-categoria
-          [categorias]="categorias"
-          [selectedValue]="formCadastro.get('categoriaId')?.value"
-          (categoriaChange)="onCategoriaSelecionada($event)"
-        >
-        </app-select-categoria>
+        <div class="tags-select-wrapper">
+          <app-select-categoria
+            [categorias]="categorias"
+            [selectedValue]="formCadastro.get('categoriaId')?.value"
+            (categoriaChange)="onCategoriaSelecionada($event)"
+          >
+          </app-select-categoria>
+
+          <button
+            type="button"
+            class="btn-add-tag"
+            (click)="abrirModalCategoria()"
+            title="Cadastrar nova Categoria"
+          >
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Componente Genérico: Tags -->
       <div class="form-group col-full">
         <label class="form-label"> <i class="fa-solid fa-tags"></i> Tags </label>
-        <app-select-tags [tags]="tags" (tagsChange)="onTagsSelecionadas($event)"> </app-select-tags>
+
+        <!-- Container flex adicionado aqui -->
+        <div class="tags-select-wrapper">
+          <app-select-tags [tags]="tags" (tagsChange)="onTagsSelecionadas($event)">
+          </app-select-tags>
+
+          <button
+            type="button"
+            class="btn-add-tag"
+            (click)="abrirModalTag()"
+            title="Cadastrar nova Tag"
+          >
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
       </div>
     </div>
 

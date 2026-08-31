@@ -67,7 +67,6 @@ export class parcelaPage implements OnInit {
   obterContasFixas(): void {
     this.contaFixaService.Parcelas().subscribe({
       next: (resposta) => {
-        //console.log(resposta);
         this.parcelasContaFixa = [...resposta];
         this.cdr.markForCheck();
       },
@@ -78,9 +77,7 @@ export class parcelaPage implements OnInit {
   obterTag(): void {
     this.tagService.GetTag().subscribe({
       next: (resposta) => {
-        //console.log("Tag:", resposta)
         this.tag = [...resposta];
-        console.log("Tag:", this.tag)
       },
       error: (erro) => console.log("Tag Erro:", erro)
     });
@@ -89,9 +86,7 @@ export class parcelaPage implements OnInit {
   obterCategoria(): void {
     this.categoriaService.getCategoria().subscribe({
       next: (resposta) => {
-        //console.log("Categoria:", resposta);
         this.categoria = [...resposta];
-        console.log("Categoria:", this.categoria);
       },
       error: (Error) => console.log("Categoria Erro:", error)
     });
@@ -146,8 +141,7 @@ export class parcelaPage implements OnInit {
   //this.router.navigate(['/cadastro'], { queryParams: { id: parcelaId } });
   //}
   
-  onPageCadastro(): void {
-    console.log("Evento onPageCadastro");
+  onPageCadastro(): void {   
     this.router.navigate(['/cadastro']);
   }
 
