@@ -4,7 +4,7 @@
     titulo="Lançamentos"
     [parcelas]="parcelasLancamentos"
     (onPagar)="pagarLancamento($event)"
-    (OpenPageCadastro)="onPageCadastro()"
+    (OpenPageCadastro)="onPageCadastroLancamento()"
   >
   </app-TableParcela>
 
@@ -14,6 +14,7 @@
     [parcelas]="parcelasContaFixa"
     (onPagar)="pagarContaFixa($event)"
     (onValor)="ValorContaFixa($event)"
+    (OpenPageCadastro)="onPageCadastroContaFixa()"
   >
   </app-TableParcela>
 </div>

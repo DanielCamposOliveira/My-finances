@@ -141,9 +141,18 @@ export class parcelaPage implements OnInit {
   //this.router.navigate(['/cadastro'], { queryParams: { id: parcelaId } });
   //}
   
-  onPageCadastro(): void {   
-    this.router.navigate(['/cadastro']);
-  }
+//  onPageCadastro(): void {   
+//    this.router.navigate(['/cadastro-lancamento']);
+//  }
 
+  // Navegação para o cadastro de Lançamento
+onPageCadastroLancamento(): void {   
+  this.router.navigate(['/cadastro-lancamento']);
+}
+
+// Navegação para o cadastro de Conta Fixa
+onPageCadastroContaFixa(): void {   
+  this.router.navigate(['/cadastro-contafixa']);
+}
 
 }

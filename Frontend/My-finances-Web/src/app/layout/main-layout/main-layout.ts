@@ -24,6 +24,9 @@ export class MainLayoutComponent implements OnInit {
   ngOnInit(): void {
     // Esta requisição agora SÓ roda quando o usuário entra no Layout (área logada)
     this.ObterInformacoesUsuario();
+
+    // verifica qual o status do DarkMode
+    this.isDarkMode = this.authService.isDarkMode();
   }
 
   ObterInformacoesUsuario(): void {
@@ -31,7 +34,18 @@ export class MainLayoutComponent implements OnInit {
   }
 
   onThemeChange(value: boolean): void {
+    this.onDarkMode();
+  }
 
+
+  onDarkMode(): void
+  {
+    // inverte o valor do status
+    const novoValor = !this.authService.isDarkMode();
+    // grava o novo valor
+    this.authService.setDarkMode(novoValor);
+    // salva o novo valor na variavel
+    this.isDarkMode = this.authService.isDarkMode();   
   }
 
   deslogar(): void {

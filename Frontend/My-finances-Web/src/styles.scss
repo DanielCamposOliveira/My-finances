@@ -14,7 +14,7 @@ body {
   // Default the application to a light color theme. This can be changed to
   // `dark` to enable the dark color theme, or to `light dark` to defer to the
   // user's system settings.
-  color-scheme: dark;
+  color-scheme: light;
 
   --bg-primary: #212529;
   --bg-secondary: #1c222c;
@@ -106,6 +106,7 @@ body {
 
 /* Tema Escuro (Ativado quando adicionamos a classe 'dark-theme' no <body>) */
 body.dark-theme {
+  color-scheme: dark;
   --bg-primary: #212529;
   --bg-secondary: #1c222c;
   --bg-container: #2b3035;
@@ -128,6 +129,8 @@ body.dark-theme {
 }
 
 body.light-theme {
+  color-scheme: light;
+
   --bg-primary: #ffffff;
   --bg-secondary: #f6f8fa;
   --bg-container: #ffffff;

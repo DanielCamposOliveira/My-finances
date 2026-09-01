@@ -28,16 +28,16 @@ export interface RegisterRequest {
 })
 export class AuthService {
   // Injeta o cliente HTTP do Angular para realizar requisições web
-  private http = inject(HttpClient); 
+  private http = inject(HttpClient);
   
-  private readonly EndPoint = `${environment.apiUrl}`;  
+  private readonly EndPoint = `${environment.apiUrl}`;
 
   private EndPoint_Login = `${environment.apiUrl}/user/auth/sign-in`;
   private EndPoint_Register = `${environment.apiUrl}/user/auth/register`;
 
 
- // Um Signal para expor o estado de autenticação (se o usuário possui um token válido)
-    tokenUsuario = signal<string | null>(localStorage.getItem('jwt_token'));
+  // Um Signal para expor o estado de autenticação (se o usuário possui um token válido)
+  tokenUsuario = signal<string | null>(localStorage.getItem('jwt_token'));
 
   // Método que realiza a tentativa de login enviando as credenciais para o backend
   Login(credenciais: LoginRequest): Observable<LoginResponse> {
@@ -50,12 +50,11 @@ export class AuthService {
         // Atualiza o Signal reativo com o novo token recebido
         this.tokenUsuario.set(resposta.token);
       })
-    );   
+    );
   }
 
-  CreateUser(dados: RegisterRequest): Observable<void>
-  {
-    return this.http.post<void>(this.EndPoint_Register,dados);
+  CreateUser(dados: RegisterRequest): Observable<void> {
+    return this.http.post<void>(this.EndPoint_Register, dados);
   }
   
 
@@ -66,6 +65,31 @@ export class AuthService {
     const token = localStorage.getItem('jwt_token');
     return !!token;
   }
+
+// ler o valor da chave
+isDarkMode(): boolean {
+  // 1. Obtém o valor como string (ou null se não existir)
+  const darkMode = localStorage.getItem('darkMode');
+
+  // 2. Se for null (não existe), cria com 'false' e retorna false
+  if (darkMode === null) {
+    localStorage.setItem('darkMode', 'false');
+    return false;
+  }
+
+  // 3. Converte a string salva ('true'/'false') para boolean
+  return darkMode === 'true';
+}
+  
+  // var novo valor na chave
+setDarkMode(value: boolean): void {
+  // Converte o boolean para string e grava no localStorage
+  localStorage.setItem('darkMode', String(value));
+}
+  
+
+
+
 
   // Método auxiliar para deslogar do sistema
   logout(): void {

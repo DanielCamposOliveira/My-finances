@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, HostBinding } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 // Angular Material Datepicker
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -11,20 +11,24 @@ import { SelectCategoriaComponent } from '../../components/select-categoria/sele
 import { SelectTagsComponent } from '../../components/select-tag/select-tags.component';
 
 import { LancamentosService } from '../../service/Lancamentos/lancamentos-service';
+import { ContaFixaService } from '../../service/ContaFixa/conta-fixa-service';
 import { CategoriaService } from '../../service/Categoria/categoria-service';
 import { TagService } from '../../service/Tag/tag-service';
 
 import { Categoria, CategoriaCadastro } from '../../models/categoria.model';
 import { Tag, TagCadastro } from '../../models/tag.model';
 import { LancamentoCadastro } from '../../models/lancamentos.model';
+import { ContaFixaCadastro } from '../../models/canta-fixa';
 
-import {MatDialog} from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { DialogDataCategoria, CategoriaInputComponent } from '../../components/Dialog/categoria-input.component/categoria-input.component';
-import {DialogDataTag, TagInputComponent} from '../../components/Dialog/tag-input.component/tag-input.component'
+import { DialogDataTag, TagInputComponent } from '../../components/Dialog/tag-input.component/tag-input.component';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SnackBarCustomComponent } from '../../components/SnackBar/snack-bar-info/snack-bar-info';
+
 export type TipoSnack = 'sucesso' | 'erro' | 'info' | 'despesa' | 'receita';
+export type TipoCadastro = 'lancamento' | 'contafixa';
 
 @Component({
   selector: 'app-cadastro',
@@ -46,32 +50,43 @@ export type TipoSnack = 'sucesso' | 'erro' | 'info' | 'despesa' | 'receita';
 export class CadastroPage implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+
   private lancamentosService = inject(LancamentosService);
+  private contaFixaService = inject(ContaFixaService);
   private categoriaService = inject(CategoriaService);
   private tagService = inject(TagService);
+
+  readonly dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
+
 
   formCadastro!: FormGroup;
   categorias: Categoria[] = [];
   tags: Tag[] = [];
 
-  readonly dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+tipoCadastro: TipoCadastro = 'lancamento';
   
   ngOnInit(): void {
+    this.obterTipoCadastro();
     this.initForm();
     this.carregarCategoria();
     this.CarregaTag();
   }
 
+  private obterTipoCadastro(): void {
+    const tipo = this.route.snapshot.data['tipo'] as TipoCadastro;
+    if (tipo) {
+      this.tipoCadastro = tipo;
+    }
+  }
 
-
-
-
-  private initForm(): void {
+private initForm(): void {
     this.formCadastro = this.fb.group({
       descricao: ['', [Validators.required]],
       valorTotal: [null, [Validators.required, Validators.min(0.01)]],
-      qtdParcelas: [1, [Validators.required, Validators.min(1)]],
+      qtdParcelas: [1, this.tipoCadastro === 'lancamento' ? [Validators.required, Validators.min(1)] : []],
       dataPrimeiroVencimento: ['', [Validators.required]],
       categoriaId: [null, [Validators.required]],
       tagIds: [[]]
@@ -106,15 +121,74 @@ export class CadastroPage implements OnInit {
       return;
     }
 
-    const payload: LancamentoCadastro = this.formCadastro.value;
+    const formValues = this.formCadastro.value;
 
-    this.lancamentosService.Lancamento(payload).subscribe({
-      next: () => {
-        this.voltar();
-      },
-      error: (err) => console.error('Erro ao registrar lançamento:', err)
-    });
+    if (this.tipoCadastro === 'lancamento') {
+     
+      // Monta o pacote 
+      const payload: LancamentoCadastro = {
+        descricao: formValues.descricao,
+        valorTotal: formValues.valorTotal,
+        qtdParcelas: formValues.qtdParcelas,
+        dataPrimeiroVencimento: formValues.dataPrimeiroVencimento,
+        categoriaId: formValues.categoriaId,
+        tagIds: formValues.tagIds
+      }
+      
+      this.lancamentosService.Lancamento(payload).subscribe({
+        next: () => {
+          this.abrirSnackBar('Lançamento cadastrado com sucesso!', 3, 'fa-solid fa-circle-check', 'sucesso');
+          this.voltar();
+        },
+        error: (err) => {
+          console.error('Erro ao registrar lançamento:', err);
+          this.abrirSnackBar('Erro ao registrar lançamento', 3, 'fa-solid fa-ban', 'erro');
+        }
+      });
+
+    }
+    else {
+
+      // Extrai apenas o número do dia (ex: 10)
+      const diaVencimento = this.extrairDia(formValues.dataPrimeiroVencimento);
+      
+      // Monta o pacote 
+      const payload: ContaFixaCadastro = {
+        descricao: formValues.descricao,
+        categoriaId: formValues.categoriaId,
+        diaVencimento: diaVencimento,
+        valorBase: formValues.valorTotal,
+        tagIds:formValues.tagIds
+      };
+    
+      this.contaFixaService.ContaFixa(payload).subscribe({
+        next: () => {
+          this.abrirSnackBar('Conta Fixa cadastrada com sucesso!', 3, 'fa-solid fa-circle-check', 'sucesso');
+          this.voltar();
+        },
+        error: (err) => {
+          console.error('Erro ao registrar conta fixa:', err);
+          this.abrirSnackBar('Erro ao registrar conta fixa', 3, 'fa-solid fa-ban', 'erro');
+        }
+      });
+    }    
   }
+
+
+// Função auxiliar para extrair o dia com segurança
+private extrairDia(data: Date | string): number {
+  if (data instanceof Date) {
+    return data.getDate();
+  }
+  // Caso venha como string no formato ISO (ex: "2026-08-10T03:00:00.000Z")
+  const dataString = String(data);
+  if (dataString.includes('-')) {
+    const parteDia = dataString.split('T')[0].split('-')[2];
+    return Number(parteDia);
+  }
+  return new Date(data).getDate();
+}
+
 
   voltar(): void {
     this.router.navigate(['/parcela']);
@@ -212,10 +286,6 @@ export class CadastroPage implements OnInit {
       }
     });
   }
-
-
- 
-
 
   // Chama o componente SnackBar
   abrirSnackBar(

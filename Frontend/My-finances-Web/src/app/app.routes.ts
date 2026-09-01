@@ -37,12 +37,17 @@ export const routes: Routes = [
       {
         path: 'parcela',
         // Exemplo: componente de cadastro
-       loadComponent: () => import('./pages/parcela/Parcela.page').then(m => m.parcelaPage) 
+        loadComponent: () => import('./pages/parcela/Parcela.page').then(m => m.parcelaPage)
       },
       {
-        path: 'cadastro',
-        // Exemplo: componente de cadastro
-       loadComponent: () => import('./pages/cadastro/cadastro.page').then(m => m.CadastroPage) 
+        path: 'cadastro-lancamento',
+        loadComponent: () => import('./pages/cadastro/cadastro.page').then(m => m.CadastroPage),
+        data: { tipo: 'lancamento' } // <-- Identificador do contexto
+      },
+      {
+        path: 'cadastro-contafixa',
+        loadComponent: () => import('./pages/cadastro/cadastro.page').then(m => m.CadastroPage),
+        data: { tipo: 'contafixa' } // <-- Identificador do contexto
       }
     ]
   },

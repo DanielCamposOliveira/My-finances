@@ -1,8 +1,8 @@
 <div class="table-container cadastro-container">
-  <!-- Barra Superior de Título -->
+  <!-- Barra Superior de Título Dinâmica -->
   <div class="table-top-bar">
     <div class="title-section">
-      <h3>Lançamento</h3>
+      <h3>{{ tipoCadastro === 'lancamento' ? 'Novo Lançamento' : 'Nova Conta Fixa' }}</h3>
     </div>
   </div>
 
@@ -32,18 +32,21 @@
       </div>
 
       <!-- Qtd. Parcelas -->
-      <div class="form-group">
-        <label class="form-label"> <i class="fa-solid fa-hashtag"></i> Qtd. Parcelas </label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-list-ol input-icon"></i>
-          <input type="number" formControlName="qtdParcelas" placeholder="1" />
+      @if (tipoCadastro === 'lancamento') {
+        <div class="form-group">
+          <label class="form-label"> <i class="fa-solid fa-hashtag"></i> Qtd. Parcelas </label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-list-ol input-icon"></i>
+            <input type="number" formControlName="qtdParcelas" placeholder="1" />
+          </div>
         </div>
-      </div>
+      }
 
       <!-- Primeiro Vencimento -->
       <div class="form-group col-full">
         <label class="form-label">
-          <i class="fa-solid fa-calendar-days"></i> Data do 1º Vencimento
+          <i class="fa-solid fa-calendar-days"></i>
+          {{ tipoCadastro === 'lancamento' ? 'Data do 1º Vencimento' : 'Data de Vencimento' }}
         </label>
         <div class="input-wrapper date-picker-wrapper" (click)="picker.open()">
           <i class="fa-solid fa-calendar input-icon"></i>
@@ -114,7 +117,7 @@
 
       <button type="submit" class="btn-cadastrar" [disabled]="formCadastro.invalid">
         <i class="fa-solid fa-check"></i>
-        Salvar Lançamento
+        {{ tipoCadastro === 'lancamento' ? 'Salvar Lançamento' : 'Salvar Conta Fixa' }}
       </button>
     </div>
   </form>

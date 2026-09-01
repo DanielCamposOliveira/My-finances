@@ -13,6 +13,7 @@ export class HeaderComponent {
   @Input() titulo: string = 'Sistema de Encurtador de URLs';
 
   @Output() logout = new EventEmitter<void>();
+  @Output() isDarkModeChange = new EventEmitter<void>();
 
   @Input() Name: string = 'Name';
   @Input() IsActive: boolean = false;
@@ -25,10 +26,6 @@ export class HeaderComponent {
   @Input()
   set isDarkMode(value: boolean) {
     this._isDarkMode = value;
-    //console.log(value);
-    // Aplica/Remove a classe no body automaticamente quando o dado chega
-   // document.body.classList.toggle('dark-theme', value);
-
    if (value) {
       document.body.classList.remove('light-theme');
       document.body.classList.add('dark-theme');
@@ -42,13 +39,9 @@ export class HeaderComponent {
     return this._isDarkMode;
   }
 
-  // Emite o evento de mudança de tema para o componente pai
-  @Output() isDarkModeChange = new EventEmitter<boolean>();
-
-
-  // Método chamado quando o usuário alterna o tema
+  // Emite o evento de mudança de tema para o componente pai   
   toggleTheme(): void {
-    this.isDarkModeChange.emit(!this._isDarkMode);
+    this.isDarkModeChange.emit();
   }
 
   onSair(): void {
