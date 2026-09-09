@@ -78,17 +78,13 @@ A aplicação divide estritamente as responsabilidades em 4 camadas principais:
 
 
 ### Login
-
-![[Pasted image 20260831225155.png | 900]]
+![Minha foto](Fotos/Login.jpg)
 
 ### Parcelas
-
-![[Pasted image 20260831225253.png | 800]]
+![Minha foto](Fotos/Parcelas.jpg)
 
 ### Cadastro Conta Fixa
-
-![[Pasted image 20260831225344.png | 800]]
+![Minha foto](Fotos/Cadastro_Conta_Fixa.jpg)
 
 ### Cadastro Categoria
-
-![[Pasted image 20260831225434.png | 800]]
+![Minha foto](Fotos/Cadastro_Categoria_Dark.jpg)
