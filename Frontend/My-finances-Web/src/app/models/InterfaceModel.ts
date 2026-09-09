@@ -34,3 +34,10 @@ export interface DashboardCardItemModel {
   iconClass: string;
   typeClass: string;
 }
+
+
+export interface ResponseGenerator<T = any> {
+  status: number;
+  message: string;
+  data?: T;
+}

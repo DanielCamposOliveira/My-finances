@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../Authentication/auth.service'; // Ajuste o caminho do seu serviço
 
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Proteção para garantir que só seja executado em requisições HTTP verdadeiras
@@ -44,8 +45,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       if (erro instanceof HttpErrorResponse) {
         // Se a API retornar 401 (Token Expirado, Inválido ou Manipulado)
         if (erro.status === 401 && !ehRotaPublica) {
-          console.log('Sessão expirada ou token inválido. Redirecionando para o login...');
-          
+          console.log('Sessão expirada ou token inválido. Redirecionando para o login...');        
+
           // Executa o método de logout para limpar o localStorage e zerar os Signals
           authService.logout();
           //console.log('Expulsa o usuário para a tela de login');

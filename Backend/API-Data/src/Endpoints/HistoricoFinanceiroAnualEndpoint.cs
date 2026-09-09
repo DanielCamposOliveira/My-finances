@@ -36,7 +36,7 @@ namespace API_Data.src.Endpoints
             // ROTAS:ATUALIZAR HISTORICO FINANCEIRO ANUAL
             // ==========================================
 
-            EndpointHistorico.MapPost("/AtualizarHistoricoMes", async (HistoricoMesRequest request, IHistoricoFinanceiroAnualService service, ClaimsPrincipal userClaims) =>
+            EndpointHistorico.MapPatch("/AtualizarHistoricoMes", async (HistoricoMesRequest request, IHistoricoFinanceiroAnualService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;

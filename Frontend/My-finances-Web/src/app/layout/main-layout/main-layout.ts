@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from '../../components/header/header';
 import { AuthService } from '../../service/Authentication/auth.service';
+import{LocalstorageService} from '../../service/localstorage/localstorage-service'
 
 @Component({
   selector: 'app-main-layout',
@@ -14,7 +15,7 @@ export class MainLayoutComponent implements OnInit {
 
   private router = inject(Router);
   private authService = inject(AuthService);
-
+  private localStorage = inject(LocalstorageService);
 
   Name: string = '';
   IsActive: boolean = false;
@@ -26,7 +27,7 @@ export class MainLayoutComponent implements OnInit {
     this.ObterInformacoesUsuario();
 
     // verifica qual o status do DarkMode
-    this.isDarkMode = this.authService.isDarkMode();
+    this.isDarkMode = this.localStorage.isDarkMode();
   }
 
   ObterInformacoesUsuario(): void {
@@ -41,14 +42,14 @@ export class MainLayoutComponent implements OnInit {
   onDarkMode(): void
   {
     // inverte o valor do status
-    const novoValor = !this.authService.isDarkMode();
+    const novoValor = !this.localStorage.isDarkMode();
     // grava o novo valor
-    this.authService.setDarkMode(novoValor);
+    this.localStorage.setDarkMode(novoValor);
     // salva o novo valor na variavel
-    this.isDarkMode = this.authService.isDarkMode();   
+    this.isDarkMode = this.localStorage.isDarkMode();   
   }
 
-  deslogar(): void {
+  deslogar(): void {    
     this.authService.logout();
     this.router.navigate(['/login']);
   }

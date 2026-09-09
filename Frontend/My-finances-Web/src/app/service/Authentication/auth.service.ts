@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
+import { LocalstorageService } from '../../service/localstorage/localstorage-service'
 
 // Interface que define o corpo da requisição que a API 2 espera
 export interface LoginRequest {
@@ -29,8 +30,8 @@ export interface RegisterRequest {
 export class AuthService {
   // Injeta o cliente HTTP do Angular para realizar requisições web
   private http = inject(HttpClient);
-  
-  private readonly EndPoint = `${environment.apiUrl}`;
+  private localStorage = inject(LocalstorageService);
+  //private readonly EndPoint = `${environment.apiUrl}`;
 
   private EndPoint_Login = `${environment.apiUrl}/user/auth/sign-in`;
   private EndPoint_Register = `${environment.apiUrl}/user/auth/register`;
@@ -65,35 +66,23 @@ export class AuthService {
     const token = localStorage.getItem('jwt_token');
     return !!token;
   }
-
-// ler o valor da chave
-isDarkMode(): boolean {
-  // 1. Obtém o valor como string (ou null se não existir)
-  const darkMode = localStorage.getItem('darkMode');
-
-  // 2. Se for null (não existe), cria com 'false' e retorna false
-  if (darkMode === null) {
-    localStorage.setItem('darkMode', 'false');
-    return false;
-  }
-
-  // 3. Converte a string salva ('true'/'false') para boolean
-  return darkMode === 'true';
-}
-  
-  // var novo valor na chave
-setDarkMode(value: boolean): void {
-  // Converte o boolean para string e grava no localStorage
-  localStorage.setItem('darkMode', String(value));
-}
-  
-
-
-
-
   // Método auxiliar para deslogar do sistema
   logout(): void {
     localStorage.removeItem('jwt_token');
+    this.localStorage.removeDakMode();
+    this.localStorage.removeHistoryMonthly();
+
     this.tokenUsuario.set(null);
   }
+
+
+
+
+  
+
+
+
+
+
+
 }
