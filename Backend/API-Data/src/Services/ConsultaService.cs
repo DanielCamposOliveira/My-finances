@@ -25,12 +25,12 @@ namespace API_Data.src.Services
 
 
         // RASCUNHO: Isso significa que vai buscar todas as dividas que foram pagas no mês 
-        public async Task<Decimal> TotalSaldo(string userId)
+        public async Task<Decimal> TotalReceitas(string userId)
         {
             int ano = DateTime.Today.Year;
             int mes = DateTime.Today.Month;
 
-            var retorno = await _repository.TotalSaldo(ano, mes, userId);
+            var retorno = await _repository.TotalReceitas(ano, mes, userId);
             return retorno;
         }
 
@@ -47,11 +47,11 @@ namespace API_Data.src.Services
 
 
         // RASCUNHO: Isso significa que vai buscar todas as dividas que foram criadas no mês, independente de estarem pagas ou não.
-        public async Task<Decimal> TotalDividasMes(string userId)
+        public async Task<Decimal> TotalDespesas(string userId)
         {
             int ano = DateTime.Today.Year;
             int mes = DateTime.Today.Month;
-            var retorno = await _repository.TotalDividasMes(ano, mes, userId);
+            var retorno = await _repository.TotalDespesas(ano, mes, userId);
             return retorno;
         }
 

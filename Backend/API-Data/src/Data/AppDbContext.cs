@@ -207,11 +207,19 @@ namespace API_Data.src.Data
             {
                 builder.HasKey(h => h.Id);
 
-                builder.Property(h => h.TotalSaldo)
+                builder.Property(h => h.Receitas)
                        .HasPrecision(18, 2)
                        .HasDefaultValue(0);
 
-                builder.Property(h => h.TotalDivida)
+                builder.Property(h => h.Despesas)
+                       .HasPrecision(18, 2)
+                       .HasDefaultValue(0);
+
+                builder.Property(h => h.DespesasPagas)
+                       .HasPrecision(18, 2)
+                       .HasDefaultValue(0);
+
+                builder.Property(h => h.DividasAnteriores)
                        .HasPrecision(18, 2)
                        .HasDefaultValue(0);
 

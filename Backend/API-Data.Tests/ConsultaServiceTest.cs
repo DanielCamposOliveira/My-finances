@@ -67,7 +67,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = service.TotalSaldo(UserID).Result;
+            var resultado = service.TotalReceitas(UserID).Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)
@@ -120,7 +120,7 @@ namespace API_Data.Tests
             //=============================================================
             // 2. ACT (Execução da regra no serviço)
             //=============================================================
-            var resultado = service.TotalDividasMes(UserID).Result;
+            var resultado = service.TotalDespesas(UserID).Result;
 
             //=============================================================
             // 3. ASSERT (Verificação do resultado)

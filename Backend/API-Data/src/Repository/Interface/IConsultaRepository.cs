@@ -7,11 +7,11 @@
 
         public Task<Decimal> TotalReceber(int ano, int mes, string userId);
 
-        public Task<Decimal> TotalSaldo(int ano, int mes, string userId);
+        public Task<Decimal> TotalReceitas(int ano, int mes, string userId);
 
         public Task<Decimal> TotalQuitadasDoMes(int ano, int mes, string userId);
 
-        public Task<Decimal> TotalDividasMes(int ano, int mes, string userId);
+        public Task<Decimal> TotalDespesas(int ano, int mes, string userId);
 
         public Task<Decimal> TotalContasMesFull(int ano, int mes, string userId);
     }

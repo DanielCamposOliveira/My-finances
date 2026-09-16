@@ -65,7 +65,7 @@ namespace API_Data.src.Repository
         /// Que a DataPagamento estejam dentro do mês e ano especificados.
         /// RASCUNHO: Isso significa que vai buscar todas as dividas que foram pagas no mês
         /// </summary>
-        public async Task<Decimal> TotalSaldo(int ano, int mes, string userId)
+        public async Task<Decimal> TotalReceitas(int ano, int mes, string userId)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace API_Data.src.Repository
         /// Desconsidera parcelas de meses anteriores (atrasadas) e meses futuros.
         /// </summary>
         /// RASCUNHO: Isso significa que vai buscar todas as dividas que foram criadas no mês, independente de estarem pagas ou não.
-        public async Task<Decimal> TotalDividasMes(int ano, int mes, string userId)
+        public async Task<Decimal> TotalDespesas(int ano, int mes, string userId)
         {
             try
             {
@@ -366,8 +366,7 @@ namespace API_Data.src.Repository
 
         /// <summary>
         /// Calcula o valor total do campo "ValorParcela" das tabelas "ContaFixaParcelas" e "LancamentoParcelas"
-        /// que foram PAGAS e cujos vencimentos pertencem EXATAMENTE ao mês e ano informados.
-        /// Desconsidera parcelas de meses anteriores (atrasadas) e meses futuros.
+        /// que foram PAGAS e cujos DataPagamento pertencem EXATAMENTE ao mês e ano informados.
         /// RASCUNHO: Isso significa que vai buscar todas as dividas que foram pagas no mês
         /// </summary>
         public async Task<Decimal> TotalQuitadasDoMes(int ano, int mes, string userId)

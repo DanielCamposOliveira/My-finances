@@ -63,16 +63,18 @@ namespace API_Data.src.Repository
                     {
                         Ano = request.ano,
                         Mes = request.mes,
-                        TotalSaldo = request.novoSaldo,
-                        TotalDivida = request.novaDivida,
+                        Receitas = request.Receitas,
+                        Despesas = request.Despesas,
+                        DespesasPagas = request.DespesasPagas,
+                        DividasAnteriores = request.DividasAnteriores,
                         UserId = userId
                     };
                     _db.HistoricosFinanceiros.Add(registro);
                 }
                 else
                 {
-                    registro.TotalSaldo = request.novoSaldo;
-                    registro.TotalDivida = request.novaDivida;
+                    registro.Receitas = request.Receitas;
+                    registro.Despesas = request.Despesas;
                 }
 
                 await _db.SaveChangesAsync();

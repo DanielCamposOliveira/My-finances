@@ -45,11 +45,11 @@ namespace API_Data.src.Endpoints
                 if (string.IsNullOrEmpty(userId))
                     return Results.Unauthorized();
 
-                var soma = await service.TotalSaldo(userId);
+                var soma = await service.TotalReceitas(userId);
                 return Results.Ok(soma);
             })
-            .WithSummary("Obter soma das Contas em Saldo")
-            .WithDescription("Retorna a soma das contas em saldo para um determinado mês e ano")
+            .WithSummary("Obter soma das Receitas")
+            .WithDescription("Retorna a soma das Receitas recebido mês e ano")
             .Produces<decimal>(StatusCodes.Status200OK);
 
 
@@ -88,11 +88,11 @@ namespace API_Data.src.Endpoints
                 if (string.IsNullOrEmpty(userId))
                     return Results.Unauthorized();
 
-                var soma = await service.TotalDividasMes(userId);
+                var soma = await service.TotalDespesas(userId);
                 return Results.Ok(soma);
             })
-            .WithSummary("Obter soma das Contas Dividas do Mês")
-            .WithDescription("Retorna o valor total das todas dividas que foram criadas no mês, independente de estarem pagas ou não")
+            .WithSummary("Obter soma das Despesas do Mês")
+            .WithDescription("Retorna o valor total das todas Despesas que foram criadas no mês, independente de estarem pagas ou não")
             .Produces<decimal>(StatusCodes.Status200OK);
 
 

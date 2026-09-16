@@ -23,8 +23,10 @@
     {
         public int ano { get; init; }
         public int mes { get; init; }
-        public int novoSaldo { get; init; }
-        public int novaDivida { get; init; }
+        public int Receitas { get; init; }
+        public int Despesas { get; init; }
+        public int DespesasPagas { get; init; }
+        public int DividasAnteriores { get; init; }
     }
 
 }

@@ -91,8 +91,8 @@ namespace API_Data.Tests
             {
                 ano = DateTime.Today.Year,
                 mes = DateTime.Today.Month,
-                novoSaldo = 1000, // Novo saldo para o mês atual
-                novaDivida = 500 // Nova dívida para o mês atual
+                Receitas = 1000, // Novo saldo para o mês atual
+                Despesas = 500 // Nova dívida para o mês atual
             };
 
 

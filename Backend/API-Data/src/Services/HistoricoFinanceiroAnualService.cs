@@ -33,8 +33,10 @@ namespace API_Data.src.Services
             }
 
             // 2. Monta os arrays zerados para o gráfico
-            var listaSaldo = new decimal[12];
-            var listaDivida = new decimal[12];
+            var ListaReceitas = new decimal[12];
+            var ListaDespesas = new decimal[12];
+            var ListaDespesasPagas = new decimal[12];
+            var ListaDividasAnteriores = new decimal[12];
 
             // Preenche os meses com os dados do banco
             foreach (var registro in registrosBanco)
@@ -42,8 +44,10 @@ namespace API_Data.src.Services
                 int indiceMes = registro.Mes - 1; // Mês 1 vira índice 0
                 if (indiceMes >= 0 && indiceMes < 12)
                 {
-                    listaSaldo[indiceMes] = registro.TotalSaldo;
-                    listaDivida[indiceMes] = registro.TotalDivida;
+                    ListaReceitas[indiceMes] = registro.Receitas;
+                    ListaDespesas[indiceMes] = registro.Despesas;
+                    ListaDespesasPagas[indiceMes] = registro.DespesasPagas;
+                    ListaDividasAnteriores[indiceMes] = registro.DividasAnteriores;
                 }
             }
 
@@ -51,22 +55,37 @@ namespace API_Data.src.Services
             var dadosGrafico = new GraficoHistoricoResponse
             {
                 ChartSeries = new List<SerieGrafico>
-        {
-            new SerieGrafico
-            {
-                Type = "line",
-                Name = "Saldo",
-                Color = "#0097FF",
-                Data = listaSaldo.ToList()
-            },
-            new SerieGrafico
-            {
-                Type = "line",
-                Name = "Dívidas",
-                Color = "#E74C3C",
-                Data = listaDivida.ToList()
-            }
-        }
+                {
+                    new SerieGrafico
+                    {
+                        Type = "line",
+                        Name = "Receitas",
+                        Color = "#3A86FF",
+                        Data = ListaReceitas.ToList()
+                    },
+                    new SerieGrafico
+                    {
+                        Type = "line",
+                        Name = "Despesas",
+                        Color = "#DF301C",
+                        Data = ListaDespesas.ToList()
+                    },
+                    new SerieGrafico
+                    {
+                        Type = "line",
+                        Name = "Despesas Pagas",
+                        Color = "#769826",
+                        Data = ListaDespesasPagas.ToList()
+                    },
+                    new SerieGrafico
+                    {
+                        Type = "line",
+                        Name = "Dividas Pendente",
+                        Color = "#FB6C00",
+                        Data = ListaDividasAnteriores.ToList()
+                    }
+
+                }
             };
 
             // 4. Retorna HTTP 200 OK contendo os dados empacotados em uma lista
@@ -81,9 +100,9 @@ namespace API_Data.src.Services
         /// <returns></returns>
         public async Task<IResult> UpdateHistoricoMesAsync(HistoricoMesRequest request, string userId)
         {
-           var response = await _Repo.AtualizarHistoricoMesAsync(request, userId);
-           if(response == false)
-           {
+            var response = await _Repo.AtualizarHistoricoMesAsync(request, userId);
+            if (response == false)
+            {
                 return Results.Problem(
                  "Erro ao cadastrar a conta fixa.",
                  statusCode: StatusCodes.Status500InternalServerError);
@@ -101,7 +120,7 @@ namespace API_Data.src.Services
         /// <returns></returns>
         public async Task<IResult> GerarHistoricoMesAsync(string userId)
         {
-     
+
             int ano = DateTime.Today.Year;
             int mes = DateTime.Today.Month - 1; // Pega o mes passado
             // verifica se o mês é 0 (janeiro), então ajusta para dezembro do ano anterior
@@ -122,7 +141,7 @@ namespace API_Data.src.Services
                  "Erro ao cadastrar a conta fixa.",
                  statusCode: StatusCodes.Status500InternalServerError);
             }
-            
+
             // se não tiver vazio então tem dados
             if (Valor.Any())
             {
@@ -130,16 +149,22 @@ namespace API_Data.src.Services
             }
 
 
-            var _TotalDivida = await _service.TotalDividasMes(userId);
-            var _TotalSaldo = await _service.TotalSaldo(userId);
+            var _TotalDespesas = await _service.TotalDespesas(userId); // ok valor total das todas dividas que foram criadas no mês, independente de estarem pagas ou não
+            var _TotalReceitas = await _service.TotalReceitas(userId); // ok Valor recebido no mes
+
+            var _TotalDespesasPagas = await _service.TotalQuitadasDoMes(userId); // ok valor pago das despesas do mes e das dividas atrazadas
+            var _TotalDividasAnteriores = await _service.TotalContasPendentes(userId); // ok valor total das todas dividas que foram criadas no mês que esta em aberto e as contas Atrasado dos meses anteriores
 
             // Monta o pacote de dados para o histórico do mês
             var HistoricoMesRequest = new HistoricoMesRequest
-            {   
+            {
                 ano = Convert.ToInt32(ano),
                 mes = Convert.ToInt32(mes),
-                novoSaldo = Convert.ToInt32(_TotalSaldo),
-                novaDivida = Convert.ToInt32(_TotalDivida)
+                Receitas = Convert.ToInt32(_TotalReceitas),
+                Despesas = Convert.ToInt32(_TotalDespesas),
+                DespesasPagas = Convert.ToInt32(_TotalDespesasPagas),
+                DividasAnteriores = Convert.ToInt32(_TotalDividasAnteriores)
+
             };
 
             bool response = await _Repo.AtualizarHistoricoMesAsync(HistoricoMesRequest, userId);
