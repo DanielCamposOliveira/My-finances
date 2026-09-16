@@ -161,7 +161,7 @@ private initForm(): void {
         tagIds:formValues.tagIds
       };
     
-      this.contaFixaService.ContaFixa(payload).subscribe({
+      this.contaFixaService.ContaFixaGen(payload).subscribe({
         next: () => {
           this.abrirSnackBar('Conta Fixa cadastrada com sucesso!', 3, 'fa-solid fa-circle-check', 'sucesso');
           this.voltar();
@@ -191,7 +191,7 @@ private extrairDia(data: Date | string): number {
 
 
   voltar(): void {
-    this.router.navigate(['/parcela']);
+    this.router.navigate(['/conta']);
   }
 
 

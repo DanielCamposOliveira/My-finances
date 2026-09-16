@@ -1,0 +1,407 @@
+/* ==========================================================================
+   1. ESTRUTURA PRINCIPAL DO CONTAINER
+   ========================================================================== */
+.table-container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-container);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 16px var(--shadow-color);
+  color: var(--text-primary);
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 10px 8px;
+  }
+}
+
+/* ==========================================================================
+   2. BARRA SUPERIOR (TÍTULO, FILTROS E CADASTRO)
+   ========================================================================== */
+/* Título */
+.table-top-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 12px;
+
+  .title-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+  }
+}
+
+/* Área de Ações e Filtros */
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .filtros-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      width: 100%;
+      gap: 0.5rem;
+    }
+  }
+}
+
+/* Inputs de Busca e Selects */
+.input-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  &.search-wrapper {
+    flex: 1;
+    max-width: 280px;
+
+    @media (max-width: 768px) {
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+
+  &.select-wrapper {
+    width: 180px;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    pointer-events: none;
+  }
+
+  input,
+  select {
+    width: 100%;
+    height: 36px;
+    box-sizing: border-box;
+    padding: 0 1rem 0 2.3rem;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: inherit;
+    line-height: normal;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px var(--hover-color);
+    }
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 2rem;
+    cursor: pointer;
+
+    option {
+      background-color: var(--bg-container);
+      color: var(--text-primary);
+    }
+  }
+}
+
+/* Botão de Cadastrar */
+.btn-cadastrar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px !important;
+  gap: 0.5rem;
+  padding: 0 1.25rem !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  border: none !important;
+  background-color: var(--accent-color) !important;
+  color: #ffffff !important;
+  cursor: pointer;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition:
+    opacity 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
+  i {
+    font-size: 0.8rem;
+  }
+
+  &:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 10px var(--shadow-color);
+  }
+
+  &:active {
+    filter: brightness(0.95);
+  }
+}
+
+/* ==========================================================================
+   3. ESTRUTURA E REGRAS BASE DA TABELA (MAT-TABLE)
+   ========================================================================== */
+.table-scroll {
+  max-height: 480px;
+  overflow: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+
+  table {
+    width: 100%;
+    min-width: 600px;
+    background-color: transparent;
+    border-collapse: collapse;
+
+    /* Células base (Cabeçalho e Linhas) */
+    th,
+    td {
+      padding: 8px 12px;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    /* Cabeçalho da Tabela */
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      background-color: var(--bg-secondary);
+      color: var(--text-secondary);
+      text-align: left !important;
+
+      .th-content {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 6px;
+
+        i {
+          font-size: 0.75rem;
+          color: var(--text-muted);
+        }
+
+        &.right {
+          justify-content: flex-end;
+          width: 100%;
+        }
+
+        &.center {
+          justify-content: center;
+          width: 100%;
+        }
+
+        &:last-child {
+          text-align: center !important;
+
+          .th-content {
+            justify-content: center;
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    /* Linhas e Células de Dados */
+    td {
+      color: var(--text-primary);
+
+      &:last-child {
+        text-align: center;
+      }
+    }
+
+    tr.mat-mdc-row,
+    tr.tabela-row {
+      transition: background-color 0.15s ease;
+      height: 42px !important;
+
+      &:hover {
+        background-color: var(--hover-color);
+      }
+
+      &:last-child td {
+        border-bottom: none;
+      }
+    }
+
+    /* Mensagem quando não há registros */
+    .mat-mdc-no-data-row td,
+    .empty-msg {
+      padding: 32px 16px !important;
+      text-align: center;
+      color: var(--text-muted);
+    }
+  }
+}
+
+/* ==========================================================================
+   4. CUSTOMIZAÇÃO DE CÉLULAS ESPECÍFICAS
+   ========================================================================== */
+/* Coluna: Descrição */
+.descricao-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .icon-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background-color: var(--bg-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  .text-strong {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+}
+
+/* ==========================================================================
+   5. BADGES E PÍLULAS (STATUS ATIVO / INATIVO)
+   ========================================================================== */
+.pill-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  line-height: 1.2;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  width: fit-content;
+  white-space: nowrap;
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  /* Status Ativo (mesmo esquema de sucesso/pago) */
+  &.pill-pago,
+  &.pill-ativo {
+    color: var(--bg-status-pago-cor);
+    background-color: var(--bg-status-pago-background-color);
+    border: var(--bg-status-pago-border);
+    .status-dot {
+      background-color: var(--bg-status-pago-cor);
+    }
+  }
+
+  /* Status Inativo (mesmo esquema de alerta/atrasado) */
+  &.pill-atrasado,
+  &.pill-inativo {
+    color: var(--bg-status-atrasado-cor);
+    background-color: var(--bg-status-atrasado-background-color);
+    border: var(--bg-status-atrasado-border);
+    .status-dot {
+      background-color: var(--bg-status-atrasado-cor);
+    }
+  }
+}
+
+/* ==========================================================================
+   6. BOTÕES DE AÇÃO NA LINHA (QUANDO HOUVER)
+   ========================================================================== */
+.acoes-wrapper {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-icon-acao {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+
+  i {
+    font-size: 0.72rem;
+  }
+
+  &:hover {
+    color: var(--text-primary) !important;
+    border-color: var(--accent-color) !important;
+    background-color: var(--hover-color) !important;
+  }
+}
+
+/* ==========================================================================
+   7. UTILITÁRIOS E HELPERS
+   ========================================================================== */
+.displayNone {
+  display: none;
+}

@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 
 import { Router } from '@angular/router';
 
-import { TableParcela } from '../../components/Tabela/contas/TableParcela';
+import { TableParcela } from '../../components/Tabela/Parcela/TableParcela';
 
 import { LancamentosService } from '../../service/Lancamentos/lancamentos-service';
 import { ContaFixaService } from '../../service/ContaFixa/conta-fixa-service';
@@ -136,23 +136,5 @@ export class parcelaPage implements OnInit {
     });
   }
 
-
-  //navegarParaCadastroComDados(parcelaId: number): void {
-  //this.router.navigate(['/cadastro'], { queryParams: { id: parcelaId } });
-  //}
-  
-//  onPageCadastro(): void {   
-//    this.router.navigate(['/cadastro-lancamento']);
-//  }
-
-  // Navegação para o cadastro de Lançamento
-onPageCadastroLancamento(): void {   
-  this.router.navigate(['/cadastro-lancamento']);
-}
-
-// Navegação para o cadastro de Conta Fixa
-onPageCadastroContaFixa(): void {   
-  this.router.navigate(['/cadastro-contafixa']);
-}
 
 }

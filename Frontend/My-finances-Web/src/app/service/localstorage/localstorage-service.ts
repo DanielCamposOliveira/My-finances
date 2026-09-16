@@ -30,6 +30,10 @@ export class LocalstorageService {
 
     }
 
+
+
+
+
    
     // ler o valor da chave
     isDarkMode(): boolean {
@@ -64,6 +68,10 @@ export class LocalstorageService {
     removeHistoryMonthly(): void {
         localStorage.removeItem('generator');
     }
+
+
+
+
 }
 
 

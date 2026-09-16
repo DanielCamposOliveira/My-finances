@@ -1,5 +1,17 @@
 import { StatusParcelaEnum } from '../enums/status-parcela-enum';
 
+export interface ContaFixa
+{
+  id: number,
+  descricao: string,
+  valorBase: number,
+  diaVencimento: number,
+  ativo: boolean,
+  categoriaId: number,
+  tagIds?: number[]
+}
+
+
 export interface ContaFixaCadastro
 {
   descricao: string,
@@ -29,3 +41,4 @@ export interface ContaFixaValorParcelaModel
   parcelaId: number;
   valorParcela: number;
 }
+

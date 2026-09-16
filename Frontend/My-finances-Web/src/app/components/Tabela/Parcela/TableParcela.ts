@@ -64,8 +64,6 @@ export class TableParcela implements OnInit, OnChanges {
 
   @Output() onValor = new EventEmitter<ContaFixaValorParcelaModel>();
 
-  @Output() OpenPageCadastro = new EventEmitter<void>();
-
   readonly StatusParcelaEnum = StatusParcelaEnum;
 
   readonly dialog = inject(MatDialog);
@@ -271,9 +269,5 @@ export class TableParcela implements OnInit, OnChanges {
     });
   }
 
-  abrirPageCadastro()
-  {
-    this.OpenPageCadastro.emit();
-  }
 
 }

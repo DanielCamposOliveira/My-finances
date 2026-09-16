@@ -1,1 +1,9 @@
-<p>conta.page works!</p>
+<div class="cadastro-container">
+  <!-- 2º Tabela: Contas Fixas -->
+  <app-TableContafixa
+    titulo="Contas Fixas"
+    [ContaFixas]="ContaFixas"
+    (OpenPageCadastro)="onPageCadastroContaFixa()"
+  >
+  </app-TableContafixa>
+</div>

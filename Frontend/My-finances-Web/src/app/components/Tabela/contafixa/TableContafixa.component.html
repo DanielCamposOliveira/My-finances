@@ -1,0 +1,99 @@
+<div class="table-container">
+  <div class="table-top-bar">
+    <div class="title-section">
+      <h3>{{ titulo }}</h3>
+    </div>
+
+    <div class="table-header">
+      <div class="filtros-wrapper">
+        <div class="input-wrapper search-wrapper">
+          <i class="fa-solid fa-magnifying-glass input-icon"></i>
+          <input
+            type="text"
+            (keyup)="applyFilter($event)"
+            placeholder="Pesquisar descrição..."
+            #input
+          />
+        </div>
+
+        <div class="input-wrapper select-wrapper">
+          <i class="fa-solid fa-filter input-icon"></i>
+          <select (change)="onStatusChange($event)">
+            <option value="null">Todos os status</option>
+            <option value="true">Ativo</option>
+            <option value="false">Inativo</option>
+          </select>
+          <i class="fa-solid fa-chevron-down select-arrow"></i>
+        </div>
+      </div>
+
+      <button mat-flat-button class="btn-cadastrar" (click)="abrirPageCadastro()">
+        <i class="fa-solid fa-plus"></i>
+        Cadastrar
+      </button>
+    </div>
+  </div>
+
+  <div class="table-scroll">
+    <table mat-table [dataSource]="dataSource">
+      <!-- ID (Oculto) -->
+      <ng-container matColumnDef="id">
+        <th *matHeaderCellDef class="displayNone">ID</th>
+        <td mat-cell *matCellDef="let element" class="displayNone">#{{ element.id }}</td>
+      </ng-container>
+
+      <!-- Descrição -->
+      <ng-container matColumnDef="descricao">
+        <th *matHeaderCellDef>
+          <span class="th-content"><i class="fa-solid fa-circle-info"></i> Descrição</span>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="descricao-cell">
+            <span class="icon-avatar"><i class="fa-solid fa-cart-shopping"></i></span>
+            <span class="text-strong">{{ element.descricao }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Valor Base (corrigido para bater com displayedColumns) -->
+      <ng-container matColumnDef="valorBase">
+        <th *matHeaderCellDef>
+          <span class="th-content"><i class="fa-solid fa-dollar-sign"></i> Valor Base</span>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.valorBase | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+        </td>
+      </ng-container>
+
+      <!-- Vencimento -->
+      <ng-container matColumnDef="diaVencimento">
+        <th *matHeaderCellDef>
+          <span class="th-content"><i class="fa-solid fa-calendar-days"></i> Dia Vencimento</span>
+        </th>
+        <td mat-cell *matCellDef="let element">Dia {{ element.diaVencimento }}</td>
+      </ng-container>
+
+      <!-- Status (Ativo / Inativo) -->
+      <ng-container matColumnDef="status">
+        <th *matHeaderCellDef>
+          <span class="th-content"><i class="fa-solid fa-circle-dot"></i> Status</span>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="pill-tag" [ngClass]="element.ativo ? 'pill-pago' : 'pill-atrasado'">
+            <span class="status-dot"></span>
+            {{ element.ativo ? 'Ativo' : 'Inativo' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="tabela-row"></tr>
+
+      <tr class="mat-mdc-no-data-row" *matNoDataRow>
+        <td class="mat-cell empty-msg" [attr.colspan]="displayedColumns.length">
+          Nenhuma Conta Fixa encontrada
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

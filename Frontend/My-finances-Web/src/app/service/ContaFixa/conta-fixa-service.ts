@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { switchMap } from 'rxjs/operators';
 import { Observable, startWith } from 'rxjs';
-import { ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel, ContaFixaCadastro } from '../../models/canta-fixa';
+import { ContaFixa, ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel, ContaFixaCadastro } from '../../models/canta-fixa';
 import { returnParcela } from '../../models/parcela-model';
 
 import { environment } from '../../../environments/environment';
@@ -15,7 +15,7 @@ export class ContaFixaService {
   private readonly EndPoint_ContaFixa = `${environment.apiUrl}/ContasFixas`;
 
   //Cria Conta Fixa e chama o endpoint de gera a pacela do mes atual
-  ContaFixa(Dados: ContaFixaCadastro): Observable<void> {
+  ContaFixaGen(Dados: ContaFixaCadastro): Observable<void> {
     const url = `${this.EndPoint_ContaFixa}`;
     return this.http.post<void>(url, Dados).pipe(
       switchMap(() => {
@@ -44,4 +44,14 @@ export class ContaFixaService {
       startWith([] as returnParcela[])
     );
   }
+
+  //Lista todas as Contas Fixa
+  ContaFixas(): Observable<ContaFixa[]> { 
+    const url = `${this.EndPoint_ContaFixa}`;
+
+    return this.http.get<ContaFixa[]>(url).pipe(
+      startWith([] as ContaFixa[])
+    );
+  }
+
 }

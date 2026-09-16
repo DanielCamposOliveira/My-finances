@@ -1,0 +1,20 @@
+.cadastro-container {
+  // Limita a largura máxima para não esticar na tela toda
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  @media (max-width: 768px) {
+    padding: 12px 4px;
+    gap: 12px;
+  }
+
+  .chart-container,
+  .table-container {
+    width: 100%;
+    overflow-x: auto; // Permite scroll horizontal na tabela/gráfico sem quebrar a tela
+  }
+}

@@ -39,6 +39,11 @@ export const routes: Routes = [
         // Exemplo: componente de cadastro
         loadComponent: () => import('./pages/parcela/Parcela.page').then(m => m.parcelaPage)
       },
+            {
+        path: 'conta',
+        // Exemplo: componente de cadastro
+        loadComponent: () => import('./pages/conta/conta.page').then(m => m.ContaPage)
+      },
       {
         path: 'cadastro-lancamento',
         loadComponent: () => import('./pages/cadastro/cadastro.page').then(m => m.CadastroPage),
