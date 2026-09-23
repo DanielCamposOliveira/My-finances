@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith } from 'rxjs';
-import { LancamentoStatusParcelaModel, LancamentoCadastro } from '../../models/lancamentos.model';
+import { LancamentoStatusParcelaModel, LancamentoCadastro, LancamentoValorParcelaModel, Lancamento, LancamentoResponseList } from '../../models/lancamentos.model';
 import { returnParcela } from '../../models/parcela-model';
 
 import { environment } from '../../../environments/environment';
@@ -20,6 +20,12 @@ export class LancamentosService {
         return this.http.patch<void>(Url, Dados);
     }
    
+      //Atualiza o valor da parcela conta fixa
+      Valor(Dados: LancamentoValorParcelaModel): Observable<void> {
+        const Url = `${this.EndPoint_Lancamento}/parcela/update/valor`;
+        return this.http.patch<void>(Url, Dados);
+    }
+    
     // Obtem todas as parcelas
     Parcelas(): Observable<returnParcela[]> {
         const url = `${this.EndPoint_Lancamento}/parcela`;
@@ -34,4 +40,13 @@ export class LancamentosService {
         const url = `${this.EndPoint_Lancamento}`;
         return this.http.post<void>(url, Dados);
     }
+
+      //Lista todas as Contas Fixa
+      Lancamentos(): Observable<LancamentoResponseList[]> { 
+        const url = `${this.EndPoint_Lancamento}`;
+    
+        return this.http.get<LancamentoResponseList[]>(url).pipe(
+          startWith([] as LancamentoResponseList[])
+        );
+      }
 }

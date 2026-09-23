@@ -11,7 +11,7 @@ import { ContaFixaService } from '../../service/ContaFixa/conta-fixa-service';
 import { TagService } from '../../service/Tag/tag-service';
 import { CategoriaService } from '../../service/Categoria/categoria-service';
 
-import { LancamentoStatusParcelaModel, LancamentoCadastro } from '../../models/lancamentos.model';
+import { LancamentoStatusParcelaModel, LancamentoValorParcelaModel } from '../../models/lancamentos.model';
 import { ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel } from '../../models/canta-fixa';
 
 import { StatusParcelaEnum } from '../../enums/status-parcela-enum';
@@ -136,5 +136,18 @@ export class parcelaPage implements OnInit {
     });
   }
 
+  ValorLancamento(parcela: LancamentoValorParcelaModel): void {
+    
+    const payload: LancamentoValorParcelaModel = {
+      parcelaId: parcela.parcelaId,
+      valorParcela: parcela.valorParcela
+    };
+    this.lancamentosService.Valor(payload).subscribe({
+      next: () => {
+        this.obterLancamentos();
+      },
+      error: (err) => console.error('Erro ao altera o valor da parcela de conta fixa:', err)
+    });
+  }
 
 }

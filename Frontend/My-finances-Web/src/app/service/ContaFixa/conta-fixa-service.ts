@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { switchMap } from 'rxjs/operators';
 import { Observable, startWith } from 'rxjs';
-import { ContaFixa, ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel, ContaFixaCadastro } from '../../models/canta-fixa';
+import { ContaFixa, ContaFixaStatusModel, ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel, ContaFixaCadastro } from '../../models/canta-fixa';
 import { returnParcela } from '../../models/parcela-model';
 
 import { environment } from '../../../environments/environment';
@@ -52,6 +52,12 @@ export class ContaFixaService {
     return this.http.get<ContaFixa[]>(url).pipe(
       startWith([] as ContaFixa[])
     );
+  }
+
+    //Atualiza o status da ContaFixa
+  ContaFixasStatus(Dados: ContaFixaStatusModel): Observable<void> {
+    const Url = `${this.EndPoint_ContaFixa}/update/status`;
+    return this.http.patch<void>(Url, Dados);
   }
 
 }

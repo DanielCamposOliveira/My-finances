@@ -19,7 +19,7 @@ export class MoneyChart implements OnChanges {
       this.initChart();
     }
   }
-
+  
   private initChart(): void {
     setTimeout(() => {
       Highcharts.chart('chart-container', {
@@ -88,16 +88,33 @@ export class MoneyChart implements OnChanges {
           borderRadius: 8,
           style: { color: '#212529' },
           formatter: function (this: any) {
+
+            const meses = [
+              'Janeiro',
+              'Fevereiro',
+              'Março',
+              'Abril',
+              'Maio',
+              'Junho',
+              'Julho',
+              'Agosto',
+              'Setembro',
+              'Outubro',
+              'Novembro',
+              'Dezembro',
+            ];
+            
             const points = this.points || [];
-            const saldo = points.find((p: any) => p.series.name === 'Saldo')?.y || 0;
-            const dividas = points.find((p: any) => p.series.name === 'Dívidas')?.y || 0;
+            const saldo = points.find((p: any) => p.series.name === 'Receitas')?.y || 0;
+            const dividas = points.find((p: any) => p.series.name === 'Despesas')?.y || 0;
             const restante = saldo - dividas;
 
             const titulo = restante < 0 ? 'Déficit' : 'Crédito';
             const cor = restante < 0 ? '#e74c3c' : '#2ecc71';
-
+            const mes = meses[this.points[0].point.index];
+            
             return `
-            <b>${this.x}</b><br>
+            <b>${mes}</b><br>
             <hr style="margin: 4px 0; border: 0; border-top: 1px solid #eee;">
             <b>${titulo}: <span style="color:${cor}">
             R$ ${Highcharts.numberFormat(Math.abs(restante), 2, ',', '.')}
