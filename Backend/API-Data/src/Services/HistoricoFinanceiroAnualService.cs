@@ -148,10 +148,9 @@ namespace API_Data.src.Services
                 return Results.Conflict($"O histórico para {mes}/{ano} já existe.");
             }
 
-
-            var _TotalDespesas = await _service.TotalDespesas(userId); // ok valor total das todas dividas que foram criadas no mês, independente de estarem pagas ou não
             var _TotalReceitas = await _service.TotalReceitas(userId); // ok Valor recebido no mes
-
+            var _TotalDespesas = await _service.TotalDespesas(userId); // ok valor total das todas dividas que foram criadas no mês, independente de estarem pagas ou não
+            
             var _TotalDespesasPagas = await _service.TotalQuitadasDoMes(userId); // ok valor pago das despesas do mes e das dividas atrazadas
             var _TotalDividasAnteriores = await _service.TotalContasPendentes(userId); // ok valor total das todas dividas que foram criadas no mês que esta em aberto e as contas Atrasado dos meses anteriores
 

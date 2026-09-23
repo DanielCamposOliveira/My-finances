@@ -11,10 +11,12 @@ namespace API_Data.src.Endpoints
         {
             // ==========================================
             // ROTAS: CRIA TAGS
-            // ==========================================
-            var Endpoint = app.MapGroup("/api/v1/tags").WithTags("Tags");
+            // ==========================================            
+            var EndpointBase = app.MapGroup("/api/v1/tags").WithTags("Tags");
+            var EndpointRead = EndpointBase.MapGroup("").RequireAuthorization().RequireRateLimiting("UserReadPolicy");
+            var EndpointWrite = EndpointBase.MapGroup("").RequireAuthorization().RequireRateLimiting("UserWritePolicy");
 
-            Endpoint.MapPost("/", async ([FromBody]  CriarTagDto dto, ITagService service, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapPost("/", async ([FromBody]  CriarTagDto dto, ITagService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -30,13 +32,14 @@ namespace API_Data.src.Endpoints
             .WithDescription("Criar Tag")
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces<TagResponseDto>(StatusCodes.Status201Created)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
             // ==========================================
             // ROTAS: LISTA TAGS
             // ==========================================
-            Endpoint.MapGet("/", async (ITagService service, ClaimsPrincipal userClaims) =>
+            EndpointWrite.MapGet("/", async (ITagService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -52,7 +55,8 @@ namespace API_Data.src.Endpoints
             .WithDescription("Lista Tag")
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces<TagResponseDto>(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
         }
     }
 }

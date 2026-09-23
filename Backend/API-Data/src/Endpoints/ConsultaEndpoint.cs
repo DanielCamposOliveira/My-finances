@@ -6,17 +6,18 @@ namespace API_Data.src.Endpoints
     public static class ConsultaEndpoint
     {
         public static void MapConsultaEndpoints(this IEndpointRouteBuilder app)
-        {
-                    
-            var EndpointValores = app.MapGroup("/api/v1/Consulta/Valores").WithTags("Consulta");
-            var EndpointDividas = app.MapGroup("/api/v1/Consulta/Dividas").WithTags("Consulta");
-            
+        {                    
+ 
+            var EndpointBase = app.MapGroup("/api/v1/Consulta").WithTags("Consulta");
+            var EndpointRead = EndpointBase.MapGroup("").RequireAuthorization().RequireRateLimiting("UserReadPolicy");
+         
+
 
             // - Dashboard
             // ==========================================
             // ROTAS: VALOR TOTAL DE CONTAS A RECEBER
             // ==========================================
-            EndpointValores.MapGet("/receber", async (IConsultaService service, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapGet("/Valores/receber", async (IConsultaService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -30,13 +31,15 @@ namespace API_Data.src.Endpoints
             })
             .WithSummary("Obter soma das Contas a Receber")
             .WithDescription("Retorna a soma das contas a receber para um determinado mês e ano")
-            .Produces<decimal>(StatusCodes.Status200OK);
+            .Produces<decimal>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
             // - Dashboard
             // ==========================================
             // ROTAS: VALOR TOTAL DE SALDO
             // ==========================================
-            EndpointValores.MapGet("/saldo", async (IConsultaService service, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapGet("/Valores/saldo", async (IConsultaService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -50,8 +53,9 @@ namespace API_Data.src.Endpoints
             })
             .WithSummary("Obter soma das Receitas")
             .WithDescription("Retorna a soma das Receitas recebido mês e ano")
-            .Produces<decimal>(StatusCodes.Status200OK);
-
+            .Produces<decimal>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
 
@@ -59,7 +63,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: VALOR TOTAL DE DIVIDAS PAGAS E REALIZADAS NO MÊS
             // ==========================================
-            EndpointDividas.MapGet("/Quitadas", async (IConsultaService service, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapGet("/Dividas/Quitadas", async (IConsultaService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -73,13 +77,15 @@ namespace API_Data.src.Endpoints
             })
             .WithSummary("Obter soma das Contas Quitadas do Mês")
             .WithDescription("Retorna a soma das contas quitadas do mês para um determinado mês e ano")
-            .Produces<decimal>(StatusCodes.Status200OK);
+            .Produces<decimal>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
             // - Consulta interna
             // ==========================================
             // ROTAS: VALOR TOTAL DE DIVIDAS REALIZADAS NO MÊS
             // ==========================================
-            EndpointDividas.MapGet("/Mes", async (IConsultaService service, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapGet("/Dividas/Mes", async (IConsultaService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -93,14 +99,16 @@ namespace API_Data.src.Endpoints
             })
             .WithSummary("Obter soma das Despesas do Mês")
             .WithDescription("Retorna o valor total das todas Despesas que foram criadas no mês, independente de estarem pagas ou não")
-            .Produces<decimal>(StatusCodes.Status200OK);
+            .Produces<decimal>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
             // - Dashboard
             // ==========================================
             // ROTAS: VALOR TOTAL DE DIVIDAS PENDENTES
             // ==========================================
-            EndpointDividas.MapGet("/pendentes", async (IConsultaService service, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapGet("/Dividas/pendentes", async (IConsultaService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -114,14 +122,16 @@ namespace API_Data.src.Endpoints
             })
             .WithSummary("Obter soma das Contas Pendentes")
             .WithDescription("Retorna o valor total das todas dividas que foram criadas no mês que esta em aberto e as contas Atrasado dos meses anteriores")
-            .Produces<decimal>(StatusCodes.Status200OK);
+            .Produces<decimal>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
             // - Dashboard
             // ==========================================
             // ROTAS: VALOR TOTAL DE DIVIDAS PENDENTES
             // ==========================================
-            EndpointDividas.MapGet("/total", async (IConsultaService service, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapGet("/Dividas/total", async (IConsultaService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -135,7 +145,9 @@ namespace API_Data.src.Endpoints
             })
             .WithSummary("Obter soma das Contas Pendentes")
             .WithDescription("Retorna o valor total das todas dividas que foram criadas no mês que esta em aberto e as contas Atrasado dos meses anteriores")
-            .Produces<decimal>(StatusCodes.Status200OK);
+            .Produces<decimal>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
         }
     }

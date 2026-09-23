@@ -6,6 +6,7 @@ using API_Data.src.Repository.Interface;
 using API_Data.src.Services;
 using API_Data.src.Services.Interface;
 using API_Data.src.Utils;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using System.Text;
@@ -22,6 +23,8 @@ var connectionString = builder.Configuration.GetConnectionString("PostgreSQLConn
 
 // Configura a Injeção de Dependência para o EF Core usar o PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+
+
 
 // ============================================================
 // INJEÇÃO DE DEPENDÊNCIA
@@ -52,9 +55,8 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 
 
 // ============================================================
-// AUTENTICAÇÃO JWT
+// 1. AUTENTICAÇÃO JWT
 // ============================================================
-
 var jwtKey = builder.Configuration["JWT:Key"];
 
 if (string.IsNullOrWhiteSpace(jwtKey))
@@ -67,16 +69,14 @@ builder.Services.AddJwtAuthentication(jwtKey);
 
 
 // ============================================================
-// AUTORIZAÇÃO
+// 2. AUTORIZAÇÃO
 // ============================================================
-
 builder.Services.AddAuthorization();
 
 
 // ============================================================
 // CORS
 // ============================================================
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Liberado", policy =>
@@ -90,27 +90,9 @@ builder.Services.AddCors(options =>
 
 
 // ============================================================
-// RATE LIMITING
+// 3. RATE LIMITING
 // ============================================================
-
-builder.Services.AddRateLimiter(options =>
-{
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-
-    options.AddPolicy("IpLimitPolicy", httpContext =>
-        RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey:
-                httpContext.Connection.RemoteIpAddress?.ToString()
-                ?? "unknown",
-
-            factory: partition => new FixedWindowRateLimiterOptions
-            {
-                AutoReplenishment = true,
-                PermitLimit = 20,
-                Window = TimeSpan.FromSeconds(10),
-                QueueLimit = 0
-            }));
-});
+builder.Services.AddRateLimitingConfiguration();
 
 
 // ============================================================
@@ -158,14 +140,12 @@ builder.Services.AddSwaggerGen(options =>
 // ============================================================
 // CONSTRÓI A APLICAÇÃO
 // ============================================================
-
 var app = builder.Build();
 
 
 // ============================================================
 // SWAGGER
 // ============================================================
-
 app.UseSwagger();
 
 app.UseSwaggerUI(options =>
@@ -182,6 +162,8 @@ app.UseSwaggerUI(options =>
 // ============================================================
 // MIDDLEWARE
 // ============================================================
+// 1º -  ForwardedHeaders e RateLimiter (executa antes do CORS e Autenticação)
+app.UseRateLimitingConfiguration();
 
 app.UseCors("Liberado");
 

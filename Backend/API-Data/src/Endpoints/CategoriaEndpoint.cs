@@ -9,15 +9,17 @@ namespace API_Data.src.Endpoints
     public static class CategoriaEndpoint
     {
         public static void MapCategoriaEndpoints(this IEndpointRouteBuilder app)
-        {
-            var Endpoint = app.MapGroup("/api/v1/categorias").WithTags("Categorias");
+        {       
+            var EndpointBase = app.MapGroup("/api/v1/categorias").WithTags("Categorias");
+            var EndpointRead = EndpointBase.MapGroup("").RequireAuthorization().RequireRateLimiting("UserReadPolicy");
+            var EndpointWrite = EndpointBase.MapGroup("").RequireAuthorization().RequireRateLimiting("UserWritePolicy");
 
             // ==========================================
             // ROTAS: CRIA Categoria
             // ==========================================
 
 
-            Endpoint.MapPost("/", async ([FromBody] CriarCategoriaDto dto, ICategoriaService service, ClaimsPrincipal userClaims) =>
+            EndpointWrite.MapPost("/", async ([FromBody] CriarCategoriaDto dto, ICategoriaService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -33,13 +35,14 @@ namespace API_Data.src.Endpoints
             .WithDescription("Criar Categoria")
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces<CategoriaResponseDto>(StatusCodes.Status201Created)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
             // ==========================================
             // ROTAS: LISTA Categoria
             // ==========================================
-            Endpoint.MapGet("/", async (ICategoriaService service, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapGet("/", async (ICategoriaService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -54,8 +57,9 @@ namespace API_Data.src.Endpoints
             .WithSummary("List Categoria")
             .WithDescription("Lista as Categoria")
             .Produces(StatusCodes.Status500InternalServerError)
-            .Produces<CategoriaResponseDto>(StatusCodes.Status201Created)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces<CategoriaResponseDto>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
         }
     }

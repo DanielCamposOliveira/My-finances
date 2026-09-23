@@ -8,13 +8,16 @@ namespace API_Data.src.Endpoints
     public static class LancamentoEndpoint
     {
         public static void MapLancamentoEndpoints(this IEndpointRouteBuilder app)
-        {
-            var Endpoint = app.MapGroup("/api/v1/lancamentos").WithTags("lancamentos");
+        {            
+            var EndpointBase = app.MapGroup("/api/v1/lancamentos").WithTags("lancamentos");
+            var EndpointRead = EndpointBase.MapGroup("").RequireAuthorization().RequireRateLimiting("UserReadPolicy");
+            var EndpointWrite = EndpointBase.MapGroup("").RequireAuthorization().RequireRateLimiting("UserWritePolicy");
+
 
             // ==========================================
             // ROTAS: CRIAR LANÇAMENTO
             // ==========================================
-            Endpoint.MapPost("/", async ([FromBody] Create dto, ILancamentosService ILancamentosService, ClaimsPrincipal userClaims) =>
+            EndpointWrite.MapPost("/", async ([FromBody] Create dto, ILancamentosService ILancamentosService, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -31,7 +34,8 @@ namespace API_Data.src.Endpoints
             .Produces(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
 
@@ -58,7 +62,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: LISTAR PARCELAS
             // ==========================================
-            Endpoint.MapGet("/parcela", async (ILancamentosService ILancamentosService, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapGet("/parcela", async (ILancamentosService ILancamentosService, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -74,13 +78,14 @@ namespace API_Data.src.Endpoints
             .WithSummary("Lista todas as Parcelas")
             .WithDescription("Lista todas as parcelas do usuário de forma linear")
             .Produces<List<ParcelasResponse>>(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
             // ==========================================
             // ROTAS: LISTAR PARCELAS PENDENTES
             // ==========================================
-            Endpoint.MapGet("/parcela/pendentes", async (ILancamentosService ILancamentosService, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapGet("/parcela/pendentes", async (ILancamentosService ILancamentosService, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -96,14 +101,15 @@ namespace API_Data.src.Endpoints
             .WithSummary("Lista os Lancamento do mes")
             .WithDescription("Lista todas as parcelas de todos os Lancamentos")
             .Produces<List<LancamentoResponse>>(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
 
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
             // ==========================================
-            Endpoint.MapPatch("/parcela/update/status", async ([FromBody] ParcelaUpdateStatus dto, ILancamentosService service, ClaimsPrincipal userClaims) =>
+            EndpointWrite.MapPatch("/parcela/update/status", async ([FromBody] ParcelaUpdateStatus dto, ILancamentosService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -121,7 +127,8 @@ namespace API_Data.src.Endpoints
             .Produces(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
 

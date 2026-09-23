@@ -9,13 +9,15 @@ namespace API_Data.src.Endpoints
     {
         public static void MapContasFixasEndpoints(this IEndpointRouteBuilder app)
         {
-            var Endpoint = app.MapGroup("/api/v1/ContasFixas").WithTags("Contas Fixas");
-
+           
+            var EndpointBase = app.MapGroup("/api/v1/ContasFixas").WithTags("Contas Fixas");
+            var EndpointRead = EndpointBase.MapGroup("").RequireAuthorization().RequireRateLimiting("UserReadPolicy");
+            var EndpointWrite = EndpointBase.MapGroup("").RequireAuthorization().RequireRateLimiting("UserWritePolicy");
 
             // ==========================================
             // ROTAS:CRIA CONTA
             // ==========================================
-            Endpoint.MapPost("/", async ([FromBody] Create dto, IContasFixasService service, ClaimsPrincipal userClaims) =>
+            EndpointWrite.MapPost("/", async ([FromBody] Create dto, IContasFixasService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -31,12 +33,13 @@ namespace API_Data.src.Endpoints
             .WithDescription("Cria Conta Fixa para todos os Meses")
             .Produces(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status500InternalServerError)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
             // ==========================================
             // ROTAS: GERA AS FATURAS DO MÊS
             // ==========================================
-            Endpoint.MapPost("/generator", async (IContasFixasService service, ClaimsPrincipal userClaims) =>
+            EndpointWrite.MapPost("/generator", async (IContasFixasService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -53,13 +56,14 @@ namespace API_Data.src.Endpoints
             .Produces(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
             // ==========================================
             // ROTAS: LISTAR PARCELAS PENDENTES
             // ==========================================
-            Endpoint.MapGet("/", async (IContasFixasService lancamentosService, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapGet("/", async (IContasFixasService lancamentosService, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -75,13 +79,14 @@ namespace API_Data.src.Endpoints
             .WithSummary("Lista Todas as contas fixas")
             .WithDescription("Lista todas as parcelas de todos os Lancamentos")
             .Produces<List<ParcelasResponse>>(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
             // ==========================================
             // ROTAS: LISTAR PARCELAS PENDENTES
             // ==========================================
-            Endpoint.MapGet("/parcela/pendentes", async (IContasFixasService lancamentosService, ClaimsPrincipal userClaims) =>
+            EndpointRead.MapGet("/parcela/pendentes", async (IContasFixasService lancamentosService, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -97,14 +102,15 @@ namespace API_Data.src.Endpoints
             .WithSummary("Lista as parcelas pendentes das contas fixas")
             .WithDescription("Lista todas as parcelas de todos os Lancamentos")
             .Produces<List<ParcelasResponse>>(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
 
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
             // ==========================================
-            Endpoint.MapPatch("/update/status", async ([FromBody] ContaFixaUpdateStatus dto, IContasFixasService service, ClaimsPrincipal userClaims) =>
+            EndpointWrite.MapPatch("/update/status", async ([FromBody] ContaFixaUpdateStatus dto, IContasFixasService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -121,13 +127,14 @@ namespace API_Data.src.Endpoints
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
             // ==========================================
-            Endpoint.MapPatch("/parcela/update/status", async ([FromBody] ParcelaUpdateStatus dto, IContasFixasService service, ClaimsPrincipal userClaims) =>
+            EndpointWrite.MapPatch("/parcela/update/status", async ([FromBody] ParcelaUpdateStatus dto, IContasFixasService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -144,13 +151,14 @@ namespace API_Data.src.Endpoints
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
             // ==========================================
             // ROTAS: ATUALIZAR O VALOR DA CONTA FIXA
             // ==========================================
-            Endpoint.MapPatch("/parcela/update/valor", async ([FromBody] ParcelaUpdateValor dto, IContasFixasService service, ClaimsPrincipal userClaims) =>
+            EndpointWrite.MapPatch("/parcela/update/valor", async ([FromBody] ParcelaUpdateValor dto, IContasFixasService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -167,7 +175,8 @@ namespace API_Data.src.Endpoints
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
 
 
