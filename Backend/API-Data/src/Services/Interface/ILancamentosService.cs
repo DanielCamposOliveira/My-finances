@@ -13,7 +13,7 @@ namespace API_Data.src.Services.Interface
 
         public Task<IResult> UptateStatusLancamentoParcela(ParcelaUpdateStatus dto, string userId);
 
-       
+        public Task<IResult> UpdateValorParcela(ParcelaUpdateValor dto, string userId);
 
 
 

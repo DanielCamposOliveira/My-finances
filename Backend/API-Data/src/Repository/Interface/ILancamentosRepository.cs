@@ -13,7 +13,7 @@ namespace API_Data.src.Repository.Interface
 
         public Task<List<Lancamento>?> ListaLancamentosAsync(string userId);
 
-        public Task<List<LancamentoResponse>?> ListaTodosLancamentosAsync(string userId);
+        public Task<List<LancamentoResponseList>?> ListaTodosLancamentosAsync(string userId);
 
         public Task<List<LancamentoParcela>?> ListParcelasAbertasAtrasadasAsync(int LancamentoId, int ano, int mes);
 
@@ -26,6 +26,12 @@ namespace API_Data.src.Repository.Interface
         public Task<List<ParcelasResponse>?> ListaTodasParcelasAsync(string userId);
 
 
+        public Task<LancamentoParcela> ObterParcelaAsync(int id);
+        public Task<bool> ChecarLancamentoParcela(int id, string userId);
+        public Task<bool> UpdateParcelaAsync(LancamentoParcela parcela);
+
+
+       // public Task<List<LancamentoResponseList>?> ListaTodosLancamentos(string userId);
 
     }
 }

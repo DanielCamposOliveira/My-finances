@@ -6,13 +6,15 @@ using API_Data.src.Repository.Interface;
 using API_Data.src.Services;
 using API_Data.src.Services.Interface;
 using API_Data.src.Utils;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
-using System.Text;
-using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Console.WriteLine($"Servidor rodando em {builder.Configuration["Urls:Endpoints:Https:Url"]}");
+
+// Evita a sobreposição limpando URLs herdadas do ambiente ou padrões
+//builder.WebHost.UseUrls();
 
 // ============================================================
 // BANCO DE DADOS
@@ -55,6 +57,35 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 
 
 // ============================================================
+// 1. CORS
+// ============================================================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Liberado", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+
+// 1. Registro do serviço com regras recomendadas
+builder.Services.AddHsts(options =>
+{
+    // Define o tempo que o navegador deve lembrar (padrão de mercado: 1 ano)
+    options.MaxAge = TimeSpan.FromDays(365);
+
+    // Aplica a política a todos os subdomínios (ex: api.seusite.com)
+    options.IncludeSubDomains = true;
+
+    // Permite inclusão na lista global HSTS Preload dos navegadores
+    options.Preload = true;
+});
+
+
+// ============================================================
 // 1. AUTENTICAÇÃO JWT
 // ============================================================
 var jwtKey = builder.Configuration["JWT:Key"];
@@ -74,19 +105,7 @@ builder.Services.AddJwtAuthentication(jwtKey);
 builder.Services.AddAuthorization();
 
 
-// ============================================================
-// CORS
-// ============================================================
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("Liberado", policy =>
-    {
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
+
 
 
 // ============================================================
@@ -137,11 +156,22 @@ builder.Services.AddSwaggerGen(options =>
 
 
 
+
 // ============================================================
 // CONSTRÓI A APLICAÇÃO
 // ============================================================
 var app = builder.Build();
 
+
+// 2. Ativação do Middleware no pipeline
+if (!app.Environment.IsDevelopment())
+{
+    // HSTS não funciona em localhost por padrão (e nem deve)
+    app.UseHsts();
+}
+
+// Redireciona chamadas HTTP para HTTPS antes de processar as rotas
+app.UseHttpsRedirection();
 
 // ============================================================
 // SWAGGER

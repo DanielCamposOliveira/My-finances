@@ -107,43 +107,83 @@ public class LancamentosRepository : ILancamentosRepository
     }
 
     // Lista todos os lançamentos com suas categorias, tags e parcelas
-    public async Task<List<LancamentoResponse>?> ListaTodosLancamentosAsync(string userId)
+    //public async Task<List<LancamentoResponse>?> ListaTodosLancamentosAsync(string userId)
+    //{
+    //    try
+    //    {
+    //        return await _db.Lancamentos
+    //            .AsNoTracking()
+    //            .Where(l => l.UserId == userId)
+    //            .Select(l => new LancamentoResponse
+    //            {
+    //                Id = l.Id,
+    //                Descricao = l.Descricao,
+    //                ValorTotal = l.ValorTotal,
+    //                QtdParcelas = l.QtdParcelas,
+    //                CategoriaNome = l.Categoria.Nome,
+    //                Tags = l.Tags
+    //                    .Select(t => t.Nome)
+    //                    .ToList(),
+    //                Parcelas = l.Parcelas
+    //                    .Select(p => new ParcelaResponse
+    //                    {
+    //                        Id = p.Id,
+    //                        NumeroParcela = p.NumeroParcela,
+    //                        ValorParcela = p.ValorParcela,
+    //                        DataVencimento = p.DataVencimento,
+    //                        DataPagamento = p.DataPagamento,
+    //                        Status = p.Status
+    //                    })
+    //                    .ToList()
+    //            })
+    //            .ToListAsync();
+    //    }
+    //    catch
+    //    {
+    //        return null;
+    //    }
+    //}
+
+
+    public async Task<List<LancamentoResponseList>?> ListaTodosLancamentosAsync(string userId)
     {
         try
         {
             return await _db.Lancamentos
                 .AsNoTracking()
                 .Where(l => l.UserId == userId)
-                .Select(l => new LancamentoResponse
+                .Select(l => new LancamentoResponseList
                 {
                     Id = l.Id,
                     Descricao = l.Descricao,
-                    ValorTotal = l.ValorTotal,
-                    QtdParcelas = l.QtdParcelas,
+                    ValorTotal = l.ValorTotal,   
+                    ValorParcela = l.Parcelas.OrderBy(p => p.NumeroParcela)
+                                         .Select(p => p.ValorParcela)
+                                         .FirstOrDefault(),
+
                     CategoriaNome = l.Categoria.Nome,
                     Tags = l.Tags
                         .Select(t => t.Nome)
                         .ToList(),
-                    Parcelas = l.Parcelas
-                        .Select(p => new ParcelaResponse
-                        {
-                            Id = p.Id,
-                            NumeroParcela = p.NumeroParcela,
-                            ValorParcela = p.ValorParcela,
-                            DataVencimento = p.DataVencimento,
-                            DataPagamento = p.DataPagamento,
-                            Status = p.Status
-                        })
-                        .ToList()
+
+                    // Concatena no formato "Total/Pagas" (ex: 10/3)                 
+                    ParcelasRestante = $"{l.Parcelas.Count(p => (int)p.Status == 2)}/{l.QtdParcelas}",
+
+                    // Ordena de forma decrescente e busca a data de vencimento da última parcela
+                    DataVencimentoUltimaParcela = l.Parcelas
+                            .OrderByDescending(p => p.NumeroParcela)
+                            .Select(p => (DateTime?)p.DataVencimento)
+                            .FirstOrDefault()
                 })
                 .ToListAsync();
+
+           
         }
         catch
         {
             return null;
         }
     }
-
 
     // ## Buscar todas as parcelas do Mes atual que NÃO esteja como PAGO por ID da CONTA
     public async Task<List<LancamentoParcela>?> ListParcelasAbertasAtrasadasAsync(int LancamentoId, int ano, int mes)
@@ -224,10 +264,50 @@ public class LancamentosRepository : ILancamentosRepository
     }
 
 
+    public async Task<LancamentoParcela> ObterParcelaAsync(int id)
+    {
+        try
+        {
+            return await _db.LancamentoParcelas.FindAsync(id);
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
+    public async Task<bool> ChecarLancamentoParcela(int id, string userId)
+    {
+        try
+        {
+            var retorno = await _db.ContaFixa.AsNoTracking().FirstAsync(c => c.Id == id && c.UserId == userId);
+            if (retorno == null)
+            {
+                return false;
+            }
 
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
-
+    // ## Atualiza o status da parcela
+    public async Task<bool> UpdateParcelaAsync(LancamentoParcela parcela)
+    {
+        try
+        {
+            _db.LancamentoParcelas.Update(parcela);
+            await _db.SaveChangesAsync();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
 
 

@@ -15,23 +15,23 @@ public class LancamentosService : ILancamentosService
         _repository = repository;
     }
 
-    //Lista todos os lançamentos
-    public async Task<IResult> ListarLancamentosAsyncOld(string userId)
-    {
-        var retorno = await _repository.ListaTodosLancamentosAsync(userId);
-        if (retorno == null)
-        {
-            return Results.Problem(
-            "Ocorreu um Erro ao Listar Lançamentos",
-            statusCode: StatusCodes.Status500InternalServerError);
-        }
+    ////Lista todos os lançamentos
+    //public async Task<IResult> ListarLancamentosAsyncOld(string userId)
+    //{
+    //    var retorno = await _repository.ListaTodosLancamentosAsync(userId);
+    //    if (retorno == null)
+    //    {
+    //        return Results.Problem(
+    //        "Ocorreu um Erro ao Listar Lançamentos",
+    //        statusCode: StatusCodes.Status500InternalServerError);
+    //    }
 
-        return Results.Ok(retorno);
-    }
+    //    return Results.Ok(retorno);
+    //}
 
     public async Task<IResult> ListarLancamentosAsync(string userId)
     {
-        var retorno = await _repository.ListaTodasParcelasAsync(userId);
+        var retorno = await _repository.ListaTodosLancamentosAsync(userId);
         if (retorno == null)
         {
             return Results.Problem(
@@ -196,5 +196,45 @@ public class LancamentosService : ILancamentosService
         return Results.Created();
     }
 
+
+    //### Atualiza o ValorParcela da Fatura
+    public async Task<IResult> UpdateValorParcela(ParcelaUpdateValor dto, string userId)
+    {
+        // obtem a parcela
+        var parcela = await _repository.ObterParcelaAsync(dto.ParcelaId);
+        if (parcela == null)
+        {
+            return Results.Problem(
+             "Parcela não encontrada",
+             statusCode: StatusCodes.Status404NotFound
+             );
+        }
+
+        // verifica se a conta pertence ao usuario
+        bool checkConta = await _repository.ChecarLancamentoParcela(parcela.LancamentoId, userId);
+        if (!checkConta)
+        {
+            return Results.Problem(
+               "Parcela não pertence ao usuario",
+               statusCode: StatusCodes.Status403Forbidden
+               );
+        }
+
+        // Altera dados
+        parcela.ValorParcela = dto.ValorParcela;
+
+        //Grava no banco de dados
+        bool retorno = await _repository.UpdateParcelaAsync(parcela);
+
+        if (!retorno)
+        {
+            return Results.Problem(
+            "Erro ao tentar atualizar o ValorParcela",
+            statusCode: StatusCodes.Status500InternalServerError
+            );
+        }
+
+        return Results.Created();
+    }
 
 }

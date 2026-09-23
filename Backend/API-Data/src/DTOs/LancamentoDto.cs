@@ -34,5 +34,20 @@ namespace API_Data.src.DTOs.Lancamento
             public required List<string> Tags { get; init; }
             public required List<ParcelaResponse> Parcelas { get; init; }
         }
-    
+
+
+    public record LancamentoResponseList
+    {
+        public required int Id { get; init; }
+        public required string Descricao { get; init; }
+        public required decimal ValorTotal { get; init; }
+        public required decimal ValorParcela { get; init; }   
+        public required string ParcelasRestante { get; init; }
+        public DateTime? DataVencimentoUltimaParcela { get; init; }
+
+        public required string CategoriaNome { get; init; }
+        public required List<string> Tags { get; init; }
+
+    }
+
 }
