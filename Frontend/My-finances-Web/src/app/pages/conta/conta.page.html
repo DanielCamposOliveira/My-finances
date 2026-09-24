@@ -4,7 +4,9 @@
     titulo="Contas Fixas"
     [ContaFixas]="ContaFixas"
     (OpenPageCadastro)="onPageCadastroContaFixa()"
+    (AlteraStatusConta)="AtualizarStatusContaFixa($event.element, $event.ativo)"
   >
+    >
   </app-TableContafixa>
 
   <app-TabelaLancamentos

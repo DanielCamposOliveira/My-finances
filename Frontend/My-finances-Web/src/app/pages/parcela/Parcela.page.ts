@@ -58,7 +58,7 @@ export class parcelaPage implements OnInit {
     this.lancamentosService.Parcelas().subscribe({
       next: (resposta) => {
         this.parcelasLancamentos = [...resposta];
-        this.cdr.markForCheck();
+        this.cdr.markForCheck();  
       },
       error: (err) => console.error('Erro ao carregar parcelas de lançamentos:', err)
     });
@@ -68,7 +68,7 @@ export class parcelaPage implements OnInit {
     this.contaFixaService.Parcelas().subscribe({
       next: (resposta) => {
         this.parcelasContaFixa = [...resposta];
-        this.cdr.markForCheck();
+        this.cdr.markForCheck();       
       },
       error: (err) => console.error('Erro ao carregar parcelas de contas fixas:', err)
     });

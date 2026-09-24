@@ -11,6 +11,7 @@ import {TabelaLancamentos} from '../../components/Tabela/lancamentos/TabelaLanca
 import { LancamentosService } from '../../service/Lancamentos/lancamentos-service';
 import { LancamentoResponseList } from '../../models/lancamentos.model';
 
+import {ContaFixaStatusModel} from '../../models/canta-fixa'
 
 //import { TableParcela } from '../../components/Tabela/Parcela/TableParcela';
 
@@ -56,6 +57,23 @@ export class ContaPage implements OnInit {
       error: (err) => console.error('Erro ao carregar parcelas de contas fixas:', err)
     });
   }
+
+
+    // Atualiza o valor\status 
+  AtualizarStatusContaFixa(parcela: ContaFixa, ativo: boolean): void {
+            
+      const payload: ContaFixaStatusModel = {
+        id_ContaFixa: parcela.id,
+        status: ativo
+      };
+  
+      this.contaFixaService.ContaFixasStatus(payload).subscribe({
+        next: () => {
+          this.obterContasFixas();
+        },
+        error: (err) => console.error('Erro ao pagar parcela do lançamento:', err)
+      });
+    }
 
 
   // Navegação para o cadastro de Lançamento
