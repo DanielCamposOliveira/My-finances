@@ -11,7 +11,7 @@ using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Console.WriteLine($"Servidor rodando em {builder.Configuration["Urls:Endpoints:Https:Url"]}");
+Console.WriteLine($"Servidor rodando em {builder.Configuration["Urls:Endpoints:Http:Url"]}");
 
 // Evita a sobreposição limpando URLs herdadas do ambiente ou padrões
 //builder.WebHost.UseUrls();
@@ -72,17 +72,17 @@ builder.Services.AddCors(options =>
 
 
 // 1. Registro do serviço com regras recomendadas
-builder.Services.AddHsts(options =>
-{
-    // Define o tempo que o navegador deve lembrar (padrão de mercado: 1 ano)
-    options.MaxAge = TimeSpan.FromDays(365);
+//builder.Services.AddHsts(options =>
+//{
+//    // Define o tempo que o navegador deve lembrar (padrão de mercado: 1 ano)
+//    options.MaxAge = TimeSpan.FromDays(365);
 
-    // Aplica a política a todos os subdomínios (ex: api.seusite.com)
-    options.IncludeSubDomains = true;
+//    // Aplica a política a todos os subdomínios (ex: api.seusite.com)
+//    options.IncludeSubDomains = true;
 
-    // Permite inclusão na lista global HSTS Preload dos navegadores
-    options.Preload = true;
-});
+//    // Permite inclusão na lista global HSTS Preload dos navegadores
+//    options.Preload = true;
+//});
 
 
 // ============================================================
@@ -171,7 +171,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 // Redireciona chamadas HTTP para HTTPS antes de processar as rotas
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // ============================================================
 // SWAGGER

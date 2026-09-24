@@ -106,8 +106,8 @@ public class LancamentosRepository : ILancamentosRepository
         }
     }
 
-    // Lista todos os lançamentos com suas categorias, tags e parcelas
-    //public async Task<List<LancamentoResponse>?> ListaTodosLancamentosAsync(string userId)
+    // ***************Lista todos os lançamentos com suas categorias, tags e parcelas
+    //public async Task<List<LancamentoResponse>?> ListaTodosLancamentosParcelaAsync(string userId)
     //{
     //    try
     //    {
@@ -120,6 +120,9 @@ public class LancamentosRepository : ILancamentosRepository
     //                Descricao = l.Descricao,
     //                ValorTotal = l.ValorTotal,
     //                QtdParcelas = l.QtdParcelas,
+
+
+
     //                CategoriaNome = l.Categoria.Nome,
     //                Tags = l.Tags
     //                    .Select(t => t.Nome)
@@ -137,6 +140,8 @@ public class LancamentosRepository : ILancamentosRepository
     //                    .ToList()
     //            })
     //            .ToListAsync();
+
+
     //    }
     //    catch
     //    {

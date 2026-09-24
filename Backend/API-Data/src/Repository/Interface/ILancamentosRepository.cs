@@ -14,6 +14,7 @@ namespace API_Data.src.Repository.Interface
         public Task<List<Lancamento>?> ListaLancamentosAsync(string userId);
 
         public Task<List<LancamentoResponseList>?> ListaTodosLancamentosAsync(string userId);
+               
 
         public Task<List<LancamentoParcela>?> ListParcelasAbertasAtrasadasAsync(int LancamentoId, int ano, int mes);
 

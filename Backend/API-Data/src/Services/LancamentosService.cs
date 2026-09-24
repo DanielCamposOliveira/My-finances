@@ -15,19 +15,19 @@ public class LancamentosService : ILancamentosService
         _repository = repository;
     }
 
-    ////Lista todos os lançamentos
-    //public async Task<IResult> ListarLancamentosAsyncOld(string userId)
-    //{
-    //    var retorno = await _repository.ListaTodosLancamentosAsync(userId);
-    //    if (retorno == null)
-    //    {
-    //        return Results.Problem(
-    //        "Ocorreu um Erro ao Listar Lançamentos",
-    //        statusCode: StatusCodes.Status500InternalServerError);
-    //    }
+    ////Lista todos as parcelas dos lançamentos
+    public async Task<IResult> ListarLancamentoParcelasAsync(string userId)
+    {
+        var retorno = await _repository.ListaTodasParcelasAsync(userId);
+        if (retorno == null)
+        {
+            return Results.Problem(
+            "Ocorreu um Erro ao Listar Lançamentos",
+            statusCode: StatusCodes.Status500InternalServerError);
+        }
 
-    //    return Results.Ok(retorno);
-    //}
+        return Results.Ok(retorno);
+    }
 
     public async Task<IResult> ListarLancamentosAsync(string userId)
     {
