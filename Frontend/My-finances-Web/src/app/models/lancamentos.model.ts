@@ -39,7 +39,7 @@ export interface LancamentoResponseList
 {
   id: number,
   Descricao: string,
-  ValorTotal: number,
+  valorTotal: number,
   ValorParcela: number,
   ParcelasRestante: string,
   DataVencimentoUltimaParcela: string,

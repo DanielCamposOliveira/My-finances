@@ -7,15 +7,17 @@ import { TableContafixa } from '../../components/Tabela/contafixa/TableContafixa
 import { ContaFixaService } from '../../service/ContaFixa/conta-fixa-service';
 import { ContaFixa } from '../../models/canta-fixa';
 
+import {TabelaLancamentos} from '../../components/Tabela/lancamentos/TabelaLancamentos.component'
 import { LancamentosService } from '../../service/Lancamentos/lancamentos-service';
-import { Lancamento } from '../../models/lancamentos.model';
+import { LancamentoResponseList } from '../../models/lancamentos.model';
 
-import { returnParcela } from '../../models/parcela-model';
+
+//import { TableParcela } from '../../components/Tabela/Parcela/TableParcela';
 
 @Component({
   selector: 'app-conta.page',
   standalone: true,
-  imports: [CommonModule, TableContafixa],
+  imports: [CommonModule, TableContafixa, TabelaLancamentos],
   templateUrl: './conta.page.html',
   styleUrl: './conta.page.scss',
 })
@@ -28,7 +30,7 @@ export class ContaPage implements OnInit {
   private router = inject(Router);
 
   ContaFixas: ContaFixa[] = [];
-  Lancamentos: returnParcela[] = [];
+  Lancamentos: LancamentoResponseList[] = [];
 
   ngOnInit(): void {
     this.obterContasFixas();
@@ -46,10 +48,9 @@ export class ContaPage implements OnInit {
   }
 
     obterLancamentos(): void {
-    this.lancamentosService.Parcelas().subscribe({
+    this.lancamentosService.Lancamentos().subscribe({
       next: (resposta) => {
-        this.Lancamentos = [...resposta];   
-        console.log(this.Lancamentos);
+        this.Lancamentos = [...resposta];  
         this.cdr.markForCheck();
       },
       error: (err) => console.error('Erro ao carregar parcelas de contas fixas:', err)

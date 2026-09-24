@@ -11,10 +11,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 
-import { AtribuicaoEnum } from '../../../enums/atribuicao-enum';
+//import { AtribuicaoEnum } from '../../../enums/atribuicao-enum';
 
 import { ContaFixa } from "../../../models/canta-fixa";
-
 registerLocaleData(localePt);
 
 @Component({
@@ -73,28 +72,52 @@ export class TableContafixa implements OnInit, OnChanges {
     this.cdr.markForCheck();
   }
 
-  private configurarFiltro(): void {
-    this.dataSource.filterPredicate = (data: ContaFixa, filter: string) => {
-      if (!filter) return true;
-  
-      let searchTerms: { text?: string; status?: boolean | null };
-      try {
-        searchTerms = JSON.parse(filter);
-      } catch {
-        return true;
-      }
-  
-      const matchTexto = searchTerms.text
-        ? data.descricao?.toLowerCase().includes(searchTerms.text.toLowerCase())
-        : true;
-  
-      const matchStatus = searchTerms.status !== null && searchTerms.status !== undefined
-        ? data.ativo === searchTerms.status
-        : true;
-  
-      return matchTexto && matchStatus;
-    };
-  }
+private configurarFiltro(): void {
+  this.dataSource.filterPredicate = (data: ContaFixa, filter: string) => {
+    if (!filter) return true;
+
+    let searchTerms: { text?: string; status?: boolean | null; num?: number | null };
+    try {
+      searchTerms = JSON.parse(filter);
+    } catch {
+      return true;
+    }
+
+    // 1. Tratamento da busca por texto em múltiplos campos
+    const textoFiltro = searchTerms.text?.toLowerCase().trim() || '';
+    let matchTexto = true;
+
+    if (textoFiltro) {
+      const id = String(data.id || '');
+      const descricao = (data.descricao || '').toLowerCase();
+      const valorBase = String(data.valorBase || '');
+      const diaVencimento = String(data.diaVencimento || '');
+      const categoriaId = String(data.categoriaId || '');
+
+      // Bate com qualquer um dos campos textuais/numéricos
+      matchTexto = (
+        descricao.includes(textoFiltro) ||
+        valorBase.includes(textoFiltro) ||
+        diaVencimento.includes(textoFiltro) ||
+        id.includes(textoFiltro) ||
+        categoriaId.includes(textoFiltro)
+      );
+    }
+
+    // 2. Tratamento do filtro de Status (ativo: true / false)
+    const matchStatus = searchTerms.status !== null && searchTerms.status !== undefined
+      ? data.ativo === searchTerms.status
+      : true;
+
+    // 3. (Opcional) Tratamento do campo 'num' caso seja usado (ex: dia de vencimento exato)
+    const matchNum = searchTerms.num !== null && searchTerms.num !== undefined
+      ? data.diaVencimento === searchTerms.num
+      : true;
+
+    // Retorna true somente se atender a todos os grupos de critérios ativos
+    return matchTexto && matchStatus && matchNum;
+  };
+}
   
   applyFilter(event: Event): void {
     this.filtroTexto = (event.target as HTMLInputElement).value.trim();
