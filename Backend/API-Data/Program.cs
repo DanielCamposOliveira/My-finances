@@ -1,3 +1,4 @@
+using API_Data.src.Background;
 using API_Data.src.Data;
 using API_Data.src.Endpoints;
 using API_Data.src.Extensions;
@@ -16,6 +17,8 @@ Console.WriteLine($"Servidor rodando em {builder.Configuration["Urls:Endpoints:H
 // Evita a sobreposição limpando URLs herdadas do ambiente ou padrões
 //builder.WebHost.UseUrls();
 
+
+
 // ============================================================
 // BANCO DE DADOS
 // ============================================================
@@ -31,6 +34,10 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connect
 // ============================================================
 // INJEÇÃO DE DEPENDÊNCIA
 // ============================================================
+
+builder.Services.AddSingleton<IWorkQueue, WorkQueue>(); // Fila partilhada
+builder.Services.AddHostedService<QueueProcessor>(); // Processador contínuo de tarefas
+builder.Services.AddHostedService<StartupQueueInitializer>(); // Tarefa disparada ao ligar o sistema para povoar a fila
 
 builder.Services.AddScoped<ILancamentosRepository, LancamentosRepository>();
 builder.Services.AddScoped<ILancamentosService, LancamentosService>();
@@ -54,6 +61,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
+
+
+
+
 
 
 // ============================================================
