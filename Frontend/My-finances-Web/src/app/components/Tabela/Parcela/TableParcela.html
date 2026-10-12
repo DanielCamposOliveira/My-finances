@@ -1,7 +1,6 @@
 <div class="table-container">
   <div class="table-top-bar">
     <div class="title-section">
-      <span class=""></span>
       <h3>{{ titulo }}</h3>
     </div>
 
@@ -19,13 +18,28 @@
 
         <div class="input-wrapper select-wrapper">
           <i class="fa-solid fa-filter input-icon"></i>
-          <select [value]="filtroStatus" (change)="onStatusChange($event)">
+          <select
+            [value]="filtroMesAtual ? 'mes_atual' : filtroStatus"
+            (change)="onStatusChange($event)"
+          >
             <option [value]="null">Todos os status</option>
+            <option value="mes_atual">Mês Atual</option>
             @for (option of statusOptions; track option.value) {
               <option [value]="option.value">{{ option.label }}</option>
             }
           </select>
           <i class="fa-solid fa-chevron-down select-arrow"></i>
+        </div>
+
+        <!-- Bloco do Total Selecionado -->
+        <div class="input-wrapper total-selecionado-wrapper">
+          <i class="fa-solid fa-calculator"></i>
+          <span
+            >Calculadora:
+            <strong>{{
+              valorTotalSelecionado | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR'
+            }}</strong></span
+          >
         </div>
       </div>
     </div>
@@ -152,6 +166,7 @@
               element.status === StatusParcelaEnum.Aberto ||
               element.status === StatusParcelaEnum.Atrasado
             ) {
+              <!-- Botao de Pagar -->
               <button
                 mat-icon-button
                 class="btn-icon-acao btn-pagar"
@@ -160,6 +175,7 @@
               >
                 <i class="fa-solid fa-check"></i>
               </button>
+              <!-- Botao de Editar -->
               <button
                 mat-icon-button
                 class="btn-icon-acao btn-editar"
@@ -168,6 +184,15 @@
               >
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
+
+              <!-- Checkbox para somar valores -->
+              <input
+                type="checkbox"
+                [checked]="itensSelecionados.has(element.id)"
+                (change)="onToggleSelecao(element, $event)"
+                [disabled]="element.atribuicao === AtribuicaoEnum.Ganho"
+                title="Selecionar para somar"
+              />
             }
           </div>
         </td>

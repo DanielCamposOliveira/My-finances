@@ -92,6 +92,21 @@
     }
   }
 
+  &.total-selecionado-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+
+    span {
+      color: var(--text-secondary);
+    }
+
+    strong {
+      color: var(--text-primary);
+    }
+  }
+
   .input-icon {
     position: absolute;
     left: 0.85rem;
@@ -148,46 +163,6 @@
       background-color: var(--bg-container);
       color: var(--text-primary);
     }
-  }
-}
-
-/* Botão de Cadastrar */
-.btn-cadastrar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 36px !important;
-  gap: 0.5rem;
-  padding: 0 1.25rem !important;
-  font-size: 0.85rem !important;
-  font-weight: 600 !important;
-  border-radius: 6px !important;
-  border: none !important;
-  background-color: var(--accent-color) !important;
-  color: #ffffff !important;
-  cursor: pointer;
-  white-space: nowrap;
-  box-sizing: border-box;
-  transition:
-    opacity 0.2s ease,
-    box-shadow 0.2s ease,
-    filter 0.2s ease;
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-
-  i {
-    font-size: 0.8rem;
-  }
-
-  &:hover {
-    filter: brightness(1.1);
-    box-shadow: 0 4px 10px var(--shadow-color);
-  }
-
-  &:active {
-    filter: brightness(0.95);
   }
 }
 
@@ -437,6 +412,53 @@
   &.btn-pagar:hover {
     color: var(--bg-status-pago-cor) !important;
     border-color: var(--bg-status-pago-cor) !important;
+  }
+}
+
+input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--bg-container); // Cor da borda padrão (cinza claro)
+  border-radius: 4px; // Cantos levemente arredondados
+  border-color: var(--accent-color) !important;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  margin: 0;
+
+  /* Efeito ao passar o mouse (hover) quando habilitado */
+  &:hover:not(:disabled) {
+    border-color: var(--btn-confirm-hover) !important;
+  }
+
+  /* Estado quando está marcado (checked) */
+  &:checked {
+    background-color: var(--accent-color);
+    border-color: var(--btn-confirm) !important;
+
+    /* Criando o ícone de "check" (visto) com CSS puro */
+    &::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 1px;
+      width: 4px;
+      height: 9px;
+      border: solid var(--bg-primary);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+  }
+
+  /* Estado quando está desabilitado (disabled) */
+  &:disabled {
+    background-color: var(--bg-secondary);
+    border-color: var(--bg-status-cancelado-cor);
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 }
 

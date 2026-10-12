@@ -206,7 +206,7 @@ export class TableContafixa implements OnInit, OnChanges {
           ativo: novoStatus
         });
 
-        this.abrirSnackBar(`confirmado com sucesso!`, 5, 'fa-solid fa-circle-check', 'despesa');
+        this.abrirSnackBar(`Confirmado com sucesso!`, 5, 'fa-solid fa-circle-check', 'despesa');
 
       }
       else {

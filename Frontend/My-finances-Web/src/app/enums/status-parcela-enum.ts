@@ -4,3 +4,8 @@ export enum StatusParcelaEnum {
     Atrasado = 3,
     Cancelado = 4,
 }
+
+export enum StatusParcelaFiltroEnum {
+    Aberto = 1,
+    Atrasado = 3
+}
