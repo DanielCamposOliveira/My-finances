@@ -49,7 +49,7 @@ namespace API_Data.src.Endpoints
                 if (string.IsNullOrEmpty(userId))
                     return Results.Unauthorized();
 
-                var lancamentos = await ILancamentosService.ListarLancamentosAsync(userId);
+                var lancamentos = await ILancamentosService.ListaTodosLancamentosAbertosAsync(userId);
                 return lancamentos;
             })
             .WithName("Lista todo os Lancamento")

@@ -129,6 +129,7 @@ namespace API_Data.src.Repository
                     .AsNoTracking()
                     .Where(cfp => cfp.ContaFixa.UserId == userId 
                                && cfp.ContaFixa.Categoria.Atribuicao == Atribuicao.Despesa
+                               && cfp.Status != StatusParcela.Cancelado
                                && cfp.DataVencimento >= inicioMes
                                && cfp.DataVencimento < fimMes)
                     .Select(cfp => (decimal?)cfp.ValorParcela);
@@ -138,6 +139,7 @@ namespace API_Data.src.Repository
                     .AsNoTracking()
                     .Where(lp => lp.Lancamento.UserId == userId 
                               && lp.Lancamento.Categoria.Atribuicao == Atribuicao.Despesa
+                              && lp.Status != StatusParcela.Cancelado
                               && lp.DataVencimento >= inicioMes
                               && lp.DataVencimento < fimMes)
                     .Select(lp => (decimal?)lp.ValorParcela);
@@ -174,6 +176,7 @@ namespace API_Data.src.Repository
                     .AsNoTracking()
                     .Where(cfp => cfp.ContaFixa.UserId == userId 
                                && cfp.Status != StatusParcela.Pago
+                               && cfp.Status != StatusParcela.Cancelado
                                && cfp.ContaFixa.Categoria.Atribuicao == Atribuicao.Despesa
                                && cfp.DataVencimento < limiteData)
                     .Select(cfp => (decimal?)cfp.ValorParcela); // Cast para decimal? evita exceção se não houver registros
@@ -183,6 +186,7 @@ namespace API_Data.src.Repository
                     .AsNoTracking()
                     .Where(lp => lp.Lancamento.UserId == userId 
                               && lp.Status != StatusParcela.Pago
+                              && lp.Status != StatusParcela.Cancelado
                               && lp.Lancamento.Categoria.Atribuicao == Atribuicao.Despesa
                               && lp.DataVencimento < limiteData)
                     .Select(lp => (decimal?)lp.ValorParcela);
@@ -291,6 +295,7 @@ namespace API_Data.src.Repository
                 .Where(cfp =>
                     cfp.ContaFixa.UserId == userId
                     && cfp.ContaFixa.Categoria.Atribuicao == Atribuicao.Despesa
+                    && cfp.Status != StatusParcela.Cancelado
                     && (
                         // 1. Vencimento no mês atual
                         (

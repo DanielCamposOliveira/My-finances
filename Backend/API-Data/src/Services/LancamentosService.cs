@@ -42,6 +42,19 @@ public class LancamentosService : ILancamentosService
         return Results.Ok(retorno);
     }
 
+    public async Task<IResult> ListaTodosLancamentosAbertosAsync(string userId)
+    {
+        var retorno = await _repository.ListaTodosLancamentosAbertosAsync(userId);
+        if (retorno == null)
+        {
+            return Results.Problem(
+                "Ocorreu um Erro ao Listar Parcelas",
+                statusCode: StatusCodes.Status500InternalServerError);
+        }
+
+        return Results.Ok(retorno);
+    }
+
     //## Obter faturas com Status Aberto(Mes recorent) ou Vencida(Ano recorrent) 
 
     public async Task<IResult> ListFaturaPendenteAsync(string userId)
@@ -184,6 +197,13 @@ public class LancamentosService : ILancamentosService
 
         //Grava no banco de dados
         var retorno = await _repository.UpdateLancamentoParcela(parcela);
+
+        // Verifica se essa é a ultina parcela se for destiva a o lancamento. para que fica como concluido
+        if (dto.Status == StatusParcela.Pago)
+        {
+            bool updateLancamento = await _repository.UpdateStatusLancamentoAsync(parcela.Id);
+        }
+                
 
         if (!retorno)
         {

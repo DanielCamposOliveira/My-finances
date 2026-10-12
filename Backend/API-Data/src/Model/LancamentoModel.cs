@@ -10,7 +10,7 @@ namespace API_Data.src.Model
         public decimal ValorTotal { get; set; }
         public int QtdParcelas { get; set; } = 1; 
         public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
-       
+        public bool Ativo { get; set; } = true;
         // Relacionamento com User
         public string UserId { get; set; }
         public User User { get; set; } = null!;

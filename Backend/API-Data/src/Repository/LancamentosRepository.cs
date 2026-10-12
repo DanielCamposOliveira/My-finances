@@ -85,7 +85,7 @@ public class LancamentosRepository : ILancamentosRepository
         {
             return await _db.LancamentoParcelas
                 .AsNoTracking()
-                .Where(p => p.Lancamento.UserId == userId)
+                .Where(p => p.Lancamento.UserId == userId && p.Status != StatusParcela.Pago)
                 .OrderBy(p => p.DataVencimento)
                 .Select(p => new ParcelasResponse
                 {
@@ -161,7 +161,7 @@ public class LancamentosRepository : ILancamentosRepository
                 {
                     Id = l.Id,
                     Descricao = l.Descricao,
-                    ValorTotal = l.ValorTotal,   
+                    ValorTotal = l.ValorTotal,
                     ValorParcela = l.Parcelas.OrderBy(p => p.NumeroParcela)
                                          .Select(p => p.ValorParcela)
                                          .FirstOrDefault(),
@@ -182,7 +182,47 @@ public class LancamentosRepository : ILancamentosRepository
                 })
                 .ToListAsync();
 
-           
+
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public async Task<List<LancamentoResponseList>?> ListaTodosLancamentosAbertosAsync(string userId)
+    {
+        try
+        {
+            return await _db.Lancamentos
+                .AsNoTracking()
+                .Where(l => l.UserId == userId && l.Ativo == true)
+                .Select(l => new LancamentoResponseList
+                {
+                    Id = l.Id,
+                    Descricao = l.Descricao,
+                    ValorTotal = l.ValorTotal,
+                    ValorParcela = l.Parcelas.OrderBy(p => p.NumeroParcela)
+                                         .Select(p => p.ValorParcela)
+                                         .FirstOrDefault(),
+
+                    CategoriaNome = l.Categoria.Nome,
+                    Tags = l.Tags
+                        .Select(t => t.Nome)
+                        .ToList(),
+
+                    // Concatena no formato "Total/Pagas" (ex: 10/3)                 
+                    ParcelasRestante = $"{l.Parcelas.Count(p => (int)p.Status == 2)}/{l.QtdParcelas}",
+
+                    // Ordena de forma decrescente e busca a data de vencimento da última parcela
+                    DataVencimentoUltimaParcela = l.Parcelas
+                            .OrderByDescending(p => p.NumeroParcela)
+                            .Select(p => (DateTime?)p.DataVencimento)
+                            .FirstOrDefault()
+                })
+                .ToListAsync();
+
+
         }
         catch
         {
@@ -205,7 +245,7 @@ public class LancamentosRepository : ILancamentosRepository
                 .AsNoTracking()  // Evita o rastreamento de alterações para melhorar o desempenho
                 .Include(p => p.Lancamento) // Inclui os dados do lançamento relacionado
                       .ThenInclude(l => l.Categoria) // Inclui os dados da Categoria vinculada ao Lançamento                      // Filtra as parcelas com base no ID do lançamento, status e datas de vencimento
-                .Where(p => p.LancamentoId == LancamentoId && p.Status != StatusParcela.Pago &&
+                .Where(p => p.LancamentoId == LancamentoId && p.Status != StatusParcela.Pago && p.Status != StatusParcela.Cancelado &&
                     (
                         // Condição 1: Do mês solicitado e não pago
                         (p.DataVencimento >= inicioMes && p.DataVencimento < fimMes)
@@ -259,7 +299,7 @@ public class LancamentosRepository : ILancamentosRepository
     {
         try
         {
-          
+
             return await _db.Lancamentos.FirstOrDefaultAsync(l => l.Id == LancamentoId);
         }
         catch
@@ -314,6 +354,69 @@ public class LancamentosRepository : ILancamentosRepository
         }
     }
 
+    // Atualiza o status "Ativo" de todas os lancamentos caso todas as parcelas esteja pagas
+    //public async Task<bool> AtualizarLancamentosAtivoAsync(string userId)
+    //{
+    //    try
+    //    {
+    //        // Busca os lançamentos ativos que possuem todas as parcelas pagas
+    //        var lancamentosParaAtualizar = await _db.Lancamentos
+    //            .Include(l => l.Parcelas)
+    //            .Where(l => l.UserId == userId && l.Ativo == true)
+    //            .Where(l => l.Parcelas.All(p => p.Status == StatusParcela.Pago)) // Garante que todas as parcelas estão pagas
+    //            .ToListAsync();
 
+    //        if (!lancamentosParaAtualizar.Any())
+    //            return false;
+
+    //        foreach (var lancamento in lancamentosParaAtualizar)
+    //        {
+    //            lancamento.Ativo = false;
+    //        }
+
+    //        await _db.SaveChangesAsync();
+    //        return true;
+    //    }
+    //    catch
+    //    {
+    //        return false;
+    //    }
+    //}
+
+    // Atualiza o status "Ativo" do lancamento por ID caso todas as parcelas esteja pagas
+    public async Task<bool> UpdateStatusLancamentoAsync(int lancamentoId)
+    {
+        try
+        {
+            // Busca o lançamento específico com suas parcelas
+            var lancamento = await _db.Lancamentos
+                .Include(l => l.Parcelas)
+                .FirstOrDefaultAsync(l => l.Id == lancamentoId);
+
+            if (lancamento == null || !lancamento.Ativo)
+                return false;
+
+            // Verifica se todas as parcelas pertencentes ao lançamento estão pagas (ex: status 2)
+            // Se a lista de parcelas não estiver vazia e todas atenderem à condição:
+            bool todasPagas = lancamento.Parcelas.Any() && lancamento.Parcelas.All
+                (
+                    p => p.Status == StatusParcela.Pago
+                );
+
+            // atualiza o valor para false e salva no banco
+            if (todasPagas)
+            {
+                lancamento.Ativo = false;
+                await _db.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
 }

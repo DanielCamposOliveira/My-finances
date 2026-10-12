@@ -189,6 +189,9 @@ namespace API_Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("CategoriaId")
                         .HasColumnType("integer");
 

@@ -131,7 +131,7 @@ namespace API_Data.src.Repository
                      .Include(p => p.ContaFixa)
                      .ThenInclude(p => p.Categoria)
                                                      
-                    .Where(p => p.ContaFixaId == contaFixaId && p.Status != StatusParcela.Pago &&
+                    .Where(p => p.ContaFixaId == contaFixaId && p.Status != StatusParcela.Pago && p.Status != StatusParcela.Cancelado && 
                         (
                             // Condição 1: Do mês solicitado e não pago
                             (p.DataVencimento >= inicioMes && p.DataVencimento < fimMes)

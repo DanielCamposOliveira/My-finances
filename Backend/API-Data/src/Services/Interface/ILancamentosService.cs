@@ -7,6 +7,8 @@ namespace API_Data.src.Services.Interface
     {
         public Task<IResult> ListarLancamentosAsync(string userId);
 
+        public Task<IResult> ListaTodosLancamentosAbertosAsync(string userId);
+
         public Task<IResult> ListarLancamentoParcelasAsync(string userId);
 
         public Task<IResult> ListFaturaPendenteAsync(string userId);
