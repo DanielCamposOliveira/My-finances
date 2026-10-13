@@ -2,7 +2,9 @@
 {
     public interface IUrlService
     {
-       public Task<IResult> GenerateUniqueToken(HttpContext context);
+        public Task<IResult> UrlGenerateUpload(HttpContext context);
+
+        public Task<IResult> UrlGenerateDownload(string token, HttpContext context);
 
     }
 }

@@ -1,50 +1,90 @@
-﻿using System.Security.Cryptography;
-
-namespace Cloud_API.src.Service.Url
+﻿namespace Cloud_API.src.Service.Url
 {
     public class UrlService : IUrlService
     {
-        private readonly UrlRepository _urlCache; // Trocamos o DictionaryStorage pelo seu Service de Cache
+        private readonly UrlUploadRepository _urlUploadRepository; // Trocamos o DictionaryStorage pelo seu Service de Cache
+        private readonly UrlDownloadRepository _urlDownloadRepository;
 
-        public UrlService(UrlRepository urlCache)
+        public UrlService(UrlUploadRepository urlUploadRepository, UrlDownloadRepository urlDownloadRepository)
         {
-            _urlCache = urlCache;
-            
+            _urlUploadRepository = urlUploadRepository;
+            _urlDownloadRepository = urlDownloadRepository;
+
         }
 
-        public async Task<IResult> GenerateUniqueToken(HttpContext context)
+
+        // Gera uma URL para o usuario fazer o UPload do PDF sem autenticação 
+        public async Task<IResult> UrlGenerateUpload(HttpContext context)
         {
             // Gerar um token para validação do arquivo no banco de dados
-            //string _TokenVideoBase = Guid.NewGuid().ToString("N").Substring(0, 15);
             string _TokenVideoBase = Guid.NewGuid().ToString("N");
-                       
+
 
             // Gerar um token para validação da url upload
             var UploadToken = Guid.NewGuid().ToString("N")[..8];
 
             var uploadUrl = $"{context.Request.Scheme}://{context.Request.Host}" +
-                            $"{StreamsRoutes.BaseMedia}{StreamsRoutes.Upload.BaseNoToken}/{UploadToken}";
+                            $"{StreamsRoutes.BaseMedia}{StreamsRoutes.UploadBase.BaseNoToken}/{UploadToken}";
 
             // Definir a data de expiração para 5 minutos a partir do momento da geração
-            var expiresAt = DateTime.UtcNow.AddMinutes(5);
+            var expiresAt = DateTime.UtcNow.AddMinutes(50);
 
             // Criar o objeto a ser armazenado no cache
-            var data = new URLRepositoryBase
+            var data = new UrlUpload
             {
-                TokenVideoBase = _TokenVideoBase,
-                TokenUrlUpload = uploadUrl,
+                TokenBase = _TokenVideoBase,
+                Url = uploadUrl,
                 ExpiresAt = expiresAt
             };
 
             // SALVANDO NO CACHE: 
             // O método 'Add' do seu UrlService usa o AbsoluteExpiration.
             // Assim que passar 10 minutos, o cache remove o objeto automaticamente.
-            _urlCache.Add(UploadToken, data);    
+            _urlUploadRepository.Add(UploadToken, data);
 
-            return Results.Ok(data);
+
+
+            return Results.Json(data, statusCode: StatusCodes.Status201Created);
         }
 
+        // Gera uma URL para o usuario fazer o Download do PDF sem autenticação 
+        public async Task<IResult> UrlGenerateDownload(string token, HttpContext context)
+        {
+            // Gerar um token para validação do arquivo no banco de dados
+           // string _Token = Guid.NewGuid().ToString("N");
 
+
+            // Gerar um token para validação da url upload
+            var DownloadToken = Guid.NewGuid().ToString("N")[..8];
+
+            var Url = $"{context.Request.Scheme}://{context.Request.Host}" +
+                            $"{StreamsRoutes.BaseArchive}{StreamsRoutes.DownloadBase.BaseNoToken}/{DownloadToken}";
+
+            // Definir a data de expiração para 5 minutos a partir do momento da geração
+            var expiresAt = DateTime.UtcNow.AddMinutes(50);
+
+            // Criar o objeto a ser armazenado no cache
+            var data = new UrlDownload
+            {
+                Token = DownloadToken,
+                FileName = token,
+                Url = Url,
+                ExpiresAt = expiresAt
+            };
+
+            // SALVANDO NO CACHE: 
+            // O método 'Add' do seu UrlService usa o AbsoluteExpiration.
+            // Assim que passar 10 minutos, o cache remove o objeto automaticamente.
+            _urlDownloadRepository.Add(data);
+
+
+            return Results.Json(
+                new { URL = data.Url },
+                        statusCode: StatusCodes.Status201Created
+            );
+
+
+        }
     }
 }
  

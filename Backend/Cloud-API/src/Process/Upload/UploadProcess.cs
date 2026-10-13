@@ -1,10 +1,12 @@
-﻿using Cloud_API.src.Model.Chunk;
+﻿using Cloud_API.src.Model.Upload;
+using Cloud_API.src.Repository.Chunk;
+using Cloud_API.src.Repository.Dictionary;
 using Cloud_API.src.Utils;
 using System.Security.Cryptography;
 
 namespace Cloud_API.src.Process.Upload
 {
-    public class UploadBaseService
+    public class UploadProcess
     {
 
         /// <summary>
@@ -18,35 +20,36 @@ namespace Cloud_API.src.Process.Upload
         /// 3. Camada de Armazenamento (I/O de Disco): O disco rígido só é tocado se o pedaço for inédito E estiver 100% perfeito.
         /// </summary>
 
-        private readonly ILogger<UploadBaseService> _logger;
+        private readonly ILogger<UploadProcess> _logger;
 
         private readonly string RepositoryBase;
         private readonly string RepositoryCache;
-        private readonly UrlRepository _urlCache;
 
+        private readonly UrlUploadRepository _urlRepository;
+        private readonly ChunkRepository _chunkRepository;
         private readonly GeneratorName _GeneratorName;
+        private readonly DictionaryRepository _dictionaryRepository;
 
-        // Injeção do nosso novo banco de dados em cache dedicado
-        private readonly UploadChunkTracker _chunkTracker;
+
 
         // Lock para garantir que apenas um processo de merge ocorra por vez
         private static readonly SemaphoreSlim _mergeLock = new SemaphoreSlim(1, 1);
 
-        private readonly DictionaryStorage _dictionaryStorage;
+        
 
 
-        public UploadBaseService(IConfiguration configuration, UrlRepository urlCache, UploadChunkTracker chunkTracker, DictionaryStorage dictionaryStorage, GeneratorName generatorName, ILogger<UploadBaseService> logger)
+        public UploadProcess(IConfiguration configuration, UrlUploadRepository urlCache, ChunkRepository chunkTracker, DictionaryRepository dictionaryStorage, GeneratorName generatorName, ILogger<UploadProcess> logger)
         {
             RepositoryBase = configuration.GetSection("LocalSettings:PathStrings:BasePathRepositoryBase").Value;
             RepositoryCache = configuration.GetSection("LocalSettings:PathStrings:BasePathRepositoryCache").Value;
-            _urlCache = urlCache;
-            _chunkTracker = chunkTracker;
+            _urlRepository = urlCache;
+            _chunkRepository = chunkTracker;
             _logger = logger;
-            _dictionaryStorage = dictionaryStorage;
+            _dictionaryRepository = dictionaryStorage;
             _GeneratorName = generatorName;
         }
 
-        public async Task<IResult> Upload(string token, UploadChunkRequest request, HttpContext context)
+        public async Task<IResult> Upload(string token, UploadChunkRequestModel request, HttpContext context)
         {
             try
             {
@@ -59,7 +62,7 @@ namespace Cloud_API.src.Process.Upload
                 // ====================================================================
                 // BARREIRA DE DUPLICIDADE: Evita reprocessar o mesmo pedaço à toa
                 // ====================================================================
-                if (_chunkTracker.JaPossuiChunk(request.TokenBase, request.ChunkIndex))
+                if (_chunkRepository.JaPossuiChunk(request.TokenBase, request.ChunkIndex))
                 {    
                     return Results.Ok(new { completed = false, ChunkPart = request.ChunkIndex, ChunkStatus = "Duplicate", message = "Ignorando reenvio" });
                 }
@@ -94,10 +97,10 @@ namespace Cloud_API.src.Process.Upload
                 // ==========================================
                 // 3. REGISTRA E VALIDA NO TRACKER (MEMÓRIA RAM)
                 // ==========================================
-                _chunkTracker.RegistrarChunk(request.TokenBase, request.ChunkIndex);
+                _chunkRepository.RegistrarChunk(request.TokenBase, request.ChunkIndex);
 
                 // Verifica na memória RAM (de forma ultra rápida) se TODOS os pacotes chegaram
-                if (_chunkTracker.VerificarSeConcluiu(request.TokenBase, request.TotalChunks))
+                if (_chunkRepository.VerificarSeConcluiu(request.TokenBase, request.TotalChunks))
                 {
                     // Tenta entrar no processo de Merge (apenas a thread que completou o quebra-cabeça avança)
                     if (await _mergeLock.WaitAsync(0))
@@ -106,7 +109,7 @@ namespace Cloud_API.src.Process.Upload
                         {                            
                             string NomeGerado = _GeneratorName.CreateName();
                             // string finalFilePath = Path.Combine(RepositoryBase, request.FileName);
-                            string finalFilePath = Path.Combine(RepositoryBase, NomeGerado, request.extension);
+                            string finalFilePath = Path.Combine(RepositoryBase, NomeGerado + request.extension);
 
                             // Se o arquivo final já existir por algum motivo, deleta para evitar conflito
                             if (File.Exists(finalFilePath)) File.Delete(finalFilePath);
@@ -136,7 +139,7 @@ namespace Cloud_API.src.Process.Upload
                             // ==========================================
 
                             //Busca no Cache usando seu método GetSingle
-                            var arquivoNoCache = _urlCache.GetSingle(token);
+                            var arquivoNoCache = _urlRepository.GetSingle(token);
 
                             // Se o GetSingle retornou null, significa que o token expirou ou nunca existiu
                             if (arquivoNoCache == null)
@@ -145,9 +148,9 @@ namespace Cloud_API.src.Process.Upload
                             }
 
 
-                            _dictionaryStorage.DicionarioDeMemoria[request.TokenBase] = new Registro
+                            _dictionaryRepository.DicionarioDeMemoria[request.TokenBase] = new Registro
                             {
-                                TokenBase = arquivoNoCache.TokenVideoBase,
+                                TokenBase = arquivoNoCache.TokenBase,
                                 FileName = NomeGerado, // salva o nome do arquivo sem extensão
                                 extension = request.extension, // adiciona a extensão do arquivo original
                                 DataUpload = DateTime.UtcNow,
@@ -158,8 +161,8 @@ namespace Cloud_API.src.Process.Upload
                             // ==========================================
                             // 5. LIMPEZA DOS BANCOS DE CACHE
                             // ==========================================
-                            _urlCache.Remove(token); // Consome o token de segurança da URL (impede que seja usado para outro upload ou download)
-                            _chunkTracker.LimparSessao(request.TokenBase); // Limpa a memória RAM do Tracker
+                            _urlRepository.Remove(token); // Consome o token de segurança da URL (impede que seja usado para outro upload ou download)
+                            _chunkRepository.LimparSessao(request.TokenBase); // Limpa a memória RAM do Tracker
 
                             var downloadUrl = $"{context.Request.Scheme}://{context.Request.Host}";
 
@@ -168,7 +171,12 @@ namespace Cloud_API.src.Process.Upload
                             // ==========================================
 
                             // Retorna um informação útil para o Frontend, como a URL de download do arquivo finalizado   
-                            return Results.Ok(new { completed = true, NameFile = NomeGerado });
+                           // return Results.Ok(new { completed = true, NameFile = NomeGerado });
+                                                 
+                            return Results.Json(
+                                new { completed = true, NameFile = NomeGerado },
+                                statusCode: StatusCodes.Status201Created
+                            );
 
 
                         }

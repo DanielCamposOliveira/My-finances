@@ -1,11 +1,12 @@
-﻿using System.Collections.Concurrent;
+﻿using Cloud_API.src.Model.Chunk;
+using System.Collections.Concurrent;
 
-namespace Cloud_API.src.Model.Chunk
+namespace Cloud_API.src.Repository.Chunk
 {
-    public class UploadChunkTracker
+    public class ChunkRepository
     {
-        private readonly ILogger<UploadChunkTracker> _logger;
-        public UploadChunkTracker(ILogger<UploadChunkTracker> logger)
+        private readonly ILogger<ChunkRepository> _logger;
+        public ChunkRepository(ILogger<ChunkRepository> logger)
         {
             _logger = logger;
         }

@@ -12,15 +12,24 @@
         public bool IsDirty { get; set; } = true;
     }
 
-    public class URLRepositoryBase
+    public class UrlUpload
     {
-        public string TokenVideoBase { get; set; }
-        public string TokenUrlUpload { get; set; }
+        public string TokenBase { get; set; }
+        public string Url { get; set; }
+        public DateTime ExpiresAt { get; set; }
+    }
+
+    public class UrlDownload
+    {
+        public string Token { get; set; }
+        public string FileName { get; set; }
+
+        public string Url { get; set; }
         public DateTime ExpiresAt { get; set; }
     }
 
 
-   
+
 
     public class RegistroDelete
     {

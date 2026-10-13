@@ -2,7 +2,7 @@
 
 namespace Cloud_API
 {
-    public class UrlRepository
+    public class UrlUploadRepository
     {
         private readonly IMemoryCache _cache;// Cache em memória para armazenar os dados de URL
 
@@ -10,14 +10,14 @@ namespace Cloud_API
         // Lista para rastrear quais chaves nós criamos
         private readonly HashSet<string> _keys = new();
 
-        public UrlRepository(IMemoryCache cache )
+        public UrlUploadRepository(IMemoryCache cache )
         {
             _cache = cache;
                     
         }
 
         // Método para adicionar um item ao cache com expiração
-        public void Add(string token, URLRepositoryBase data)
+        public void Add(string token, UrlUpload data)
         {
             // Configuramos a expiração absoluta para o item, usando a data de expiração do objeto
             var options = new MemoryCacheEntryOptions
@@ -52,15 +52,15 @@ namespace Cloud_API
 
 
         // Método para obter um item do cache
-        public URLRepositoryBase? Get(string token)
+        public UrlUpload? Get(string token)
         {
-            return _cache.Get<URLRepositoryBase>(token);
+            return _cache.Get<UrlUpload>(token);
         }
 
         // Método para obter um item do cache, retornando null se não existir
-        public URLRepositoryBase? GetSingle(string token)
+        public UrlUpload? GetSingle(string token)
         {
-            if (_cache.TryGetValue(token, out URLRepositoryBase data))
+            if (_cache.TryGetValue(token, out UrlUpload data))
             {
                 return data;
             }
@@ -69,17 +69,17 @@ namespace Cloud_API
         }
 
         // Método para obter todos os itens do cache
-        public List<URLRepositoryBase> GetAll()
+        public List<UrlUpload> GetAll()
         {
             // Criamos uma lista para armazenar os itens encontrados
-            var allEntries = new List<URLRepositoryBase>();
+            var allEntries = new List<UrlUpload>();
 
             lock (_keys)
             {
                 foreach (var key in _keys)
                 {
                     // Tentamos obter o item do cache usando a chave
-                    if (_cache.TryGetValue(key, out URLRepositoryBase item))
+                    if (_cache.TryGetValue(key, out UrlUpload item))
                     {
                         // Se o item for encontrado, adicionamos ele à lista de resultados
                         allEntries.Add(item);
