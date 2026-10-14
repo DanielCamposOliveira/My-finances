@@ -2,15 +2,15 @@
 
 namespace Cloud_API.src.Service.Download
 {
-    public class DownloadService
+    public class DownloadService : IDownloadService
     {
         private readonly UrlDownloadRepository _urlDownloadRepository;
-        private readonly DownloadProcess _downloadBaseServiceMd5;
+        private readonly IDownloadProcess _downloadProcess;
 
-        public DownloadService(UrlDownloadRepository urlDownloadRepository, DownloadProcess downloadBaseServiceMd5)
+        public DownloadService(UrlDownloadRepository urlDownloadRepository, IDownloadProcess downloadProcess)
         {
             _urlDownloadRepository = urlDownloadRepository;
-            _downloadBaseServiceMd5 = downloadBaseServiceMd5;
+            _downloadProcess = downloadProcess;
         }
 
         public async Task<IResult> DownloadBase(string token, HttpContext context)
@@ -19,7 +19,7 @@ namespace Cloud_API.src.Service.Download
             if (string.IsNullOrEmpty(token))
                 return Results.BadRequest("TokenBase não informado.");
 
-            // 2. Busca no Cache usando seu método GetSingle
+            // verifica se a url esta disponivel
             var arquivoNoCache = _urlDownloadRepository.GetSingle(token);
 
             // Se o GetSingle retornou null, significa que o token expirou ou nunca existiu
@@ -28,13 +28,7 @@ namespace Cloud_API.src.Service.Download
                 return Results.NotFound("Url inválida ou token expirado!");
             }
 
-
-            return await _downloadBaseServiceMd5.DownloadBase(arquivoNoCache, context);
-
-            
-
-
-
+            return await _downloadProcess.DownloadBase(arquivoNoCache, context);
         }
     }
 }

@@ -14,58 +14,39 @@ using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
 // Adiciona o serviço de cache em memória nativo do .NET
 builder.Services.AddMemoryCache();
-
 builder.Services.AddAntiforgery();
 
 // ============================================================
 // 1. CONFIGURAÇÃO DE AUTENTICAÇÃO NATIVA (API KEY)
 // ============================================================
 
-builder.Services.AddAuthentication("ApiKeyScheme")
-    .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKeyScheme", null);
+builder.Services.AddAuthentication("ApiKeyScheme").AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKeyScheme", null);
 
 builder.Services.AddAuthorization(); // Habilita o suporte a [Authorize] / RequireAuthorization()
-
 
 
 // ============================================================
 // INJEÇÃO DE DEPENDÊNCIA
 // ============================================================
+builder.Services.AddSingleton<Hashids>(provider => new Hashids(builder.Configuration.GetSection("config:SaltSecret").Value, 7));
+builder.Services.AddSingleton<SnowflakeGenerator>();
+
 builder.Services.AddSingleton<UrlDownloadRepository>();
 builder.Services.AddSingleton<UrlUploadRepository>();
 builder.Services.AddSingleton<DictionaryRepository>();
 builder.Services.AddSingleton<ChunkRepository>();
 
-
-
 builder.Services.AddScoped<IUrlService, UrlService>();
+
 builder.Services.AddScoped<IUploadService, UploadService>();
+builder.Services.AddScoped<IUploadProcess ,UploadProcess>();
 
-builder.Services.AddScoped<DownloadService>();
-
-builder.Services.AddScoped<UploadProcess>();
-
-builder.Services.AddScoped<DownloadProcess>();
-
-//------------- verificar ----------------
+builder.Services.AddScoped<IDownloadService ,DownloadService>();
 builder.Services.AddScoped<IDownloadProcess, DownloadProcess>();
 
-// 1. Registre o SnowflakeGenerator como Singleton (precisa ser Singleton para manter o estado da sequência)
-builder.Services.AddSingleton<SnowflakeGenerator>();
-
-// 2. Registre o Hashids
-builder.Services.AddSingleton<Hashids>(provider => new Hashids(builder.Configuration.GetSection("config:SaltSecret").Value, 7));
-
-// 3. Registre a sua classe GeneratorName (como Transient ou Scoped, dependendo da sua preferência)
 builder.Services.AddTransient<GeneratorName>();
-
-
-
-
 
 
 // ============================================================
@@ -78,9 +59,9 @@ builder.Services.AddSwaggerGen(c =>
     // Define como o Swagger deve descrever a autenticação por Key
     c.AddSecurityDefinition("ApiKey", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Description = "Insira sua chave API no cabeçalho. Nome: access_token",
+        Description = "Insira sua chave API no cabeçalho. Nome: X-Api-Key",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Name = "access_token",
+        Name = "X-Api-Key",
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
         Scheme = "ApiKeyScheme"
     });
@@ -119,14 +100,11 @@ builder.Services.AddCors(options =>
 });
 
 
-
-
 // ============================================================
 // CONSTRÓI A APLICAÇÃO
 // ============================================================
 
 var app = builder.Build();
-
 
 // 2. Ativação do Middleware no pipeline
 if (!app.Environment.IsDevelopment())
@@ -134,9 +112,6 @@ if (!app.Environment.IsDevelopment())
     // HSTS não funciona em localhost por padrão (e nem deve)
     app.UseHsts();
 }
-
-
-
 
 
 // ============================================================
@@ -154,9 +129,6 @@ app.UseSwaggerUI(c =>
 });
 
 
-
-
-
 // ============================================================
 // MIDDLEWARE
 // ============================================================
@@ -171,9 +143,6 @@ app.UseAuthorization();
 app.UseAntiforgery();
 
 
-
-
-
 // ============================================================
 // ENDPOINTS
 // ============================================================
@@ -181,12 +150,4 @@ app.MapUploadEndpoints();
 app.MapDonwloadEndpoints();
 app.MapUrlEndpoints();
 
-
-
 app.Run();
-
-
-
-
-
-

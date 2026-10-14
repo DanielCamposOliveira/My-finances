@@ -7,28 +7,15 @@ namespace Cloud_API.src.Service.Upload
     public class UploadService : IUploadService
     {
         private readonly UrlUploadRepository _UrlUploadRepository; 
-        private readonly UploadProcess _uploadProcess;
+        private readonly IUploadProcess _uploadProcess;
 
 
-        public UploadService(UrlUploadRepository urlCache, UploadProcess uploadProcess)
+        public UploadService(UrlUploadRepository urlCache, IUploadProcess uploadProcess)
         {
             _UrlUploadRepository = urlCache;
             _uploadProcess = uploadProcess;
         }
 
-
-
-
-        //public IResult GetAllCache()
-        //{
-        //    return Results.Ok(_urlCache.GetAll());
-
-        //}
-
-        //public IResult GetSingleCache(string token)
-        //{
-        //    return Results.Ok(_urlCache.GetSingle(token));
-        //}
 
         public async Task<IResult> UploadBase(string token, [FromForm] UploadChunkRequestModel request, HttpContext context )
         {
@@ -56,8 +43,6 @@ namespace Cloud_API.src.Service.Upload
             //Chama a função de receber o upload do arquivo
             return await _uploadProcess.Upload(token, request, context);
 
-        }
-
-       
+        }       
     }
 }

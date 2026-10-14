@@ -2,7 +2,7 @@
 {
     public class UrlService : IUrlService
     {
-        private readonly UrlUploadRepository _urlUploadRepository; // Trocamos o DictionaryStorage pelo seu Service de Cache
+        private readonly UrlUploadRepository _urlUploadRepository; 
         private readonly UrlDownloadRepository _urlDownloadRepository;
 
         public UrlService(UrlUploadRepository urlUploadRepository, UrlDownloadRepository urlDownloadRepository)
@@ -27,7 +27,7 @@
                             $"{StreamsRoutes.BaseMedia}{StreamsRoutes.UploadBase.BaseNoToken}/{UploadToken}";
 
             // Definir a data de expiração para 5 minutos a partir do momento da geração
-            var expiresAt = DateTime.UtcNow.AddMinutes(50);
+            var expiresAt = DateTime.UtcNow.AddMinutes(1);
 
             // Criar o objeto a ser armazenado no cache
             var data = new UrlUpload
@@ -49,11 +49,7 @@
 
         // Gera uma URL para o usuario fazer o Download do PDF sem autenticação 
         public async Task<IResult> UrlGenerateDownload(string token, HttpContext context)
-        {
-            // Gerar um token para validação do arquivo no banco de dados
-           // string _Token = Guid.NewGuid().ToString("N");
-
-
+        {  
             // Gerar um token para validação da url upload
             var DownloadToken = Guid.NewGuid().ToString("N")[..8];
 
@@ -61,7 +57,7 @@
                             $"{StreamsRoutes.BaseArchive}{StreamsRoutes.DownloadBase.BaseNoToken}/{DownloadToken}";
 
             // Definir a data de expiração para 5 minutos a partir do momento da geração
-            var expiresAt = DateTime.UtcNow.AddMinutes(50);
+            var expiresAt = DateTime.UtcNow.AddMinutes(1);
 
             // Criar o objeto a ser armazenado no cache
             var data = new UrlDownload

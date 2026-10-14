@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 
 namespace Cloud_API.src.Process.Upload
 {
-    public class UploadProcess
+    public class UploadProcess : IUploadProcess
     {
 
         /// <summary>
@@ -30,12 +30,9 @@ namespace Cloud_API.src.Process.Upload
         private readonly GeneratorName _GeneratorName;
         private readonly DictionaryRepository _dictionaryRepository;
 
-
-
         // Lock para garantir que apenas um processo de merge ocorra por vez
         private static readonly SemaphoreSlim _mergeLock = new SemaphoreSlim(1, 1);
-
-        
+                
 
 
         public UploadProcess(IConfiguration configuration, UrlUploadRepository urlCache, ChunkRepository chunkTracker, DictionaryRepository dictionaryStorage, GeneratorName generatorName, ILogger<UploadProcess> logger)
@@ -204,7 +201,6 @@ namespace Cloud_API.src.Process.Upload
                 });
             }
         }
-
 
 
         /// <summary>
