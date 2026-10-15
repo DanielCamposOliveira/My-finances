@@ -1,4 +1,4 @@
-﻿using Cloud_API.src.Model.Upload;
+﻿using Cloud_API.src.DTO;
 using Cloud_API.src.Process.Upload;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,11 +17,11 @@ namespace Cloud_API.src.Service.Upload
         }
 
 
-        public async Task<IResult> UploadBase(string token, [FromForm] UploadChunkRequestModel request, HttpContext context )
+        public async Task<IResult> UploadBase(string token, [FromForm] UploadChunkDTO request, HttpContext context )
         {
             //verifica se o ID não esta em branco
-            if (string.IsNullOrEmpty(request.TokenBase))
-                return Results.BadRequest("TokenBase não informado.");
+            //if (string.IsNullOrEmpty(request.TokenBase))
+            //    return Results.BadRequest("TokenBase não informado.");
 
             //verifica se o token não esta em branco
             if (string.IsNullOrEmpty(token))

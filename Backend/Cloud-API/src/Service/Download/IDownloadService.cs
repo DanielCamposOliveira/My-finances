@@ -2,6 +2,6 @@
 {
     public interface IDownloadService
     {
-        public Task<IResult> DownloadBase(string token, HttpContext context);
+        public Task<IResult> DownloadBase(string token);
     }
 }

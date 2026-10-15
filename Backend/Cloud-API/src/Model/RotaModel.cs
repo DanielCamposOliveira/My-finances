@@ -35,9 +35,7 @@
 
         public static class  DeleteBase
         {
-            public const string Task = "/delete/task/{token}";
-            public const string Base = "/delete/base/{token}";          
-            public const string Erro = "/delete/erro/{token}";
+            public const string Base = "/delete/base/{token}";  
         }
 
   

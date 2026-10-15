@@ -25,6 +25,7 @@ namespace Cloud_API.src.EndPoints
             .Produces(StatusCodes.Status401Unauthorized)
             .RequireAuthorization();
 
+
             // Rota acessada pela API usando Key
             // Gera uma URL para o usuario fazer o Download do PDF sem autenticação 
             taskGroupDownload.MapGet("/", async (string token, HttpContext context, IUrlService service) =>

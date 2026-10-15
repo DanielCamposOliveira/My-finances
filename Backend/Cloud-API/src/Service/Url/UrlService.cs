@@ -1,4 +1,6 @@
-﻿namespace Cloud_API.src.Service.Url
+﻿using Cloud_API.src.Model;
+
+namespace Cloud_API.src.Service.Url
 {
     public class UrlService : IUrlService
     {
@@ -17,23 +19,25 @@
         public async Task<IResult> UrlGenerateUpload(HttpContext context)
         {
             // Gerar um token para validação do arquivo no banco de dados
-            string _TokenVideoBase = Guid.NewGuid().ToString("N");
+            // gera um nome para pasta temporaria para upload do arquivo
+            //string _nomePasta = Guid.NewGuid().ToString("N");
+            string _nomePasta = $"{Guid.NewGuid().ToString("N")[..5]}";
 
 
             // Gerar um token para validação da url upload
             var UploadToken = Guid.NewGuid().ToString("N")[..8];
 
-            var uploadUrl = $"{context.Request.Scheme}://{context.Request.Host}" +
-                            $"{StreamsRoutes.BaseMedia}{StreamsRoutes.UploadBase.BaseNoToken}/{UploadToken}";
+
+            var UrlUpload = $"{context.Request.Scheme}://{context.Request.Host}" + $"{StreamsRoutes.BaseMedia}{StreamsRoutes.UploadBase.BaseNoToken}/{UploadToken}";
 
             // Definir a data de expiração para 5 minutos a partir do momento da geração
             var expiresAt = DateTime.UtcNow.AddMinutes(1);
 
             // Criar o objeto a ser armazenado no cache
-            var data = new UrlUpload
+            var data = new UrlUploadModel
             {
-                TokenBase = _TokenVideoBase,
-                Url = uploadUrl,
+                NomePasta =_nomePasta,
+                Url = UrlUpload,
                 ExpiresAt = expiresAt
             };
 
@@ -44,7 +48,7 @@
 
 
 
-            return Results.Json(data, statusCode: StatusCodes.Status201Created);
+            return Results.Json(UrlUpload, statusCode: StatusCodes.Status201Created);
         }
 
         // Gera uma URL para o usuario fazer o Download do PDF sem autenticação 

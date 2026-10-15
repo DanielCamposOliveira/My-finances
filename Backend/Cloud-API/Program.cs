@@ -2,6 +2,7 @@ using Cloud_API;
 using Cloud_API.src.Authentication;
 using Cloud_API.src.EndPoints;
 using Cloud_API.src.Process.Download;
+using Cloud_API.src.Process.Storage;
 using Cloud_API.src.Process.Upload;
 using Cloud_API.src.Repository.Chunk;
 using Cloud_API.src.Repository.Dictionary;
@@ -13,6 +14,10 @@ using HashidsNet;
 using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddDbContext<AppDbContext>();
+
 
 // Adiciona o serviço de cache em memória nativo do .NET
 builder.Services.AddMemoryCache();
@@ -45,6 +50,8 @@ builder.Services.AddScoped<IUploadProcess ,UploadProcess>();
 
 builder.Services.AddScoped<IDownloadService ,DownloadService>();
 builder.Services.AddScoped<IDownloadProcess, DownloadProcess>();
+
+builder.Services.AddScoped<IStorageProcess, StorageProcess>();
 
 builder.Services.AddTransient<GeneratorName>();
 

@@ -3,6 +3,8 @@
     public interface IDownloadProcess
     {
 
-        Task<IResult> DownloadBase(UrlDownload data, HttpContext context);
+        //   Task<IResult> DownloadBase(UrlDownload data);
+
+        Task<string?> DownloadBase(UrlDownload data);
     }
 }

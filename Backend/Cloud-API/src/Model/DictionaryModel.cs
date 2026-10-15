@@ -12,12 +12,11 @@
         public bool IsDirty { get; set; } = true;
     }
 
-    public class UrlUpload
-    {
-        public string TokenBase { get; set; }
-        public string Url { get; set; }
-        public DateTime ExpiresAt { get; set; }
-    }
+
+
+
+
+
 
     public class UrlDownload
     {
@@ -28,15 +27,6 @@
         public DateTime ExpiresAt { get; set; }
     }
 
-
-
-
-    public class RegistroDelete
-    {
-        public string Id { get; set; }
-        public string FileName { get; set; }
-        public string? extension { get; set; }
-    }
 
 
 

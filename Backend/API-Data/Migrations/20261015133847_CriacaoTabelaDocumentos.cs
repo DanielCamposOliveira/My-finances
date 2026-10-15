@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace Cloud_API.Migrations
+namespace API_Data.Migrations
 {
     /// <inheritdoc />
-    public partial class novosCampos : Migration
+    public partial class CriacaoTabelaDocumentos : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

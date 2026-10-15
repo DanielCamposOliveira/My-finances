@@ -1,4 +1,5 @@
-﻿using Cloud_API.src.Model.Upload;
+﻿using Cloud_API.src.DTO;
+using Cloud_API.src.Model;
 using Cloud_API.src.Repository.Chunk;
 using Cloud_API.src.Repository.Dictionary;
 using Cloud_API.src.Utils;
@@ -46,12 +47,23 @@ namespace Cloud_API.src.Process.Upload
             _GeneratorName = generatorName;
         }
 
-        public async Task<IResult> Upload(string token, UploadChunkRequestModel request, HttpContext context)
+        // token é passado aqui apenas para saber se a URL ainda esta valida e no fim do upload é removido do cache essa URL
+        public async Task<IResult> Upload(string token, UploadChunkDTO request, HttpContext context)
         {
             try
             {
+                //Busca no Cache usando seu método GetSingle
+                var arquivoNoCache = _urlRepository.GetSingle(token);
+
+                // Se o GetSingle retornou null, significa que o token expirou ou nunca existiu
+                if (arquivoNoCache == null)
+                {
+                    return Results.NotFound("Url inválida ou token expirado!");
+                }
+
+
                 // Verifica se o arquivo chegou corretamente
-                if(request.File.Length == 0 || request.File == null)
+                if (request.File.Length == 0 || request.File == null)
                 {
                     return Results.BadRequest(new { completed = false, ChunkPart = request.ChunkIndex, ChunkStatus = "Erro", message = "Arquivo não enviado" });
                 }
@@ -59,7 +71,8 @@ namespace Cloud_API.src.Process.Upload
                 // ====================================================================
                 // BARREIRA DE DUPLICIDADE: Evita reprocessar o mesmo pedaço à toa
                 // ====================================================================
-                if (_chunkRepository.JaPossuiChunk(request.TokenBase, request.ChunkIndex))
+                // if (_chunkRepository.JaPossuiChunk(request.TokenBase, request.ChunkIndex))
+                if (_chunkRepository.JaPossuiChunk(arquivoNoCache.NomePasta, request.ChunkIndex))
                 {    
                     return Results.Ok(new { completed = false, ChunkPart = request.ChunkIndex, ChunkStatus = "Duplicate", message = "Ignorando reenvio" });
                 }
@@ -78,12 +91,15 @@ namespace Cloud_API.src.Process.Upload
 
 
                 // Cria o diretório temporário para os pedaços usando o TokenVideoBase como nome da pasta
-                string tempFolderName = Path.Combine(RepositoryCache, request.TokenBase);
+                //string tempFolderName = Path.Combine(RepositoryCache, request.TokenBase);
+
+                string tempFolderName = Path.Combine(RepositoryCache, arquivoNoCache.NomePasta);
+
                 if (!Directory.Exists(tempFolderName)) Directory.CreateDirectory(tempFolderName);
 
                 // ==========================================
                 // 2. SALVA O CHUNK NO DISCO
-                // ==========================================e
+                // ==========================================
                 string chunkFilePath = Path.Combine(tempFolderName, $"{request.ChunkIndex}.part");
                 using (var stream = new FileStream(chunkFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
@@ -94,10 +110,12 @@ namespace Cloud_API.src.Process.Upload
                 // ==========================================
                 // 3. REGISTRA E VALIDA NO TRACKER (MEMÓRIA RAM)
                 // ==========================================
-                _chunkRepository.RegistrarChunk(request.TokenBase, request.ChunkIndex);
+                //_chunkRepository.RegistrarChunk(request.TokenBase, request.ChunkIndex);
+                _chunkRepository.RegistrarChunk(arquivoNoCache.NomePasta, request.ChunkIndex);
 
-                // Verifica na memória RAM (de forma ultra rápida) se TODOS os pacotes chegaram
-                if (_chunkRepository.VerificarSeConcluiu(request.TokenBase, request.TotalChunks))
+                // Verifica na memória se TODOS os pacotes chegaram
+                //if (_chunkRepository.VerificarSeConcluiu(request.TokenBase, request.TotalChunks))
+                if (_chunkRepository.VerificarSeConcluiu(arquivoNoCache.NomePasta, request.TotalChunks))
                 {
                     // Tenta entrar no processo de Merge (apenas a thread que completou o quebra-cabeça avança)
                     if (await _mergeLock.WaitAsync(0))
@@ -135,31 +153,34 @@ namespace Cloud_API.src.Process.Upload
                             // 4. REGISTRA O ARQUIVO NO BANCO DE DADOS DictionaryStorage APENAS QUANDO O MERGE FOR CONCLUÍDO COM SUCESSO
                             // ==========================================
 
-                            //Busca no Cache usando seu método GetSingle
-                            var arquivoNoCache = _urlRepository.GetSingle(token);
+                            ////Busca no Cache usando seu método GetSingle
+                            //var arquivoNoCache = _urlRepository.GetSingle(token);
 
-                            // Se o GetSingle retornou null, significa que o token expirou ou nunca existiu
-                            if (arquivoNoCache == null)
-                            {
-                                return Results.NotFound("Url inválida ou token expirado!");
-                            }
+                            //// Se o GetSingle retornou null, significa que o token expirou ou nunca existiu
+                            //if (arquivoNoCache == null)
+                            //{
+                            //    return Results.NotFound("Url inválida ou token expirado!");
+                            //}
 
 
-                            _dictionaryRepository.DicionarioDeMemoria[request.TokenBase] = new Registro
-                            {
-                                TokenBase = arquivoNoCache.TokenBase,
-                                FileName = NomeGerado, // salva o nome do arquivo sem extensão
-                                extension = request.extension, // adiciona a extensão do arquivo original
-                                DataUpload = DateTime.UtcNow,
-                                IsDirty = true
-                            };
+                            //_dictionaryRepository.BancoDadosMemoria[request.TokenBase] = new Documento
+                            //{
+
+                            //    //TokenBase = arquivoNoCache.TokenBase,
+                            //    //FileName = NomeGerado, // salva o nome do arquivo sem extensão
+                            //    //extension = request.extension, // adiciona a extensão do arquivo original
+                            //    //DataUpload = DateTime.UtcNow,
+                            //    //IsDirty = true
+                            //};
 
 
                             // ==========================================
                             // 5. LIMPEZA DOS BANCOS DE CACHE
                             // ==========================================
                             _urlRepository.Remove(token); // Consome o token de segurança da URL (impede que seja usado para outro upload ou download)
-                            _chunkRepository.LimparSessao(request.TokenBase); // Limpa a memória RAM do Tracker
+                            //_chunkRepository.LimparSessao(request.TokenBase); // Limpa a memória RAM do Tracker
+                            _chunkRepository.LimparSessao(arquivoNoCache.NomePasta); // Limpa a memória RAM do Tracker
+
 
                             var downloadUrl = $"{context.Request.Scheme}://{context.Request.Host}";
 
@@ -191,7 +212,8 @@ namespace Cloud_API.src.Process.Upload
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao processar o chunk {ChunkIndex} do token {TokenVideoBase}", request.ChunkIndex, request.TokenBase);
+                //_logger.LogError(ex, "Erro ao processar o chunk {ChunkIndex} do token {TokenVideoBase}", request.ChunkIndex, request.TokenBase);
+                _logger.LogError(ex, "Erro ao processar o chunk {ChunkIndex} do token {TokenVideoBase}", request.ChunkIndex);
                 return Results.BadRequest(new
                 {
                     completed = false,

@@ -1,4 +1,4 @@
-﻿using Cloud_API.src.Model.Upload;
+﻿using Cloud_API.src.DTO;
 using Cloud_API.src.Service.Upload;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +11,7 @@ namespace Cloud_API.src.EndPoints
             var taskGroupUpload = app.MapGroup(StreamsRoutes.BaseMedia).WithTags("Upload");
 
            
-            taskGroupUpload.MapPost(StreamsRoutes.UploadBase.Base, async (string token, [FromForm] UploadChunkRequestModel request, HttpContext context, IUploadService service) =>
+            taskGroupUpload.MapPost(StreamsRoutes.UploadBase.Base, async (string token, [FromForm] UploadChunkDTO request, HttpContext context, IUploadService service) =>
             {
                 var response = await service.UploadBase(token, request, context);
                 return response;
