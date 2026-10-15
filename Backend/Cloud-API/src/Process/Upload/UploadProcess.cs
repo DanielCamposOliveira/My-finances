@@ -29,7 +29,7 @@ namespace Cloud_API.src.Process.Upload
 
         private readonly CacheUploadRepository _urlRepository;
         private readonly ChunkRepository _chunkRepository;
-        private readonly GeneratorName _GeneratorName;
+        private readonly IGeneratorName _GeneratorName;
         private readonly DictionaryRepository _dictionaryRepository;
 
         // Lock para garantir que apenas um processo de merge ocorra por vez
@@ -37,7 +37,7 @@ namespace Cloud_API.src.Process.Upload
 
         private readonly IDataBaseRepository _dataBaseRepository;
 
-        public UploadProcess(IConfiguration configuration, CacheUploadRepository urlCache, ChunkRepository chunkTracker, DictionaryRepository dictionaryStorage, GeneratorName generatorName, ILogger<UploadProcess> logger, IDataBaseRepository dataBaseRepository)
+        public UploadProcess(IConfiguration configuration, CacheUploadRepository urlCache, ChunkRepository chunkTracker, DictionaryRepository dictionaryStorage, IGeneratorName generatorName, ILogger<UploadProcess> logger, IDataBaseRepository dataBaseRepository)
         {
             RepositoryBase = configuration.GetSection("LocalSettings:PathStrings:BasePathRepositoryBase").Value;
             RepositoryCache = configuration.GetSection("LocalSettings:PathStrings:BasePathRepositoryCache").Value;

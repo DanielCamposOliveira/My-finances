@@ -2,7 +2,7 @@
 
 namespace Cloud_API.src.Utils
 {
-    public class GeneratorName
+    public class GeneratorName : IGeneratorName
     {
         SnowflakeGenerator gerador;
         private readonly Hashids hashids;

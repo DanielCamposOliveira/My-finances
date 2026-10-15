@@ -39,7 +39,6 @@ builder.Services.AddAuthorization(); // Habilita o suporte a [Authorize] / Requi
 // ============================================================
 builder.Services.AddSingleton<Hashids>(provider => new Hashids(builder.Configuration.GetSection("config:SaltSecret").Value, 7));
 builder.Services.AddSingleton<SnowflakeGenerator>();
-
 builder.Services.AddSingleton<CacheDownloadRepository>();
 builder.Services.AddSingleton<CacheUploadRepository>();
 builder.Services.AddSingleton<DictionaryRepository>();
@@ -53,13 +52,19 @@ builder.Services.AddScoped<IUploadProcess ,UploadProcess>();
 builder.Services.AddScoped<IDownloadService ,DownloadService>();
 builder.Services.AddScoped<IDownloadProcess, DownloadProcess>();
 
+builder.Services.AddScoped<IStorageService, StorageService>();
 builder.Services.AddScoped<IStorageProcess, StorageProcess>();
 
-builder.Services.AddTransient<GeneratorName>();
+
 
 builder.Services.AddScoped<IDataBaseRepository, DataBaseRepository>();
 
-builder.Services.AddScoped<IStorageService, StorageService>();
+
+
+
+
+builder.Services.AddTransient<IGeneratorName, GeneratorName>();
+
 
 // ============================================================
 // SWAGGER
