@@ -1,6 +1,7 @@
 ﻿using Cloud_API.src.DTO;
 using Cloud_API.src.Model;
 using Cloud_API.src.Repository.Chunk;
+using Cloud_API.src.Repository.DataBase;
 using Cloud_API.src.Repository.Dictionary;
 using Cloud_API.src.Utils;
 using System.Security.Cryptography;
@@ -26,17 +27,17 @@ namespace Cloud_API.src.Process.Upload
         private readonly string RepositoryBase;
         private readonly string RepositoryCache;
 
-        private readonly UrlUploadRepository _urlRepository;
+        private readonly CacheUploadRepository _urlRepository;
         private readonly ChunkRepository _chunkRepository;
         private readonly GeneratorName _GeneratorName;
         private readonly DictionaryRepository _dictionaryRepository;
 
         // Lock para garantir que apenas um processo de merge ocorra por vez
         private static readonly SemaphoreSlim _mergeLock = new SemaphoreSlim(1, 1);
-                
 
+        private readonly IDataBaseRepository _dataBaseRepository;
 
-        public UploadProcess(IConfiguration configuration, UrlUploadRepository urlCache, ChunkRepository chunkTracker, DictionaryRepository dictionaryStorage, GeneratorName generatorName, ILogger<UploadProcess> logger)
+        public UploadProcess(IConfiguration configuration, CacheUploadRepository urlCache, ChunkRepository chunkTracker, DictionaryRepository dictionaryStorage, GeneratorName generatorName, ILogger<UploadProcess> logger, IDataBaseRepository dataBaseRepository)
         {
             RepositoryBase = configuration.GetSection("LocalSettings:PathStrings:BasePathRepositoryBase").Value;
             RepositoryCache = configuration.GetSection("LocalSettings:PathStrings:BasePathRepositoryCache").Value;
@@ -45,6 +46,7 @@ namespace Cloud_API.src.Process.Upload
             _logger = logger;
             _dictionaryRepository = dictionaryStorage;
             _GeneratorName = generatorName;
+            _dataBaseRepository = dataBaseRepository;
         }
 
         // token é passado aqui apenas para saber se a URL ainda esta valida e no fim do upload é removido do cache essa URL
@@ -173,7 +175,15 @@ namespace Cloud_API.src.Process.Upload
                             //    //IsDirty = true
                             //};
 
-
+                            // Grava no banco de dados
+                            bool gravar = await _dataBaseRepository.RegistraArquivo(request, NomeGerado);
+                            if(gravar == false)
+                            {
+                                return Results.Json(
+                                    new { completed = false, NameFile = NomeGerado },
+                                    statusCode: StatusCodes.Status400BadRequest
+                                );
+                            }
                             // ==========================================
                             // 5. LIMPEZA DOS BANCOS DE CACHE
                             // ==========================================

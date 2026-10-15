@@ -3,7 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Cloud_API
 {
-    public class UrlUploadRepository
+    public class CacheUploadRepository
     {
         private readonly IMemoryCache _cache;// Cache em memória para armazenar os dados de URL
 
@@ -11,7 +11,7 @@ namespace Cloud_API
         // Lista para rastrear quais chaves nós criamos
         private readonly HashSet<string> _keys = new();
 
-        public UrlUploadRepository(IMemoryCache cache )
+        public CacheUploadRepository(IMemoryCache cache )
         {
             _cache = cache;
                     

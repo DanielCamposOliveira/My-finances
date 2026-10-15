@@ -9,6 +9,7 @@
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         public DateTime DateAccessed { get; set; } // = DateTime.UtcNow;
 
+        public int QtdAcess { get; set; } = 0;
         public bool Ativo { get; set; } = true; // se o arquivo for apagado por algum motivo, não deletamos o registro por enquanto
     }
 }

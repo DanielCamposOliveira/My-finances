@@ -47,6 +47,9 @@ namespace Cloud_API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("QtdAcess")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NameArchived")

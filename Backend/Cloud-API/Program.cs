@@ -5,8 +5,10 @@ using Cloud_API.src.Process.Download;
 using Cloud_API.src.Process.Storage;
 using Cloud_API.src.Process.Upload;
 using Cloud_API.src.Repository.Chunk;
+using Cloud_API.src.Repository.DataBase;
 using Cloud_API.src.Repository.Dictionary;
 using Cloud_API.src.Service.Download;
+using Cloud_API.src.Service.Storage;
 using Cloud_API.src.Service.Upload;
 using Cloud_API.src.Service.Url;
 using Cloud_API.src.Utils;
@@ -38,8 +40,8 @@ builder.Services.AddAuthorization(); // Habilita o suporte a [Authorize] / Requi
 builder.Services.AddSingleton<Hashids>(provider => new Hashids(builder.Configuration.GetSection("config:SaltSecret").Value, 7));
 builder.Services.AddSingleton<SnowflakeGenerator>();
 
-builder.Services.AddSingleton<UrlDownloadRepository>();
-builder.Services.AddSingleton<UrlUploadRepository>();
+builder.Services.AddSingleton<CacheDownloadRepository>();
+builder.Services.AddSingleton<CacheUploadRepository>();
 builder.Services.AddSingleton<DictionaryRepository>();
 builder.Services.AddSingleton<ChunkRepository>();
 
@@ -55,6 +57,9 @@ builder.Services.AddScoped<IStorageProcess, StorageProcess>();
 
 builder.Services.AddTransient<GeneratorName>();
 
+builder.Services.AddScoped<IDataBaseRepository, DataBaseRepository>();
+
+builder.Services.AddScoped<IStorageService, StorageService>();
 
 // ============================================================
 // SWAGGER
@@ -156,5 +161,5 @@ app.UseAntiforgery();
 app.MapUploadEndpoints();
 app.MapDonwloadEndpoints();
 app.MapUrlEndpoints();
-
+app.MapStorageEndpoint();
 app.Run();

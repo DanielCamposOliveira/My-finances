@@ -2,9 +2,6 @@
 {
     public interface IDownloadProcess
     {
-
-        //   Task<IResult> DownloadBase(UrlDownload data);
-
-        Task<string?> DownloadBase(UrlDownload data);
+        Task<string?> DownloadBase(string NameArchived);
     }
 }

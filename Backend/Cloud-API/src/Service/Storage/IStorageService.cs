@@ -2,5 +2,6 @@
 {
     public interface IStorageService
     {
+        public Task<IResult> Delete(string token);
     }
 }

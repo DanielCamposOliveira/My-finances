@@ -9,9 +9,9 @@ namespace Cloud_API.src.EndPoints
             var taskGroupUpload = app.MapGroup(StreamsRoutes.BaseArchive).WithTags("Download");
 
 
-            taskGroupUpload.MapGet(StreamsRoutes.DownloadBase.Base, async (string token,  IDownloadService service) =>
+            taskGroupUpload.MapGet(StreamsRoutes.DownloadBase.Base, async (string token, HttpContext context, IDownloadService service) =>
             {
-                var response = await service.DownloadBase(token);
+                var response = await service.DownloadBase(token, context);
                 return response;
             })
             .WithSummary("Download PDF")

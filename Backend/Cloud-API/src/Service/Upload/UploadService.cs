@@ -6,11 +6,11 @@ namespace Cloud_API.src.Service.Upload
 {
     public class UploadService : IUploadService
     {
-        private readonly UrlUploadRepository _UrlUploadRepository; 
+        private readonly CacheUploadRepository _UrlUploadRepository; 
         private readonly IUploadProcess _uploadProcess;
 
 
-        public UploadService(UrlUploadRepository urlCache, IUploadProcess uploadProcess)
+        public UploadService(CacheUploadRepository urlCache, IUploadProcess uploadProcess)
         {
             _UrlUploadRepository = urlCache;
             _uploadProcess = uploadProcess;
@@ -19,10 +19,15 @@ namespace Cloud_API.src.Service.Upload
 
         public async Task<IResult> UploadBase(string token, [FromForm] UploadChunkDTO request, HttpContext context )
         {
-            //verifica se o ID não esta em branco
-            //if (string.IsNullOrEmpty(request.TokenBase))
-            //    return Results.BadRequest("TokenBase não informado.");
+            // Busca no Cache usando seu método GetSingle
+            var arquivoNoCache = _UrlUploadRepository.GetSingle(token);
 
+            // Se o GetSingle retornou null, significa que o token expirou ou nunca existiu
+            if (arquivoNoCache == null)
+            {
+                return Results.NotFound("token inexistente!");
+            }
+       
             //verifica se o token não esta em branco
             if (string.IsNullOrEmpty(token))
                 return Results.BadRequest("token não informado.");
@@ -31,14 +36,9 @@ namespace Cloud_API.src.Service.Upload
             if (string.IsNullOrEmpty(request.chunkMd5))
                 return Results.BadRequest("chunkMd5 não informado.");
 
-            // 2. Busca no Cache usando seu método GetSingle
-            var arquivoNoCache = _UrlUploadRepository.GetSingle(token);
 
-            // Se o GetSingle retornou null, significa que o token expirou ou nunca existiu
-            if (arquivoNoCache == null)
-            {
-                return Results.NotFound("Url inválida ou token expirado!");
-            }
+
+
 
             //Chama a função de receber o upload do arquivo
             return await _uploadProcess.Upload(token, request, context);

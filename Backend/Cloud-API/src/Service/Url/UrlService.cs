@@ -4,10 +4,10 @@ namespace Cloud_API.src.Service.Url
 {
     public class UrlService : IUrlService
     {
-        private readonly UrlUploadRepository _urlUploadRepository; 
-        private readonly UrlDownloadRepository _urlDownloadRepository;
+        private readonly CacheUploadRepository _urlUploadRepository; 
+        private readonly CacheDownloadRepository _urlDownloadRepository;
 
-        public UrlService(UrlUploadRepository urlUploadRepository, UrlDownloadRepository urlDownloadRepository)
+        public UrlService(CacheUploadRepository urlUploadRepository, CacheDownloadRepository urlDownloadRepository)
         {
             _urlUploadRepository = urlUploadRepository;
             _urlDownloadRepository = urlDownloadRepository;
@@ -60,11 +60,11 @@ namespace Cloud_API.src.Service.Url
             var Url = $"{context.Request.Scheme}://{context.Request.Host}" +
                             $"{StreamsRoutes.BaseArchive}{StreamsRoutes.DownloadBase.BaseNoToken}/{DownloadToken}";
 
-            // Definir a data de expiração para 5 minutos a partir do momento da geração
+            // Definir a data de expiração para 1 minutos a partir do momento da geração
             var expiresAt = DateTime.UtcNow.AddMinutes(1);
 
             // Criar o objeto a ser armazenado no cache
-            var data = new UrlDownload
+            var data = new UrlDonwloadModel
             {
                 Token = DownloadToken,
                 FileName = token,

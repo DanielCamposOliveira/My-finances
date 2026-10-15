@@ -34,6 +34,10 @@ namespace Cloud_API
                    .HasConversion<int>()
                    .IsRequired();
 
+                builder.Property(d => d.QtdAcess)
+               .HasConversion<int>()
+               .IsRequired();
+
                 builder.HasIndex(d => new
                 {
                     d.NameArchived

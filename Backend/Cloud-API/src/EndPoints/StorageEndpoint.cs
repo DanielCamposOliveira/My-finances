@@ -1,4 +1,4 @@
-﻿using Cloud_API.src.Service.Url;
+﻿using Cloud_API.src.Service.Storage;
 using static Cloud_API.StreamsRoutes;
 
 namespace Cloud_API.src.EndPoints
@@ -11,9 +11,9 @@ namespace Cloud_API.src.EndPoints
 
             // Rota acessada pela API usando Key
             // Gera uma URL para o usuario fazer o UPload do PDF sem autenticação 
-            taskGroupDelete.MapDelete("/", async (HttpContext context, IUrlService service) =>
+            taskGroupDelete.MapDelete("/", async (string token,  IStorageService service) =>
             {
-                var response = await service.UrlGenerateUpload(context);
+                var response = await service.Delete(token);
                 return response;
             })
             .WithSummary("Deleta PDF")

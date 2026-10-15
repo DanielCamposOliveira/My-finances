@@ -1,70 +1,75 @@
-﻿using Cloud_API.src.Process.Download;
-using Microsoft.AspNetCore.Http.HttpResults;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Cloud_API.src.DTO;
+using Cloud_API.src.Model;
+using Cloud_API.src.Process.Download;
+using Cloud_API.src.Repository.DataBase;
 
 namespace Cloud_API.src.Service.Download
 {
     public class DownloadService : IDownloadService
     {
 
-        private readonly UrlDownloadRepository _urlDownloadRepository;
+        private readonly CacheDownloadRepository _CacheDownloadRepository;
         private readonly IDownloadProcess _downloadProcess;
+        private readonly IDataBaseRepository _dataBaseRepository;
 
-        public DownloadService(UrlDownloadRepository urlDownloadRepository, IDownloadProcess downloadProcess)
+
+        public DownloadService(CacheDownloadRepository cacheDownloadRepository, IDownloadProcess downloadProcess, IDataBaseRepository dataBaseRepository)
         {
-            _urlDownloadRepository = urlDownloadRepository;
+            _CacheDownloadRepository = cacheDownloadRepository;
             _downloadProcess = downloadProcess;
+            _dataBaseRepository = dataBaseRepository;
         }
 
-        //public async Task<IResult> DownloadBasesss(string token)
-        //{
-        //    //verifica se o ID não esta em branco
-        //    if (string.IsNullOrEmpty(token))
-        //        return Results.BadRequest("TokenBase não informado.");
 
-        //    // verifica se a url esta disponivel
-        //    var arquivoNoCache = _urlDownloadRepository.GetSingle(token);
-
-        //    // Se o GetSingle retornou null, significa que o token expirou ou nunca existiu
-        //    if (arquivoNoCache == null)
-        //    {
-        //        return Results.NotFound("Url inválida ou token expirado!");
-        //    }
-
-        //    return await _downloadProcess.DownloadBase(arquivoNoCache);
-        //}
-
-        public async Task<IResult> DownloadBase(string token)
+        public async Task<IResult> DownloadBase(string token, HttpContext httpContext)
         {
             if (string.IsNullOrEmpty(token))
                 return Results.BadRequest();
 
-            var arquivoNoCache = _urlDownloadRepository.GetSingle(token);
+            // verifica se essa URL existe no banco de dados de cache
+            UrlDonwloadModel UrlNoCache = _CacheDownloadRepository.GetSingle(token);
 
-            if (arquivoNoCache == null)
+            if (UrlNoCache == null)
             {
                 return Results.NotFound();
             }
 
-            if (string.IsNullOrEmpty(arquivoNoCache.FileName))
+
+            // verifica se esse ARQUIVO existe no banco de dados
+            DocumentoDownloadDTO dados = await _dataBaseRepository.ObterRegistro(UrlNoCache.FileName);
+
+            if(dados == null)
             {
                 return Results.BadRequest();
             }
 
 
-            // Chama o processo que agora retorna apenas o caminho do arquivo
-            var filePath = await _downloadProcess.DownloadBase(arquivoNoCache);
+            string NameArchived = dados.NameArchived + dados.Extension;
+      
+            var filePath = await _downloadProcess.DownloadBase(NameArchived);
 
             if (filePath == null)
             {
+
+                bool var = await _dataBaseRepository.Active(dados.NameArchived, false);
+
                 return Results.NotFound();
             }
 
-            // Remove a URL para não ser acessada novamente
-            _urlDownloadRepository.Remove(token);
 
-            // O serviço/endpoint é quem decide retornar o arquivo usando o framework web
+            // Remove a URL para não ser acessada novamente
+            _CacheDownloadRepository.Remove(token);
+
+            // Atualiza o campo "DateAccessed" ultama vez acessado
+            bool Update = await _dataBaseRepository.UpdateDateAccessed(dados.NameArchived);
+
+            string fileDownloadName = dados.NameOriginal + dados.Extension;
+
+            // Força o navegador a exibir no formato inline (visualizar) com o nome original
+            httpContext.Response.Headers.Append("Content-Disposition", $"inline; filename=\"{fileDownloadName}\"");
+
             return Results.File(filePath, "application/pdf", enableRangeProcessing: false);
+
         }
     }
 }
