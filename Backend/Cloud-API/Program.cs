@@ -1,5 +1,7 @@
 using Cloud_API;
 using Cloud_API.src.Authentication;
+using Cloud_API.src.Background.BackgroundLocal;
+using Cloud_API.src.Background.BackgroundProcess;
 using Cloud_API.src.EndPoints;
 using Cloud_API.src.Process.Download;
 using Cloud_API.src.Process.Storage;
@@ -7,6 +9,7 @@ using Cloud_API.src.Process.Upload;
 using Cloud_API.src.Repository.Chunk;
 using Cloud_API.src.Repository.DataBase;
 using Cloud_API.src.Repository.Dictionary;
+using Cloud_API.src.Service.Consulta;
 using Cloud_API.src.Service.Download;
 using Cloud_API.src.Service.Storage;
 using Cloud_API.src.Service.Upload;
@@ -14,10 +17,12 @@ using Cloud_API.src.Service.Url;
 using Cloud_API.src.Utils;
 using HashidsNet;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+// Configura a Injeção de Dependência para o EF Core usar o SQLite
 builder.Services.AddDbContext<AppDbContext>();
 
 
@@ -37,12 +42,18 @@ builder.Services.AddAuthorization(); // Habilita o suporte a [Authorize] / Requi
 // ============================================================
 // INJEÇÃO DE DEPENDÊNCIA
 // ============================================================
+builder.Services.AddHostedService<TaskBackground>();
+builder.Services.AddHostedService<BackgroundServiceLocal>();
+
 builder.Services.AddSingleton<Hashids>(provider => new Hashids(builder.Configuration.GetSection("config:SaltSecret").Value, 7));
 builder.Services.AddSingleton<SnowflakeGenerator>();
 builder.Services.AddSingleton<CacheDownloadRepository>();
 builder.Services.AddSingleton<CacheUploadRepository>();
 builder.Services.AddSingleton<DictionaryRepository>();
 builder.Services.AddSingleton<ChunkRepository>();
+
+builder.Services.AddSingleton<IFilaDeTrabalho, FilaDeTrabalho>();
+
 
 builder.Services.AddScoped<IUrlService, UrlService>();
 
@@ -55,12 +66,9 @@ builder.Services.AddScoped<IDownloadProcess, DownloadProcess>();
 builder.Services.AddScoped<IStorageService, StorageService>();
 builder.Services.AddScoped<IStorageProcess, StorageProcess>();
 
-
+builder.Services.AddScoped<IConsultaService,ConsultaService>();
 
 builder.Services.AddScoped<IDataBaseRepository, DataBaseRepository>();
-
-
-
 
 
 builder.Services.AddTransient<IGeneratorName, GeneratorName>();
@@ -71,10 +79,16 @@ builder.Services.AddTransient<IGeneratorName, GeneratorName>();
 // ============================================================
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen(options =>
 {
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Cloud - API",
+        Version = "v1"
+    });
+
     // Define como o Swagger deve descrever a autenticação por Key
-    c.AddSecurityDefinition("ApiKey", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    options.AddSecurityDefinition("ApiKey", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Description = "Insira sua chave API no cabeçalho. Nome: X-Api-Key",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
@@ -82,9 +96,9 @@ builder.Services.AddSwaggerGen(c =>
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
         Scheme = "ApiKeyScheme"
     });
-    
+
     // Define que todas as rotas (exceto as do Swagger) exigem a autenticação por Key
-    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
         {
             new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -112,7 +126,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("DesenvolvimentoTotal", policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        policy
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 
@@ -150,7 +167,6 @@ app.UseSwaggerUI(c =>
 // MIDDLEWARE
 // ============================================================
 // 1º -  ForwardedHeaders e RateLimiter (executa antes do CORS e Autenticação)
-// A ordem importa: Autenticação vem antes da Autorização
 
 app.UseCors("DesenvolvimentoTotal"); // Deve ficar entre o UseRouting e o UseAuthorization
 
@@ -167,4 +183,7 @@ app.MapUploadEndpoints();
 app.MapDonwloadEndpoints();
 app.MapUrlEndpoints();
 app.MapStorageEndpoint();
+app.MapConsultaEndpoints();
+
+
 app.Run();

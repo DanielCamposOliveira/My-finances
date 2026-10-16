@@ -6,10 +6,12 @@ namespace Cloud_API.src.Repository.DataBase
 {
     public class DataBaseRepository : IDataBaseRepository
     {
-        private readonly AppDbContext _db;
-        public DataBaseRepository(AppDbContext db)
-        {
-            _db = db;
+
+        private readonly IServiceScopeFactory _scopeFactory;
+
+        public DataBaseRepository( IServiceScopeFactory scopeFactory)
+        {    
+            _scopeFactory = scopeFactory;
         }
 
         public async Task<bool> RegistraArquivo(UploadChunkDTO Dados, string NomeGerado)
@@ -17,8 +19,15 @@ namespace Cloud_API.src.Repository.DataBase
 
             try
             {
+                // Cria um escopo de DI isolado para a thread em background
+                using var scope = _scopeFactory.CreateScope();
+
+                // Resolve o DbContext dentro deste novo escopo
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                
                 // verifica se existe algum arquivo com o mesmo nome, porem isso vai ser muito mas muito RARO
-                if(await _db.StorageRegistry.AnyAsync(d => d.NameArchived == NomeGerado))
+                if (await dbContext.StorageRegistry.AnyAsync(d => d.NameArchived == NomeGerado))
                 {
                     return false;
                 }
@@ -35,10 +44,10 @@ namespace Cloud_API.src.Repository.DataBase
                 };
 
                 // Adiciona os dados ao banco de dados
-                _db.StorageRegistry.AddAsync(registro);
+                dbContext.StorageRegistry.AddAsync(registro);
 
                 //salva as alterações
-                await _db.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
                 return true;
             }
@@ -52,7 +61,14 @@ namespace Cloud_API.src.Repository.DataBase
         public async Task<DocumentoDownloadDTO> ObterRegistro(string token)
         {
 
-           var dados = await _db.StorageRegistry.FirstOrDefaultAsync(d => d.NameArchived == token);
+            // Cria um escopo de DI isolado para a thread em background
+            using var scope = _scopeFactory.CreateScope();
+
+            // Resolve o DbContext dentro deste novo escopo
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+
+            var dados = await dbContext.StorageRegistry.FirstOrDefaultAsync(d => d.NameArchived == token);
 
             if(dados == null)
             {
@@ -79,7 +95,14 @@ namespace Cloud_API.src.Repository.DataBase
         {
             try
             {
-                var dados = await _db.StorageRegistry.FirstOrDefaultAsync(d => d.NameArchived == NameArchived);
+                // Cria um escopo de DI isolado para a thread em background
+                using var scope = _scopeFactory.CreateScope();
+
+                // Resolve o DbContext dentro deste novo escopo
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+
+                var dados = await dbContext.StorageRegistry.FirstOrDefaultAsync(d => d.NameArchived == NameArchived);
 
                 if (dados == null || dados.Ativo == false)
                 {
@@ -89,7 +112,7 @@ namespace Cloud_API.src.Repository.DataBase
                 dados.DateAccessed = DateTime.Now;
                 dados.QtdAcess = dados.QtdAcess + 1;
 
-                await _db.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
                 return true;
             }
             catch
@@ -102,7 +125,14 @@ namespace Cloud_API.src.Repository.DataBase
         {
             try
             {
-                var dados = await _db.StorageRegistry.FirstOrDefaultAsync(d => d.NameArchived == NameArchived);
+                // Cria um escopo de DI isolado para a thread em background
+                using var scope = _scopeFactory.CreateScope();
+
+                // Resolve o DbContext dentro deste novo escopo
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+
+                var dados = await dbContext.StorageRegistry.FirstOrDefaultAsync(d => d.NameArchived == NameArchived);
 
                 if (dados == null)
                 {
@@ -111,7 +141,7 @@ namespace Cloud_API.src.Repository.DataBase
 
                 dados.Ativo = valor;
 
-                await _db.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
                 return true;
             }
@@ -125,16 +155,23 @@ namespace Cloud_API.src.Repository.DataBase
         {
             try
             {
-                var dados = await _db.StorageRegistry.FirstOrDefaultAsync(d => d.NameArchived == NameArchived);
+                // Cria um escopo de DI isolado para a thread em background
+                using var scope = _scopeFactory.CreateScope();
+
+                // Resolve o DbContext dentro deste novo escopo
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+
+                var dados = await dbContext.StorageRegistry.FirstOrDefaultAsync(d => d.NameArchived == NameArchived);
 
                 if (dados == null)
                 {
                     return false;
                 }
 
-                _db.StorageRegistry.Remove(dados);
+                dbContext.StorageRegistry.Remove(dados);
 
-                await _db.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
                 return true;
             }

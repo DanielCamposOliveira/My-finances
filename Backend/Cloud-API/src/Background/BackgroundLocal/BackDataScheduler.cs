@@ -33,8 +33,17 @@
                         {
                             Console.WriteLine($"Erro na execução agendada: {ex.Message}");
                         }
-                        // Aguarda o intervalo definido antes de executar novamente, respeitando o token de cancelamento
-                        await Task.Delay(_intervaloExecucao, _cts.Token);
+
+                        try
+                        {
+                            // Aguarda o intervalo respeitando o token. Se cancelar, ele lança TaskCanceledException e sai limpo.
+                            await Task.Delay(_intervaloExecucao, _cts.Token);
+                        }
+                        catch (TaskCanceledException)
+                        {
+                            // Normal ao encerrar a aplicação
+                            break;
+                        }      
                     }
                 }, _cts.Token);
             }
@@ -44,8 +53,16 @@
         {
             if (_execucaoTask != null && !_execucaoTask.IsCompleted)
             {
-                _cts.Cancel();
-                _execucaoTask.Wait(); // Espera a tarefa terminar de forma limpa
+                _cts.Cancel(); // Dispara o cancelamento
+                try
+                {
+                    // Aguarda a tarefa terminar sem travar a thread principal de forma brusca
+                    _execucaoTask.Wait(TimeSpan.FromSeconds(3));
+                }
+                catch
+                {
+                    // Ignora eventuais exceções de timeout no encerramento
+                }        
             }
         }
 

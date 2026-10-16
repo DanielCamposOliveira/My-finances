@@ -13,7 +13,7 @@ namespace Cloud_API.src.Process.Storage
 
         public async Task<bool> DeleteDocumento(DocumentoDTO arquivo)
         {
-            string DocumentPath = Path.Combine(RepositoryBase, arquivo.FileName + arquivo.extension);
+            string DocumentPath = Path.Combine(RepositoryBase, arquivo.NameFile + arquivo.extension);
 
             try
             {

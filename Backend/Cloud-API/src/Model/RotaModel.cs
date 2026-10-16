@@ -2,13 +2,15 @@
 {
     public static class StreamsRoutes
     {
-        public const string BaseMedia = "/media";
-        public const string BaseArchive = "/archive";
+        public const string BaseMedia = "/api/v1/media";
+        public const string BaseArchive = "/api/v1/archive";
+
+        public const string BaseConsultae = "/api/v1/search";
 
         public static class UrlBase
         {
-            public const string Upload = "/inbound/";
-            public const string Donwload = "/output/{token}";
+            public const string Upload = "/api/v1/inbound/";
+            public const string Donwload = "/api/v1/output/{token}";
         }
 
         //public static class Task
@@ -21,6 +23,13 @@
         //    public const string FilterCache = "/cache/filter/{token}";
 
         //}
+
+        public static class Consulta
+        {
+            public const string Base = "/base/{token}";
+            public const string BaseNoToken = "/base";
+        }
+
         public static class DownloadBase
         {
             public const string BaseNoToken = "/download/base";

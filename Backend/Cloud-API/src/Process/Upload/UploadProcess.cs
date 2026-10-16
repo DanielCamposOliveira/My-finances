@@ -1,4 +1,5 @@
-﻿using Cloud_API.src.DTO;
+﻿using Cloud_API.src.Background.BackgroundProcess;
+using Cloud_API.src.DTO;
 using Cloud_API.src.Model;
 using Cloud_API.src.Repository.Chunk;
 using Cloud_API.src.Repository.DataBase;
@@ -23,30 +24,31 @@ namespace Cloud_API.src.Process.Upload
         /// </summary>
 
         private readonly ILogger<UploadProcess> _logger;
-
+        private readonly IFilaDeTrabalho _fila;
         private readonly string RepositoryBase;
         private readonly string RepositoryCache;
 
         private readonly CacheUploadRepository _urlRepository;
         private readonly ChunkRepository _chunkRepository;
         private readonly IGeneratorName _GeneratorName;
-        private readonly DictionaryRepository _dictionaryRepository;
+        private readonly DictionaryRepository BancoDadosMemoria;
 
         // Lock para garantir que apenas um processo de merge ocorra por vez
         private static readonly SemaphoreSlim _mergeLock = new SemaphoreSlim(1, 1);
 
         private readonly IDataBaseRepository _dataBaseRepository;
 
-        public UploadProcess(IConfiguration configuration, CacheUploadRepository urlCache, ChunkRepository chunkTracker, DictionaryRepository dictionaryStorage, IGeneratorName generatorName, ILogger<UploadProcess> logger, IDataBaseRepository dataBaseRepository)
+        public UploadProcess(IConfiguration configuration, CacheUploadRepository urlCache, ChunkRepository chunkTracker, DictionaryRepository dictionaryStorage, IGeneratorName generatorName, ILogger<UploadProcess> logger, IDataBaseRepository dataBaseRepository, IFilaDeTrabalho fila)
         {
             RepositoryBase = configuration.GetSection("LocalSettings:PathStrings:BasePathRepositoryBase").Value;
             RepositoryCache = configuration.GetSection("LocalSettings:PathStrings:BasePathRepositoryCache").Value;
             _urlRepository = urlCache;
             _chunkRepository = chunkTracker;
             _logger = logger;
-            _dictionaryRepository = dictionaryStorage;
+            BancoDadosMemoria = dictionaryStorage;
             _GeneratorName = generatorName;
             _dataBaseRepository = dataBaseRepository;
+            _fila = fila;
         }
 
         // token é passado aqui apenas para saber se a URL ainda esta valida e no fim do upload é removido do cache essa URL
@@ -152,40 +154,37 @@ namespace Cloud_API.src.Process.Upload
 
 
                             // ==========================================
-                            // 4. REGISTRA O ARQUIVO NO BANCO DE DADOS DictionaryStorage APENAS QUANDO O MERGE FOR CONCLUÍDO COM SUCESSO
+                            // 4. REGISTRA O ARQUIVO NO BANCO DE DADOS EM MEMÓRIA (DictionaryRepository)
                             // ==========================================
-
-                            ////Busca no Cache usando seu método GetSingle
-                            //var arquivoNoCache = _urlRepository.GetSingle(token);
-
-                            //// Se o GetSingle retornou null, significa que o token expirou ou nunca existiu
-                            //if (arquivoNoCache == null)
-                            //{
-                            //    return Results.NotFound("Url inválida ou token expirado!");
-                            //}
-
-
-                            //_dictionaryRepository.BancoDadosMemoria[request.TokenBase] = new Documento
-                            //{
-
-                            //    //TokenBase = arquivoNoCache.TokenBase,
-                            //    //FileName = NomeGerado, // salva o nome do arquivo sem extensão
-                            //    //extension = request.extension, // adiciona a extensão do arquivo original
-                            //    //DataUpload = DateTime.UtcNow,
-                            //    //IsDirty = true
-                            //};
-
-                            // Grava no banco de dados
-                            bool gravar = await _dataBaseRepository.RegistraArquivo(request, NomeGerado);
-                            if(gravar == false)
+                            var novoDocumento = new Documento
                             {
-                                return Results.Json(
-                                    new { completed = false, NameFile = NomeGerado },
-                                    statusCode: StatusCodes.Status400BadRequest
-                                );
+                                NameOriginal = request.FileName,
+                                NameArchived = NomeGerado,
+                                Extension = request.extension,
+                                DateCreated = DateTime.UtcNow,
+                                QtdAcess = 0,
+                                Ativo = true
+                            };
+
+                            // Utiliza o método Registrar que criamos no DictionaryRepository usando o token como chave
+                            bool salvoNaMemoria = BancoDadosMemoria.Registrar(token, novoDocumento);
+
+                            if (!salvoNaMemoria)
+                            {
+                                _logger.LogWarning("O token {Token} já existia no dicionário em memória.", token);
                             }
+
+
                             // ==========================================
-                            // 5. LIMPEZA DOS BANCOS DE CACHE
+                            // 5. REGISTRA NO BANCO DE DADOS (VIA FILA)
+                            // ==========================================
+
+                            // Enfileira a Tarefa de grava no Banco de Dados que sera rodada em Background 
+                            await _fila.EnfileirarTarefaAsync(token => _dataBaseRepository.RegistraArquivo(request, NomeGerado));
+
+
+                            // ==========================================
+                            // 6. LIMPEZA DOS BANCOS DE CACHE
                             // ==========================================
                             _urlRepository.Remove(token); // Consome o token de segurança da URL (impede que seja usado para outro upload ou download)
                             //_chunkRepository.LimparSessao(request.TokenBase); // Limpa a memória RAM do Tracker
@@ -202,7 +201,7 @@ namespace Cloud_API.src.Process.Upload
                            // return Results.Ok(new { completed = true, NameFile = NomeGerado });
                                                  
                             return Results.Json(
-                                new { completed = true, NameFile = NomeGerado },
+                                new { completed = true, token = NomeGerado },
                                 statusCode: StatusCodes.Status201Created
                             );
 

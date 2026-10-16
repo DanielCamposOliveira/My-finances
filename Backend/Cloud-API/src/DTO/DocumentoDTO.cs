@@ -2,7 +2,7 @@
 {
     public class DocumentoDTO
     {
-        public string FileName { get; set; }
+        public string NameFile { get; set; }
         public string extension { get; set; }
     }
 }
