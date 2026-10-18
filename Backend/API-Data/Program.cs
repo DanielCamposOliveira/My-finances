@@ -24,7 +24,14 @@ Console.WriteLine($"Servidor rodando em {builder.Configuration["Urls:Endpoints:H
 // ============================================================
 
 // Recupera a string de conexão do appsettings.json de Conexão com o PostgreSQL
+//var connectionString = builder.Configuration.GetConnectionString("PostgreSQLConnection");
 var connectionString = builder.Configuration.GetConnectionString("PostgreSQLConnection");
+
+// Como vai ficar:
+builder.Services.AddDbContextPool<AppDbContext>(options =>
+{
+    options.UseNpgsql(connectionString);
+}, poolSize: 128); // 128 é o padrão do EF Core, mas você pode ajustar conforme a carga
 
 // Configura a Injeção de Dependência para o EF Core usar o PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
@@ -64,7 +71,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 
 
 
-
+builder.Services.AddHttpClient<IArquivosService, ArquivosService>();
 
 
 // ============================================================
@@ -223,6 +230,6 @@ app.MapTagEndpoints();
 app.MapCategoriaEndpoints();
 app.MapLancamentoEndpoints();
 app.MapConsultaEndpoints();
-
+app.MapArquivosEndpoints();
 
 app.Run();
