@@ -3,6 +3,16 @@
     public class UserDtos
     {
         public record RegisterRequest(string Name, string Email, string Password); // Requisição de registro
+
+        public class RegisterUserGoogle 
+        {
+            public string Name { get; set; }
+            public string Email { get; set; }
+            public string GoogleId { get; set; }
+            public string AvatarUrl { get; set; }
+        }
+
+
         public record LoginRequest(string Email, string Password); // Requisição de login
         public record AuthResponse(string Token); // Retorna o token JWT
 
@@ -15,7 +25,7 @@
             public bool IsActive { get; init; }
         }
 
-
+        public record GoogleAuthRequest(string IdToken);
         public class ListUsers
         {
             public string Id { get; set; }

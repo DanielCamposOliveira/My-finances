@@ -34,7 +34,7 @@ builder.Services.AddDbContextPool<AppDbContext>(options =>
 }, poolSize: 128); // 128 é o padrão do EF Core, mas você pode ajustar conforme a carga
 
 // Configura a Injeção de Dependência para o EF Core usar o PostgreSQL
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+//builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
 
 

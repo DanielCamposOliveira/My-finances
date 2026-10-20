@@ -11,7 +11,7 @@ namespace API_Data.src.Endpoints
         public static void MapUserEndpoints(this IEndpointRouteBuilder app)
         {
             // ==========================================
-            // ROTAS: CRIA USUARIO
+            // ROTAS: REGISTRO
             // ==========================================
             // Grupo base comum (compartilha o prefixo e a documentação Swagger)
             var EndpointBase = app.MapGroup("/api/v1/user").WithTags("user");
@@ -31,7 +31,8 @@ namespace API_Data.src.Endpoints
             .WithTags("authentication")
             .WithDescription("Registra um novo usuário")
             .Produces(StatusCodes.Status500InternalServerError)
-            .Produces<TagResponseDto>(StatusCodes.Status204NoContent);
+            .Produces<TagResponseDto>(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status500InternalServerError);
 
 
             // ==========================================
@@ -52,7 +53,7 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: DELETAR USUARIO
             // ==========================================
-            EndpointProtected.MapPost("/{UserDelete}", async (string UserDelete, IUserService service, ClaimsPrincipal userClaims) =>
+            EndpointProtected.MapDelete("/{UserDelete}", async (string UserDelete, IUserService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT
                 var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -70,7 +71,23 @@ namespace API_Data.src.Endpoints
             .WithDescription("Exclui usuário")
             .Produces(StatusCodes.Status500InternalServerError)
             .Produces<TagResponseDto>(StatusCodes.Status201Created);
-     
+
+
+
+            // ==========================================
+            // NOVA ROTA: LOGIN / REGISTRO COM GOOGLE
+            // ==========================================
+            EndpointPublic.MapPost("/auth/google", async ([FromBody] GoogleAuthRequest dto, IUserService service) =>
+            {
+                return await service.AuthenticateGoogleUserAsync(dto);
+            })
+            .WithSummary("Login com Google")
+            .WithTags("authentication")
+            .WithDescription("Autentica ou cadastra o usuário via Google ID Token e retorna o JWT da API")
+            .Produces(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces<AuthResponse>(StatusCodes.Status200OK);
+
 
         }
     }

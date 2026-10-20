@@ -1,9 +1,9 @@
-﻿using API_Data.src.Model;
+﻿using static API_Data.src.DTOs.JwtDTO;
 
 namespace API_Data.src.Utils
 {
     public interface IJwtService
     {
-        string GenerateToken(User user);
+        string GenerateToken(RegisterJWT user);
     }
 }

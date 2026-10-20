@@ -9,8 +9,12 @@ namespace API_Data.src.Repository.Interface
         Task<User?> GetUserByIdAsync(string id);
 
         Task<(OperationResult, User? User)> RegisterUserAsync(RegisterRequest user);
+        Task<(OperationResult, User? User)> RegisterUserGoogleAsync(RegisterUserGoogle user);
 
         Task<User?> GetUserByEmailAsync(string email);
+
+        Task<User?> GetUserByGoogleIdAsync(string googleId);
+
 
         Task<OperationResult> DeactivateUserAsync(string userId);
 
@@ -18,5 +22,10 @@ namespace API_Data.src.Repository.Interface
 
 
         Task<ExportPagUserResponse> GetUserPageAsync(string userId, int page, int limit);
+
+
+        
+        
+        Task<OperationResult> UpdateUserAsync(User user);
     }
 }

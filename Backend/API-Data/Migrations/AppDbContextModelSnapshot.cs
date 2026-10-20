@@ -17,7 +17,7 @@ namespace API_Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.10")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -292,10 +292,16 @@ namespace API_Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("text");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<string>("GoogleId")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -316,6 +322,10 @@ namespace API_Data.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("GoogleId")
+                        .IsUnique()
+                        .HasFilter("\"GoogleId\" IS NOT NULL");
 
                     b.ToTable("Users");
                 });

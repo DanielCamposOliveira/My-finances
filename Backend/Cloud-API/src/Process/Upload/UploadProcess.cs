@@ -187,6 +187,7 @@ namespace Cloud_API.src.Process.Upload
                             // 6. LIMPEZA DOS BANCOS DE CACHE
                             // ==========================================
                             _urlRepository.Remove(token); // Consome o token de segurança da URL (impede que seja usado para outro upload ou download)
+
                             //_chunkRepository.LimparSessao(request.TokenBase); // Limpa a memória RAM do Tracker
                             _chunkRepository.LimparSessao(arquivoNoCache.NomePasta); // Limpa a memória RAM do Tracker
 

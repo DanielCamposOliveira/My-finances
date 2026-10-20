@@ -251,6 +251,13 @@ namespace API_Data.src.Data
                 builder.HasIndex(u => u.Email)
                         .IsUnique();
 
+                // Cria o índice único no banco de dados para o campo GoogleId
+                //Impede que dois usuários tenham o mesmo GoogleId, desde que ele não seja NULL.
+                //Permite que vários usuários tenham GoogleId = NULL.
+                builder.HasIndex(u => u.GoogleId)
+                       .IsUnique()
+                       .HasFilter("\"GoogleId\" IS NOT NULL");
+
                 builder.Property(u => u.PasswordHash)
                         .IsRequired();
 

@@ -106,6 +106,18 @@ namespace API_Data.src.Repository
             }
         }
 
+        public async Task<User?> GetUserByGoogleIdAsync(string googleId)
+        {
+            try
+            {
+                return await _db.Users.FirstOrDefaultAsync(u => u.GoogleId == googleId);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task<User?> GetUserByIdAsync(string userId)
         {
             try
@@ -188,6 +200,8 @@ namespace API_Data.src.Repository
                 {
                     Name = user.Name,
                     Email = user.Email,
+                    IsActive = false, 
+                    IsAdmin = false,
                     PasswordHash = PasswordHasher.HashPassword(user.Password)
                 };
 
@@ -219,6 +233,62 @@ namespace API_Data.src.Repository
             }
         }
 
+        public async Task<(OperationResult, User? User)> RegisterUserGoogleAsync(RegisterUserGoogle user)
+        {
+            try
+            {
+                // Cria um novo usuário com os dados fornecidos e o hash da senha
+                var newUser = new User
+                {
+                    Name = user.Name,
+                    Email = user.Email,
+                    AvatarUrl = user.AvatarUrl,
+                    GoogleId = user.GoogleId,
+                    IsActive = true,
+                    IsAdmin = false,
+                };
+
+                // Adiciona o usuário ao banco de dados
+                _db.Users.AddAsync(newUser);
+
+                //salva as alterações
+                await _db.SaveChangesAsync();
+
+                return (
+                    new OperationResult
+                    {
+                        Success = true,
+                        Message = $"{newUser.Id} cadastrado com sucesso."
+                    },
+                    newUser
+                );
+            }
+            catch (Exception ex)
+            {
+                return (
+                    new OperationResult
+                    {
+                        Success = false,
+                        Message = ex.Message
+                    },
+                    null
+                );
+            }
+        }
+
+        public async Task<OperationResult> UpdateUserAsync(User user)
+        {
+            try
+            {
+                _db.Users.Update(user);
+                await _db.SaveChangesAsync();
+                return new OperationResult { Success = true };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult { Success = false, Message = ex.Message };
+            }
+        }
 
     }
 }

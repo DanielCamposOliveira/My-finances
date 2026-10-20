@@ -8,9 +8,18 @@ namespace API_Data.src.Model
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string PasswordHash { get; set; } = string.Empty;
+
+        // Pode ser nulo quando o cadastro é feito exclusivamente via Google
+        public string? PasswordHash { get; set; } = string.Empty;
+
+
         public bool IsActive { get; set; } = true;
         public bool IsAdmin { get; set; } = false;
+
+
+        // Identificador 'sub' vindo do Google OpenID Connect
+        public string? GoogleId { get; set; }
+        public string? AvatarUrl { get; set; }
 
 
         // Relacionamentos inversos

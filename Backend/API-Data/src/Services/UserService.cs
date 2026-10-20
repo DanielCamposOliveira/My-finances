@@ -5,7 +5,11 @@ using API_Data.src.Repository;
 using API_Data.src.Repository.Interface;
 using API_Data.src.Services.Interface;
 using API_Data.src.Utils;
+using Google.Apis.Auth;
 using static API_Data.src.DTOs.UserDtos;
+using Google.Apis.Auth;
+using Microsoft.Extensions.Configuration;
+using static API_Data.src.DTOs.JwtDTO;
 
 namespace API_Data.src.Services
 {
@@ -15,14 +19,15 @@ namespace API_Data.src.Services
         private readonly IJwtService _jwtService;
         private readonly ICategoriaRepository _categoriaRepository;
         private readonly ITagRepository _tagRepository;
-       
+        private readonly IConfiguration _config;
 
-        public UserService(IUserRepository userRepository, ICategoriaRepository categoriaRepository, ITagRepository tagRepository, IJwtService jwtService)
+        public UserService(IUserRepository userRepository, ICategoriaRepository categoriaRepository, ITagRepository tagRepository, IJwtService jwtService, IConfiguration config)
         {
             _jwtService = jwtService;
             _categoriaRepository = categoriaRepository;
             _tagRepository = tagRepository;
             _userRepository = userRepository;
+            _config = config;
         }
 
         private async Task<OperationResult> IsAdminUser(string userId)
@@ -197,9 +202,13 @@ namespace API_Data.src.Services
             if (!result.Success)
                 return Results.BadRequest(new { message = result.Message });
 
+            var pacoteJWT = new RegisterJWT
+            {
+                ID = user.Id
+            };
 
-            // Gerar o token JWT usando o IJwtService
-            var token = _jwtService.GenerateToken(user);
+            // Gerar o token JWT usando o JwtService
+            var token = _jwtService.GenerateToken(pacoteJWT);
 
             // Retornar a resposta de autenticação com o token
             return Results.Ok(new AuthResponse(token));
@@ -227,6 +236,113 @@ namespace API_Data.src.Services
             return Results.Created(); // 201 Created
         }
 
-    
+
+        public async Task<IResult> AuthenticateGoogleUserAsync(GoogleAuthRequest req)
+        {
+            if (string.IsNullOrWhiteSpace(req.IdToken))
+                return Results.BadRequest(new { message = "IdToken não fornecido." });
+
+            GoogleJsonWebSignature.Payload payload;
+
+            try
+            {
+                var settings = new GoogleJsonWebSignature.ValidationSettings
+                {
+                    Audience = new[] { _config["Google:ClientId"] }
+                };
+
+                // Validação criptográfica do token junto ao Google
+                payload = await GoogleJsonWebSignature.ValidateAsync(req.IdToken, settings);
+            }
+            catch (InvalidJwtException)
+            {
+                return Results.Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(new { message = $"Falha ao validar token: {ex.Message}" });
+            }
+
+            if (!payload.EmailVerified)
+            {
+                return Results.BadRequest(new { message = "E-mail não verificado pelo Google." });
+            }
+            
+            // 1. Tenta encontrar pelo GoogleId (Login recorrente)
+            var user = await _userRepository.GetUserByGoogleIdAsync(payload.Subject);
+
+            // 2. Se não encontrou, verifica se já existe uma conta com o mesmo e-mail para vincular
+            if (user == null)
+            {
+                user = await _userRepository.GetUserByEmailAsync(payload.Email);
+
+                if (user != null)
+                {
+                    // Vincula conta existente ao GoogleId
+                    user.GoogleId = payload.Subject;
+                    user.AvatarUrl ??= payload.Picture;            
+                    user.Name = payload.Name;
+
+                    await _userRepository.UpdateUserAsync(user);
+                }
+                else
+                {
+                    var Pacote = new RegisterUserGoogle
+                    {
+                        Name = payload.Name,
+                        Email = payload.Email,
+                        AvatarUrl = payload.Picture,
+                        GoogleId = payload.Subject,       
+                    };
+
+                    // Cria um novo usuario
+                    var result = await _userRepository.RegisterUserGoogleAsync(Pacote);
+
+                    // Verificar se o registro foi bem-sucedido
+                    if (!result.Item1.Success)
+                        return Results.BadRequest(new { message = result.Item1.Message });
+
+
+                    // gera uma lista 
+                    var ListCategoria = CategoriaDefaults.ObterCategoriasPadrao(result.User.Id);
+                    var Listag = TagDefaults.ObterTagsPadrao(result.User.Id);
+
+                    // Grava as Tags e Categorias padão do usuario
+                    var CategoryResult = await _categoriaRepository.CriarListCategoriaAsync(ListCategoria);
+                    var TagResult = await _tagRepository.CriarListTag(Listag);
+
+
+                }
+            }
+            else
+            {
+                // Opcional: Atualizar foto caso tenha mudado
+                //if (!string.IsNullOrEmpty(payload.Picture) && user.AvatarUrl != payload.Picture)
+                //{
+                //    user.AvatarUrl = payload.Picture;
+                //    await _userRepository.UpdateUserAsync(user);
+                //}
+            }
+
+            // Verifica se a conta está ativa
+            var activeCheck = await IsActiveUser(user.Id);
+            if (!activeCheck.Success)
+                return Results.BadRequest(new { message = activeCheck.Message });
+
+
+
+            var pacoteJWT = new RegisterJWT
+            {
+                ID = user.Id
+            };
+
+            // Gerar o token JWT usando o JwtService
+            var tokenJWT = _jwtService.GenerateToken(pacoteJWT);
+
+            // Retornar a resposta de autenticação com o token
+            return Results.Ok(new AuthResponse(tokenJWT));
+
+        }
+
     }
 }

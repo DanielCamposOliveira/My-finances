@@ -17,10 +17,12 @@ using Cloud_API.src.Service.Url;
 using Cloud_API.src.Utils;
 using HashidsNet;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Console.WriteLine($"Servidor rodando em ");
+
 
 // Configura a Injeção de Dependência para o EF Core usar o SQLite
 builder.Services.AddDbContext<AppDbContext>();

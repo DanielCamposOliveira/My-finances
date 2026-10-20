@@ -11,5 +11,7 @@ namespace API_Data.src.Services.Interface
         Task<IResult> DeleteUser(string userId, string UserDelete);
         Task<IResult> GetUserInfo(string userId);        
         Task<IResult> ObterPageUserAsync(string userId, int page, int limit);
+
+        Task<IResult> AuthenticateGoogleUserAsync(GoogleAuthRequest req);
     }
 }

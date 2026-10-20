@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using static API_Data.src.DTOs.JwtDTO;
 
 namespace API_Data.src.Utils
 {
@@ -17,17 +18,12 @@ namespace API_Data.src.Utils
 
             _keyBytes = Encoding.UTF8.GetBytes(key);
         }
-        /// <summary>
-        /// Gera um token JWT (JSON Web Token) para o usuário informado.
-        /// </summary>
-        /// <param name="user">
-        /// Usuário para o qual o token será gerado.
-        /// </param>
-        /// <returns>
-        /// Retorna o token JWT assinado, contendo o identificador do usuário
-        /// e uma data de expiração de 8 horas.
-        /// </returns>
-        public string GenerateToken(User user)
+  
+        // Gera um token JWT (JSON Web Token) para o usuário informado.
+        // Retorna o token JWT assinado, contendo o identificador do usuário
+        // e uma data de expiração de 8 horas.
+
+        public string GenerateToken(RegisterJWT Pacote)
         {
             // Cria o manipulador responsável por gerar e serializar o token JWT.
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -40,7 +36,7 @@ namespace API_Data.src.Utils
                 // Essa informação pode ser utilizada para identificar o usuário autenticado.
                 Subject = new ClaimsIdentity(new[]
                 {       
-                    new Claim(ClaimTypes.NameIdentifier, user.Id)
+                    new Claim(ClaimTypes.NameIdentifier, Pacote.ID)
                 }),
 
                 // Define a expiração do token para 8 horas a partir do horário atual em UTC.
