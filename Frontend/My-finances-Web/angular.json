@@ -65,6 +65,12 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "allowedHosts": ["myfinances.ddns.net", "localhost"],
+            "headers": {
+              "Cross-Origin-Opener-Policy": "same-origin-allow-popups"
+            }
+          },
           "configurations": {
             "production": {
               "buildTarget": "My-finances-Web:build:production"
@@ -74,7 +80,7 @@
             }
           },
           "defaultConfiguration": "development"
-        },
+        },,
         "test": {
           "builder": "@angular/build:unit-test"
         }

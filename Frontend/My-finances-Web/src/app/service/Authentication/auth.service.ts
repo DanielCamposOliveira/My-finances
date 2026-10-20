@@ -12,6 +12,10 @@ export interface LoginRequest {
   password: string; // Nota: o backend espera a propriedade como 'password'
 }
 
+export interface GoogleLoginRequest {
+  idToken: string;
+}
+
 // Interface que define a resposta bem-sucedida da API (conforme o documento)
 export interface LoginResponse {
   token: string;
@@ -35,7 +39,7 @@ export class AuthService {
 
   private EndPoint_Login = `${environment.apiUrl}/user/auth/sign-in`;
   private EndPoint_Register = `${environment.apiUrl}/user/auth/register`;
-
+  private EndPoint_Google_Login = `${environment.apiUrl}/user/auth/google`;
 
   // Um Signal para expor o estado de autenticação (se o usuário possui um token válido)
   tokenUsuario = signal<string | null>(localStorage.getItem('jwt_token'));
@@ -53,6 +57,18 @@ export class AuthService {
       })
     );
   }
+
+  // Novo método para login com Google
+  LoginComGoogle(dados: GoogleLoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(this.EndPoint_Google_Login, dados).pipe(
+      tap((resposta) => {
+        console.log("Chegou aqui");
+        localStorage.setItem('jwt_token', resposta.token);
+        this.tokenUsuario.set(resposta.token);
+      })
+    );
+  }
+
 
   CreateUser(dados: RegisterRequest): Observable<void> {
     return this.http.post<void>(this.EndPoint_Register, dados);
