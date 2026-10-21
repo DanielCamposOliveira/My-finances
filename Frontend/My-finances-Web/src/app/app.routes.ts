@@ -53,6 +53,11 @@ export const routes: Routes = [
         path: 'cadastro-contafixa',
         loadComponent: () => import('./pages/cadastro/cadastro.page').then(m => m.CadastroPage),
         data: { tipo: 'contafixa' } // <-- Identificador do contexto
+      },
+      {
+          path: 'upload',
+        loadComponent: () => import('./pages/upload/upload.page').then(m => m.UploadPage),
+        data: { tipo: 'Upload' } // <-- Identificador do contexto
       }
     ]
   },
