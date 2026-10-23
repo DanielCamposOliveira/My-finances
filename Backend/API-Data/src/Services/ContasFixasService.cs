@@ -224,6 +224,55 @@ namespace API_Data.src.Services
         }
 
 
+        public async Task<IResult> UpdateProofPaymentParcela(ParcelaUpdateProofPayment dto, string userId)
+        {
+            // obtem a parcela
+            var parcela = await _repository.ObterParcelaAsync(dto.ParcelaId);
+            if (parcela == null)
+            {
+                return Results.Problem(
+                 "Parcela não encontrada",
+                 statusCode: StatusCodes.Status404NotFound
+                 );
+            }
+
+            // verifica se a conta pertence ao usuario
+            bool checkConta = await _repository.ChecarContaFixa(parcela.ContaFixaId, userId);
+            if (!checkConta)
+            {
+                return Results.Problem(
+                   "Parcela não pertence ao usuario",
+                   statusCode: StatusCodes.Status403Forbidden
+                   );
+            }
+
+            // verifica se a parcela esta paga antes de adicionar um comprovante de pagamento
+            if (parcela.Status != StatusParcela.Pago)
+            {
+                return Results.Problem(
+                    "Parcela não esta Pago",
+                     statusCode: StatusCodes.Status409Conflict
+                    );
+            }
+
+            // Altera dados da parcela
+            parcela.ProofPayment = dto.ProofPayment;
+            
+
+            //Grava no banco de dados
+            bool retorno = await _repository.UpdateParcelaAsync(parcela);
+
+            if (!retorno)
+            {
+                return Results.Problem(
+                "Erro ao tentar atualizar o ValorParcela",
+                statusCode: StatusCodes.Status500InternalServerError
+                );
+            }
+
+            return Results.Created();
+        }
+
         //### Atualiza o ValorParcela da Fatura
         public async Task<IResult> UpdateValorParcela(ParcelaUpdateValor dto, string userId)
         {

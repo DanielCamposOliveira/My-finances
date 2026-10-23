@@ -112,6 +112,10 @@ namespace API_Data.Migrations
                     b.Property<int>("NumeroParcela")
                         .HasColumnType("integer");
 
+                    b.Property<string>("ProofPayment")
+                        .HasMaxLength(18)
+                        .HasColumnType("character varying(18)");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -242,6 +246,10 @@ namespace API_Data.Migrations
 
                     b.Property<int>("NumeroParcela")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ProofPayment")
+                        .HasMaxLength(18)
+                        .HasColumnType("character varying(18)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

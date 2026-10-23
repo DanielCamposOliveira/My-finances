@@ -11,6 +11,8 @@ namespace API_Data.src.Model
         public DateTime? DataPagamento { get; set; }
         public StatusParcela Status { get; set; } = StatusParcela.Aberto;
 
+        public string? ProofPayment { get; set; } // Token do comprovante de pagamento .ex PDF
+
         // Relacionamento Obrigatório com ContaFixa
         public int ContaFixaId { get; set; }
         public ContaFixa ContaFixa { get; set; } = null!;

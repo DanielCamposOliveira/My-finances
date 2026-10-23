@@ -114,6 +114,10 @@ namespace API_Data.src.Data
                        .HasConversion<int>()
                        .IsRequired();
 
+                builder.Property(p => p.ProofPayment)
+                       .HasMaxLength(18)
+                       .IsRequired(false);
+
                 builder.HasOne(p => p.Lancamento)
                        .WithMany(l => l.Parcelas)
                        .HasForeignKey(p => p.LancamentoId)
@@ -180,6 +184,10 @@ namespace API_Data.src.Data
                 builder.Property(p => p.Status)
                        .HasConversion<int>()
                        .IsRequired();
+
+                builder.Property(p => p.ProofPayment)
+                       .HasMaxLength(18)
+                       .IsRequired(false);
 
                 // Relacionamento com ContaFixa
                 builder.HasOne(p => p.ContaFixa)

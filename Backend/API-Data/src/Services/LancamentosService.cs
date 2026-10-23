@@ -216,6 +216,65 @@ public class LancamentosService : ILancamentosService
         return Results.Created();
     }
 
+    public async Task<IResult> UptateProofPaymentLancamentoParcela(ParcelaUpdateProofPayment dto, string userId)
+    {
+
+        // Busca Parcela do Lancamento
+        var parcela = await _repository.BuscaLancamentoParcelasync(dto.ParcelaId);
+        if (parcela == null)
+        {
+            return Results.Problem(
+                "Parcela não encontrada !",
+                statusCode: StatusCodes.Status404NotFound
+                );
+        }
+
+        // Busca Lancamento
+        var _lancamento = await _repository.BuscaLancamentoasync(parcela.LancamentoId);
+        if (_lancamento == null)
+        {
+            return Results.Problem(
+                "Lancamento não encontrada !",
+                statusCode: StatusCodes.Status404NotFound
+                );
+        }
+
+        // verifica se o Lancamento é do Usuario
+        if (_lancamento.UserId != userId)
+        {
+            return Results.Problem(
+                "Parcela não Pertence ao usuario !",
+                 statusCode: StatusCodes.Status403Forbidden
+                );
+        }
+
+        // verifica se a parcela esta paga antes de adicionar um comprovante de pagamento
+        if(parcela.Status != StatusParcela.Pago)
+        {
+            return Results.Problem(
+                "Parcela não esta Pago",
+                 statusCode: StatusCodes.Status409Conflict
+                );
+        }
+
+
+        // Altera dados da parcela
+        parcela.ProofPayment = dto.ProofPayment;
+        
+
+        //Grava no banco de dados
+        var retorno = await _repository.UpdateLancamentoParcela(parcela);
+
+        if (!retorno)
+        {
+            return Results.Problem(
+            "Erro ao tentar atualizar o Status",
+            statusCode: StatusCodes.Status500InternalServerError
+            );
+        }
+
+        return Results.Created();
+    }
 
     //### Atualiza o ValorParcela da Fatura
     public async Task<IResult> UpdateValorParcela(ParcelaUpdateValor dto, string userId)

@@ -15,6 +15,8 @@ namespace API_Data.src.Services.Interface
 
         public Task<IResult> UpdateStatusParcela(ParcelaUpdateStatus dto, string userId);
 
+        public Task<IResult> UpdateProofPaymentParcela(ParcelaUpdateProofPayment dto, string userId);
+
         public Task<IResult> UpdateValorParcela(ParcelaUpdateValor dto, string userId);
 
         public Task<IResult> UpdateStatusContaFixa(ContaFixaUpdateStatus dto, string userId);

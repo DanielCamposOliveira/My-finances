@@ -134,6 +134,29 @@ namespace API_Data.src.Endpoints
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
             // ==========================================
+            EndpointWrite.MapPatch("/update/ProofPayment", async ([FromBody] ParcelaUpdateProofPayment dto, IContasFixasService service, ClaimsPrincipal userClaims) =>
+            {
+                // Recupera o ID do usuário logado a partir das claims do token JWT
+                var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Se não houver ID de usuário, retorna 401 Unauthorized
+                if (string.IsNullOrEmpty(userId))
+                    return Results.Unauthorized();
+
+                var result = await service.UpdateProofPaymentParcela(dto, userId);
+                return Results.Ok(result);
+            })
+            .WithSummary("Atualiza Status conta fixa")
+            .WithDescription("Atualiza o status da conta fixa")
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status500InternalServerError)
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
+
+            // ==========================================
+            // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
+            // ==========================================
             EndpointWrite.MapPatch("/parcela/update/status", async ([FromBody] ParcelaUpdateStatus dto, IContasFixasService service, ClaimsPrincipal userClaims) =>
             {
                 // Recupera o ID do usuário logado a partir das claims do token JWT

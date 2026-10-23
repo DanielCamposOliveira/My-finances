@@ -130,6 +130,29 @@ namespace API_Data.src.Endpoints
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status429TooManyRequests);
 
+            // ==========================================
+            // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA
+            // ==========================================
+            EndpointWrite.MapPatch("/parcela/update/ProofPayment", async ([FromBody] ParcelaUpdateProofPayment dto, ILancamentosService service, ClaimsPrincipal userClaims) =>
+            {
+                // Recupera o ID do usuário logado a partir das claims do token JWT
+                var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Se não houver ID de usuário, retorna 401 Unauthorized
+                if (string.IsNullOrEmpty(userId))
+                    return Results.Unauthorized();
+
+                var result = await service.UptateProofPaymentLancamentoParcela(dto, userId);
+                return result;
+            })
+            .WithSummary("Atualiza Status da parcela")
+            .WithDescription("Atualiza o status da parcela")
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status201Created)
+            .Produces(StatusCodes.Status500InternalServerError)
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status429TooManyRequests);
 
             // ==========================================
             // ROTAS: ATUALIZAR O VALOR DA CONTA FIXA

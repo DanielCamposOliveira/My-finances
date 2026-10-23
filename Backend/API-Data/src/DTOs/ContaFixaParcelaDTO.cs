@@ -20,6 +20,11 @@ namespace API_Data.src.DTOs.ContasFixas
         public required StatusParcela Status { get; init; }
     }
 
+    public record ParcelaUpdateProofPayment
+    {
+        public required int ParcelaId { get; init; }
+        public required string ProofPayment { get; init; }
+    }
 
     public record ParcelaUpdateValor
     {
