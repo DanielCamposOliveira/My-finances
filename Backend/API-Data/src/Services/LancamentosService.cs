@@ -3,6 +3,7 @@ using API_Data.src.Enum;
 using API_Data.src.Model;
 using API_Data.src.Repository.Interface;
 using API_Data.src.Services.Interface;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace API_Data.src.Services;
 
@@ -53,6 +54,53 @@ public class LancamentosService : ILancamentosService
         }
 
         return Results.Ok(retorno);
+    }
+
+    public async Task<IResult> ListaTodosLancamentosPagosAsync(int LancamentoId, string userId)
+    {
+        // Busca Lancamento
+        var _lancamento = await _repository.BuscaLancamentoasync(LancamentoId);
+        if (_lancamento == null)
+        {
+            return Results.Problem(
+                "Lancamento não encontrada !",
+                statusCode: StatusCodes.Status404NotFound
+                );
+        }
+
+        // verifica se o Lancamento é do Usuario
+        if (_lancamento.UserId != userId)
+        {
+            return Results.Problem(
+                "Parcela não Pertence ao usuario !",
+                 statusCode: StatusCodes.Status403Forbidden
+                );
+        }
+
+        var ListaParacelas = await _repository.ListParcelasPorIdLancamentoAsync(LancamentoId);
+
+
+        var PacoteDTO = new List<ParcelasResponse>();
+
+        // Monta o DTO
+        foreach (var parcela in ListaParacelas)
+        {
+            PacoteDTO.Add(new ParcelasResponse
+            {
+                Id = parcela.Id,
+                NumeroParcela = parcela.NumeroParcela,
+                ValorParcela = parcela.ValorParcela,
+                DataVencimento = parcela.DataVencimento,
+                Status = parcela.Status,
+                descricao = parcela.Lancamento.Descricao,
+                dependence_id = parcela.LancamentoId,
+                Atribuicao = parcela.Lancamento.Categoria.Atribuicao,
+                ProofPayment = parcela.ProofPayment,
+            });
+        }
+
+        return Results.Ok(PacoteDTO);
+
     }
 
     //## Obter faturas com Status Aberto(Mes recorent) ou Vencida(Ano recorrent) 

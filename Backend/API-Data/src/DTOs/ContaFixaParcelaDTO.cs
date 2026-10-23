@@ -12,6 +12,7 @@ namespace API_Data.src.DTOs.ContasFixas
         public required StatusParcela Status { get; init; }
         public required Atribuicao Atribuicao { get; init; }
         public required int NumeroParcela { get; init; }
+        public string? ProofPayment { get; set; } // Token do comprovante de pagamento .ex PDF
     }
 
     public record ParcelaUpdateStatus

@@ -11,7 +11,8 @@ namespace API_Data.src.DTOs.Lancamento
         public required DateTime DataVencimento { get; init; }
         public required StatusParcela Status { get; init; }
         public required Atribuicao Atribuicao { get; init; }
-        public required int NumeroParcela { get; init; }            
+        public required int NumeroParcela { get; init; }
+        public string? ProofPayment { get; set; } // Token do comprovante de pagamento .ex PDF
     }
 
     public record ParcelaUpdateStatus
@@ -25,7 +26,6 @@ namespace API_Data.src.DTOs.Lancamento
         public required int ParcelaId { get; init; }
         public required string ProofPayment { get; init; }
     }
-
 
     public record ParcelaUpdateValor
     {

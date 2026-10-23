@@ -47,6 +47,41 @@ namespace API_Data.src.Repository
             }
         }
 
+        // Busca todas os parcelas pagas conrespondente ao ID da ContaFixa
+        public async Task<List<ContaFixaParcela>?> ListParcelasPorIdContaFixaAsync(int ContaFixaId)
+        {
+            try
+            {
+
+                return await _db.ContaFixaParcelas // Busca na tabela de parcelas do lançamento
+                    .AsNoTracking()  // Evita o rastreamento de alterações para melhorar o desempenho
+                    .Include(p => p.ContaFixa) // Inclui os dados do lançamento relacionado
+                          .ThenInclude(l => l.Categoria) // Inclui os dados da Categoria vinculada ao Lançamento                      // Filtra as parcelas com base no ID do lançamento, status e datas de vencimento
+                    .Where(p => p.ContaFixaId == ContaFixaId && p.Status == StatusParcela.Pago
+
+                    )
+                    .OrderBy(p => p.DataVencimento) // Ordena as parcelas pelo vencimento
+                    .ToListAsync(); // Converte o resultado para uma lista
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<ContaFixa?> BuscaLancamentoasync(int ContaFixaID)
+        {
+            try
+            {
+
+                return await _db.ContaFixa.FirstOrDefaultAsync(c => c.Id == ContaFixaID);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         // Criar a Conta Fixa
         public async Task<ContaFixa?> CriarContaFixaAsync(ContaFixa contaFixa)
         {

@@ -21,7 +21,7 @@ namespace API_Data.src.Services.Interface
 
         public Task<IResult> UpdateValorParcela(ParcelaUpdateValor dto, string userId);
 
-
+        public Task<IResult> ListaTodosLancamentosPagosAsync(int LancamentoId, string userId);
 
 
     }

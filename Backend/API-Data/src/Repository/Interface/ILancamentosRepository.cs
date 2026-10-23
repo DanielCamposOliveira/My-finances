@@ -34,7 +34,9 @@ namespace API_Data.src.Repository.Interface
 
         public Task<bool> UpdateStatusLancamentoAsync(int lancamentoId);
 
-       // public Task<List<LancamentoResponseList>?> ListaTodosLancamentos(string userId);
+        // public Task<List<LancamentoResponseList>?> ListaTodosLancamentos(string userId);
+
+        public Task<List<LancamentoParcela>?> ListParcelasPorIdLancamentoAsync(int LancamentoId);
 
     }
 }

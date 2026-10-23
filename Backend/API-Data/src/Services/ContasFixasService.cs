@@ -181,6 +181,52 @@ namespace API_Data.src.Services
             return Results.Ok(faturasGeradas);
         }
 
+        public async Task<IResult> ListaTodosLancamentosPagosAsync(int ContaFixaId, string userId)
+        {
+            // Busca Lancamento
+            var _ContaFixa = await _repository.BuscaLancamentoasync(ContaFixaId);
+            if (_ContaFixa == null)
+            {
+                return Results.Problem(
+                    "Lancamento não encontrada !",
+                    statusCode: StatusCodes.Status404NotFound
+                    );
+            }
+
+            // verifica se o Lancamento é do Usuario
+            if (_ContaFixa.UserId != userId)
+            {
+                return Results.Problem(
+                    "Parcela não Pertence ao usuario !",
+                     statusCode: StatusCodes.Status403Forbidden
+                    );
+            }
+
+            var ListaParacelas = await _repository.ListParcelasPorIdContaFixaAsync(ContaFixaId);
+
+
+            var PacoteDTO = new List<ParcelasResponse>();
+
+            // Monta o DTO
+            foreach (var parcela in ListaParacelas)
+            {
+                PacoteDTO.Add(new ParcelasResponse
+                {
+                    Id = parcela.Id,
+                    dependence_id = parcela.ContaFixa.Id,
+                    Descricao = parcela.ContaFixa.Descricao,
+                    ValorParcela = parcela.ValorParcela,
+                    DataVencimento = parcela.DataVencimento,
+                    Status = parcela.Status,
+                    Atribuicao = parcela.ContaFixa.Categoria.Atribuicao,
+                    NumeroParcela = parcela.NumeroParcela,
+                    ProofPayment = parcela.ProofPayment,
+                });
+            }
+
+            return Results.Ok(PacoteDTO);
+
+        }
 
         //### Atualiza o status da Fatura
         public async Task<IResult> UpdateStatusParcela(ParcelaUpdateStatus dto, string userId)

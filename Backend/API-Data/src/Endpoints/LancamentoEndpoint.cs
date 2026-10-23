@@ -105,6 +105,27 @@ namespace API_Data.src.Endpoints
             .Produces(StatusCodes.Status429TooManyRequests);
 
 
+            // ==========================================
+            // ROTAS: LISTA AS PARCELAS PAGAS
+            // ==========================================
+            EndpointWrite.MapGet("/parcela/ProofPayment/{id}", async (int id, ILancamentosService service, ClaimsPrincipal userClaims) =>
+            {
+                // Recupera o ID do usuário logado a partir das claims do token JWT
+                var userId = userClaims.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Se não houver ID de usuário, retorna 401 Unauthorized
+                if (string.IsNullOrEmpty(userId))
+                    return Results.Unauthorized();
+
+                var result = await service.ListaTodosLancamentosPagosAsync(id, userId);
+                return result;
+            })
+            .WithSummary("Lista as Parcelas Pagas")
+            .WithDescription("Lista as Parcelas Pagas por ID")
+            .Produces(StatusCodes.Status404NotFound)          
+            .Produces(StatusCodes.Status403Forbidden)
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized);
 
             // ==========================================
             // ROTAS: ATUALIZAR O STATUS DA CONTA FIXA

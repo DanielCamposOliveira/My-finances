@@ -13,6 +13,8 @@ namespace API_Data.src.Services.Interface
 
         public Task<IResult> ListFaturaPendenteAsync(string userId);
 
+        public Task<IResult> ListaTodosLancamentosPagosAsync(int ContaFixaId, string userId);
+
         public Task<IResult> UpdateStatusParcela(ParcelaUpdateStatus dto, string userId);
 
         public Task<IResult> UpdateProofPaymentParcela(ParcelaUpdateProofPayment dto, string userId);

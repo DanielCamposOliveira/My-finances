@@ -17,7 +17,10 @@ namespace API_Data.src.Repository.Interface
 
         public Task<ContaFixaParcela?> ObterParcelaDoMesAsync(int contaFixaId, int ano, int mes);
 
+        public Task<ContaFixa?> BuscaLancamentoasync(int ContaFixaID);
         public Task<List<ContaFixaParcela>> ListParcelasAbertasAtrasadasAsync(int contaFixaId, int ano, int mes);
+
+        public Task<List<ContaFixaParcela>?> ListParcelasPorIdContaFixaAsync(int ContaFixaId); 
 
         public Task<ContaFixaParcela?> CriarParcelaFixaAsync(ContaFixaParcela parcela);
 

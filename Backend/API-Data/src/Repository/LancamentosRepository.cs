@@ -106,6 +106,8 @@ public class LancamentosRepository : ILancamentosRepository
         }
     }
 
+
+
     // ***************Lista todos os lançamentos com suas categorias, tags e parcelas
     //public async Task<List<LancamentoResponse>?> ListaTodosLancamentosParcelaAsync(string userId)
     //{
@@ -265,6 +267,27 @@ public class LancamentosRepository : ILancamentosRepository
         }
     }
 
+    // Busca todas os parcelas pagas conrespondente ao ID do lancamento
+    public async Task<List<LancamentoParcela>?> ListParcelasPorIdLancamentoAsync(int LancamentoId)
+    {
+        try
+        {
+
+            return await _db.LancamentoParcelas // Busca na tabela de parcelas do lançamento
+                .AsNoTracking()  // Evita o rastreamento de alterações para melhorar o desempenho
+                .Include(p => p.Lancamento) // Inclui os dados do lançamento relacionado
+                      .ThenInclude(l => l.Categoria) // Inclui os dados da Categoria vinculada ao Lançamento                      // Filtra as parcelas com base no ID do lançamento, status e datas de vencimento
+                .Where(p => p.LancamentoId == LancamentoId && p.Status == StatusParcela.Pago 
+            
+                )
+                .OrderBy(p => p.DataVencimento) // Ordena as parcelas pelo vencimento
+                .ToListAsync(); // Converte o resultado para uma lista
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
     // Atualiza a parcela do lançamento
     public async Task<bool> UpdateLancamentoParcela(LancamentoParcela parcela)
@@ -307,6 +330,8 @@ public class LancamentosRepository : ILancamentosRepository
             return null;
         }
     }
+
+
 
 
     public async Task<LancamentoParcela> ObterParcelaAsync(int id)
