@@ -413,6 +413,11 @@
     color: var(--bg-status-pago-cor) !important;
     border-color: var(--bg-status-pago-cor) !important;
   }
+
+  &.btn-payments:hover {
+    color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+  }
 }
 
 input[type='checkbox'] {

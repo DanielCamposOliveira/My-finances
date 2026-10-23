@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
-
+import { Router } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SnackBarCustomComponent } from '../../SnackBar/snack-bar-info/snack-bar-info';
 
-import { ContaFixa } from "../../../models/canta-fixa";
+import { ContaFixa } from "../../../models/contaFixa.model";
 registerLocaleData(localePt);
 export type TipoSnack = 'sucesso' | 'erro' | 'info' | 'despesa' | 'receita';
 
@@ -42,12 +42,15 @@ export type TipoSnack = 'sucesso' | 'erro' | 'info' | 'despesa' | 'receita';
 // ...
 export class TableContafixa implements OnInit, OnChanges {
   private cdr = inject(ChangeDetectorRef);
-
+  private router = inject(Router);
+  
   @Input() titulo: string = 'ContaFixas';
   @Input() ContaFixas: ContaFixa[] = [];
   @Output() OpenPageCadastro = new EventEmitter<void>();
   //@Output() AlteraStatusConta = new EventEmitter<{ conta: ContaFixa; NewStatus: boolean }>();
   @Output() AlteraStatusConta = new EventEmitter<{ element: ContaFixa; ativo: boolean }>();
+
+  @Input() tipo: 'conta-fixa' | 'lancamento' = 'conta-fixa';
 
 
   displayedColumns: string[] = [
@@ -241,5 +244,11 @@ export class TableContafixa implements OnInit, OnChanges {
       });
     }
 
+// Método de navegação para a tela de pagamentos:
+  navegarParaPayments(element: ContaFixa): void {
+    // Usamos o dependence_id (ID da ContaFixa ou Lançamento pai) ou element.id conforme sua regra de negócio
+    const idAlvo = element.id ?? element.id;
+    this.router.navigate(['/payments', this.tipo, idAlvo]);
+  }
 
 }

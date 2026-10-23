@@ -1,8 +1,9 @@
-<div class="cadastro-container">
+<div class="container">
   <!-- 1º Tabela: Contas Fixas -->
   <app-TableParcela
     titulo="Contas Fixas"
     [parcelas]="parcelasContaFixa"
+    tipo="conta-fixa"
     (onPagar)="pagarContaFixa($event)"
     (onValor)="ValorContaFixa($event)"
   >
@@ -11,6 +12,7 @@
   <!-- 2º Tabela: Lançamentos -->
   <app-TableParcela
     titulo="Lançamentos"
+    tipo="lancamento"
     [parcelas]="parcelasLancamentos"
     (onPagar)="pagarLancamento($event)"
     (onValor)="ValorLancamento($event)"

@@ -5,13 +5,13 @@ import { Router } from '@angular/router';
 
 import { TableContafixa } from '../../components/Tabela/contafixa/TableContafixa.component';
 import { ContaFixaService } from '../../service/ContaFixa/conta-fixa-service';
-import { ContaFixa } from '../../models/canta-fixa';
+import { ContaFixa } from '../../models/contaFixa.model';
 
 import {TabelaLancamentos} from '../../components/Tabela/lancamentos/TabelaLancamentos.component'
 import { LancamentosService } from '../../service/Lancamentos/lancamentos-service';
 import { LancamentoResponseList } from '../../models/lancamentos.model';
 
-import {ContaFixaStatusModel} from '../../models/canta-fixa'
+import {ContaFixaStatusModel} from '../../models/contaFixa.model'
 
 //import { TableParcela } from '../../components/Tabela/Parcela/TableParcela';
 

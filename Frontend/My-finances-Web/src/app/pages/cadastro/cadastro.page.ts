@@ -18,7 +18,7 @@ import { TagService } from '../../service/Tag/tag-service';
 import { Categoria, CategoriaCadastro } from '../../models/categoria.model';
 import { Tag, TagCadastro } from '../../models/tag.model';
 import { LancamentoCadastro } from '../../models/lancamentos.model';
-import { ContaFixaCadastro } from '../../models/canta-fixa';
+import { ContaFixaCadastro } from '../../models/contaFixa.model';
 
 import { MatDialog } from '@angular/material/dialog';
 import { DialogDataCategoria, CategoriaInputComponent } from '../../components/Dialog/categoria-input.component/categoria-input.component';

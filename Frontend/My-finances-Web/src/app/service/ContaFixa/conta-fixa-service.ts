@@ -2,8 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { switchMap } from 'rxjs/operators';
 import { Observable, startWith } from 'rxjs';
-import { ContaFixa, ContaFixaStatusModel, ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel, ContaFixaCadastro } from '../../models/canta-fixa';
-import { returnParcela } from '../../models/parcela-model';
+import { ContaFixa, ContaFixaStatusModel, ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel, ContaFixaCadastro } from '../../models/contaFixa.model';
+import { returnParcela } from '../../models/parcela.model';
 
 import { environment } from '../../../environments/environment';
 
@@ -40,6 +40,14 @@ export class ContaFixaService {
   //Lista todas as parcelas de todos os Lancamentos
   Parcelas(): Observable<returnParcela[]> {
     const url = `${this.EndPoint_ContaFixa}/parcela/pendentes`;
+    return this.http.get<returnParcela[]>(url).pipe(
+      startWith([] as returnParcela[])
+    );
+  }
+
+  // ----------------- Lista todas as parcelas de todos os Lancamentos
+  ParcelasPagasPorId(id: number | string): Observable<returnParcela[]> {
+    const url = `${this.EndPoint_ContaFixa}/parcela/ProofPayment/${id}`;
     return this.http.get<returnParcela[]>(url).pipe(
       startWith([] as returnParcela[])
     );

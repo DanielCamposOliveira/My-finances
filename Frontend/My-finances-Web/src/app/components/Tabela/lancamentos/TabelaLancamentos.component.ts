@@ -5,13 +5,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
-
+import { Router } from '@angular/router';
 
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 
-import {LancamentoResponseList} from '../../../models/lancamentos.model'
+import {LancamentoResponseList, Lancamento} from '../../../models/lancamentos.model'
 registerLocaleData(localePt);
 
 @Component({
@@ -32,11 +32,13 @@ registerLocaleData(localePt);
 })
 export class TabelaLancamentos implements OnInit, OnChanges {
   private cdr = inject(ChangeDetectorRef);
-
+  private router = inject(Router);
+  
   @Input() titulo: string = 'Tabela';
   @Input() Lancamentos: LancamentoResponseList[] = [];
   @Output() OpenPageCadastro = new EventEmitter<void>();
-
+  @Input() tipo: 'conta-fixa' | 'lancamento' = 'conta-fixa';
+  
 
   displayedColumns: string[] = [
     'id',
@@ -45,7 +47,8 @@ export class TabelaLancamentos implements OnInit, OnChanges {
     'valorParcela',
     'ParcelasRestante',
     'DataVencimentoUltimaParcela',
-    'CategoriaNome'
+    'CategoriaNome',
+    'acoes'
   ];
 
   dataSource = new MatTableDataSource<LancamentoResponseList>([]);
@@ -133,6 +136,13 @@ private configurarFiltro(): void {
 
   abrirPageCadastro() {
     this.OpenPageCadastro.emit();
+  }
+
+// Método de navegação para a tela de pagamentos:
+  navegarParaPayments(element: Lancamento): void {
+    // Usamos o dependence_id (ID da ContaFixa ou Lançamento pai) ou element.id conforme sua regra de negócio
+    const idAlvo = element.id ?? element.id;
+    this.router.navigate(['/payments', this.tipo, idAlvo]);
   }
 
 }

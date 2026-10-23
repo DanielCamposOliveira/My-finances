@@ -1,8 +1,9 @@
-<div class="cadastro-container">
+<div class="container">
   <!-- 2º Tabela: Contas Fixas -->
   <app-TableContafixa
     titulo="Contas Fixas"
     [ContaFixas]="ContaFixas"
+    tipo="conta-fixa"
     (OpenPageCadastro)="onPageCadastroContaFixa()"
     (AlteraStatusConta)="AtualizarStatusContaFixa($event.element, $event.ativo)"
   >
@@ -11,6 +12,7 @@
 
   <app-TabelaLancamentos
     titulo="Lancamentos"
+    tipo="lancamento"
     [Lancamentos]="Lancamentos"
     (OpenPageCadastro)="onPageCadastroLancamento()"
   >

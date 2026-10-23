@@ -189,6 +189,11 @@
   &:active {
     filter: brightness(0.95);
   }
+
+  &.btn-payments:hover {
+    color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+  }
 }
 
 /* ==========================================================================

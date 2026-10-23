@@ -2,7 +2,7 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 
-import { Router } from '@angular/router';
+
 
 import { TableParcela } from '../../components/Tabela/Parcela/TableParcela';
 
@@ -12,10 +12,10 @@ import { TagService } from '../../service/Tag/tag-service';
 import { CategoriaService } from '../../service/Categoria/categoria-service';
 
 import { LancamentoStatusParcelaModel, LancamentoValorParcelaModel } from '../../models/lancamentos.model';
-import { ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel } from '../../models/canta-fixa';
+import { ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel } from '../../models/contaFixa.model';
 
 import { StatusParcelaEnum } from '../../enums/status-parcela-enum';
-import { returnParcela } from '../../models/parcela-model';
+import { returnParcela } from '../../models/parcela.model';
 
 import { Tag } from '../../models/tag.model';
 import { Categoria } from '../../models/categoria.model';
@@ -38,7 +38,7 @@ export class parcelaPage implements OnInit {
 
 
   private cdr = inject(ChangeDetectorRef);
-  private router = inject(Router);
+
   
   parcelasLancamentos: returnParcela[] = [];
   parcelasContaFixa: returnParcela[] = [];
@@ -50,8 +50,8 @@ export class parcelaPage implements OnInit {
   ngOnInit(): void {
     this.obterLancamentos();
     this.obterContasFixas();
-    this.obterTag();
-    this.obterCategoria();
+    //this.obterTag();
+    //this.obterCategoria();
   }
 
   obterLancamentos(): void {
@@ -74,6 +74,7 @@ export class parcelaPage implements OnInit {
     });
   }
 
+  /*
   obterTag(): void {
     this.tagService.GetTag().subscribe({
       next: (resposta) => {
@@ -92,6 +93,7 @@ export class parcelaPage implements OnInit {
     });
   }
 
+  */
 
   // Atualiza o valor\status 
   pagarLancamento(parcela: returnParcela): void {

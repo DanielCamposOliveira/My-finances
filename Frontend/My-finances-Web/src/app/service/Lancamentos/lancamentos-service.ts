@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith } from 'rxjs';
 import { LancamentoStatusParcelaModel, LancamentoCadastro, LancamentoValorParcelaModel, Lancamento, LancamentoResponseList } from '../../models/lancamentos.model';
-import { returnParcela } from '../../models/parcela-model';
+import { returnParcela } from '../../models/parcela.model';
 
 import { environment } from '../../../environments/environment';
 
@@ -34,6 +34,14 @@ export class LancamentosService {
         );
     }
 
+      // ----------------- Lista todas as parcelas de todos os Lancamentos
+  ParcelasPagasPorId(id: number | string): Observable<returnParcela[]> {
+    const url = `${this.EndPoint_Lancamento}/parcela/ProofPayment/${id}`;
+    return this.http.get<returnParcela[]>(url).pipe(
+      startWith([] as returnParcela[])
+    );
+    }
+    
     // cadastra lancamentos
     Lancamento(Dados: LancamentoCadastro): Observable<void>{
         console.log("Dados sendo enviados: ", Dados);

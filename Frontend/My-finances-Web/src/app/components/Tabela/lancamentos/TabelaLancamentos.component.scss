@@ -397,6 +397,11 @@
     border-color: var(--accent-color) !important;
     background-color: var(--hover-color) !important;
   }
+
+  &.btn-payments:hover {
+    color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+  }
 }
 
 /* ==========================================================================

@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
-
+import { Router } from '@angular/router';
 //
 import { PopUp } from '../../Dialog/pop-up/pop-up'
 
@@ -22,10 +22,10 @@ import { MatSelectModule } from '@angular/material/select';
 
 import { AtribuicaoEnum } from '../../../enums/atribuicao-enum';
 import { StatusParcelaEnum, StatusParcelaFiltroEnum } from '../../../enums/status-parcela-enum';
-import { returnParcela } from "../../../models/parcela-model";
+import { returnParcela } from "../../../models/parcela.model";
 
 
-import {ContaFixaValorParcelaModel} from '../../../models/canta-fixa'
+import {ContaFixaValorParcelaModel} from '../../../models/contaFixa.model'
 import {
   MatDialog,
 } from '@angular/material/dialog';
@@ -56,12 +56,13 @@ export type TipoSnack = 'sucesso' | 'erro' | 'info' | 'despesa' | 'receita';
 
 export class TableParcela implements OnInit, OnChanges {
   private cdr = inject(ChangeDetectorRef);
-
+  private router = inject(Router);
+  
   @Input() titulo: string = 'Parcelas';
   @Input() parcelas: returnParcela[] = [];
-
+  @Input() tipo: 'conta-fixa' | 'lancamento' = 'conta-fixa';
+  
   @Output() onPagar = new EventEmitter<returnParcela>();
-
   @Output() onValor = new EventEmitter<ContaFixaValorParcelaModel>();
 
 
@@ -342,5 +343,12 @@ onStatusChange(event: Event): void {
     });
   }
 
+
+// Método de navegação para a tela de pagamentos:
+  navegarParaPayments(element: returnParcela): void {
+    // Usamos o dependence_id (ID da ContaFixa ou Lançamento pai) ou element.id conforme sua regra de negócio
+    const idAlvo = element.dependence_id ?? element.id;
+    this.router.navigate(['/payments', this.tipo, idAlvo]);
+  }
 
 }

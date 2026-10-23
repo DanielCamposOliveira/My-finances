@@ -9,4 +9,5 @@ export interface returnParcela {
   status: StatusParcelaEnum;
   atribuicao: number;
   numeroParcela: number;
+  ProofPayment: string;
 }
