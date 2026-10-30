@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { switchMap } from 'rxjs/operators';
 import { Observable, startWith } from 'rxjs';
-import { ContaFixa, ContaFixaStatusModel, ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel, ContaFixaCadastro } from '../../models/contaFixa.model';
+import { ContaFixa, ContaFixaStatusModel, ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel, ContaFixaCadastro, ContaFixaProofPaymentParcelaModel } from '../../models/contaFixa.model';
 import { returnParcela } from '../../models/parcela.model';
 
 import { environment } from '../../../environments/environment';
@@ -14,31 +14,34 @@ export class ContaFixaService {
   private http = inject(HttpClient);
   private readonly EndPoint_ContaFixa = `${environment.apiUrl}/ContasFixas`;
 
-  //Cria Conta Fixa e chama o endpoint de gera a pacela do mes atual
-  ContaFixaGen(Dados: ContaFixaCadastro): Observable<void> {
-    const url = `${this.EndPoint_ContaFixa}`;
-    return this.http.post<void>(url, Dados).pipe(
-      switchMap(() => {
-        const Url = `${this.EndPoint_ContaFixa}/generator`;
-        return this.http.post<void>(Url, Dados);
-      })
-    );
-  }
 
   //Atualiza o status da parcela conta fixa
-  Status(Dados: ContaFixaStatusParcelaModel): Observable<void> {
+  UpdateStatus(Dados: ContaFixaStatusParcelaModel): Observable<void> {
     const Url = `${this.EndPoint_ContaFixa}/parcela/update/status`;
     return this.http.patch<void>(Url, Dados);
   }
 
   //Atualiza o valor da parcela conta fixa
-  Valor(Dados: ContaFixaValorParcelaModel): Observable<void> {
+  UpdateValor(Dados: ContaFixaValorParcelaModel): Observable<void> {
     const Url = `${this.EndPoint_ContaFixa}/parcela/update/valor`;
     return this.http.patch<void>(Url, Dados);
   }
 
+  //Atualiza o status da ContaFixa
+  UpdateContaFixasStatus(Dados: ContaFixaStatusModel): Observable<void> {
+    const Url = `${this.EndPoint_ContaFixa}/update/status`;
+    return this.http.patch<void>(Url, Dados);
+  }
+
+    //Atualiza ProofPayment da parcela conta fixa
+  UpdateProofPayment(Dados: ContaFixaProofPaymentParcelaModel): Observable<void> {
+    const Url = `${this.EndPoint_ContaFixa}/update/ProofPayment`;
+    return this.http.patch<void>(Url, Dados);
+  }
+
+
   //Lista todas as parcelas de todos os Lancamentos
-  Parcelas(): Observable<returnParcela[]> {
+  ListParcelas(): Observable<returnParcela[]> {
     const url = `${this.EndPoint_ContaFixa}/parcela/pendentes`;
     return this.http.get<returnParcela[]>(url).pipe(
       startWith([] as returnParcela[])
@@ -46,7 +49,7 @@ export class ContaFixaService {
   }
 
   // ----------------- Lista todas as parcelas de todos os Lancamentos
-  ParcelasPagasPorId(id: number | string): Observable<returnParcela[]> {
+  ListParcelasPagasPorId(id: number | string): Observable<returnParcela[]> {
     const url = `${this.EndPoint_ContaFixa}/parcela/ProofPayment/${id}`;
     return this.http.get<returnParcela[]>(url).pipe(
       startWith([] as returnParcela[])
@@ -54,7 +57,7 @@ export class ContaFixaService {
   }
 
   //Lista todas as Contas Fixa
-  ContaFixas(): Observable<ContaFixa[]> { 
+  ListContaFixas(): Observable<ContaFixa[]> {
     const url = `${this.EndPoint_ContaFixa}`;
 
     return this.http.get<ContaFixa[]>(url).pipe(
@@ -62,10 +65,17 @@ export class ContaFixaService {
     );
   }
 
-    //Atualiza o status da ContaFixa
-  ContaFixasStatus(Dados: ContaFixaStatusModel): Observable<void> {
-    const Url = `${this.EndPoint_ContaFixa}/update/status`;
-    return this.http.patch<void>(Url, Dados);
+
+
+  //Cria Conta Fixa e chama o endpoint de gera a pacela do mes atual
+  CreateContaFixaGen(Dados: ContaFixaCadastro): Observable<void> {
+    const url = `${this.EndPoint_ContaFixa}`;
+    return this.http.post<void>(url, Dados).pipe(
+      switchMap(() => {
+        const Url = `${this.EndPoint_ContaFixa}/generator`;
+        return this.http.post<void>(Url, Dados);
+      })
+    );
   }
 
 }

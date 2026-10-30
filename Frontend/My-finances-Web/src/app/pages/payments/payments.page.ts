@@ -43,12 +43,11 @@ export class PaymentsPage implements OnInit{
 
   carregarDados(tipo: string, id: string): void {
     const obs$ = tipo === 'conta-fixa'
-      ? this.contaFixaService.ParcelasPagasPorId(id)
-      : this.lancamentosService.ParcelasPagasPorId(id); // método correspondente no LancamentosService
+      ? this.contaFixaService.ListParcelasPagasPorId(id)
+      : this.lancamentosService.ListParcelasPagasPorId(id); // método correspondente no LancamentosService
 
     obs$.subscribe({
-      next: (resposta) => {
-        console.log(resposta);
+      next: (resposta) => {       
         this.parcelasPagas = [...resposta];
         this.cdr.markForCheck();
       },

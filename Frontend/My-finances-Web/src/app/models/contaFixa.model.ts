@@ -42,3 +42,11 @@ export interface ContaFixaValorParcelaModel
   valorParcela: number;
 }
 
+// interface para atualizar  o ProofPayment da Conta Fixa
+export interface ContaFixaProofPaymentParcelaModel
+{
+  parcelaId: number;
+  proofPayment: string;
+}
+
+

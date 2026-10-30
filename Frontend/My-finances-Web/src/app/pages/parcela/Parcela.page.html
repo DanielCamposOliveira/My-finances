@@ -1,21 +1,23 @@
 <div class="container">
   <!-- 1º Tabela: Contas Fixas -->
   <app-TableParcela
-    titulo="Contas Fixas"
+    titulo="Parcela - Contas Fixas"
     [parcelas]="parcelasContaFixa"
     tipo="conta-fixa"
     (onPagar)="pagarContaFixa($event)"
     (onValor)="ValorContaFixa($event)"
+    (onUploadComprovante)="UploadComprovantePagamento($event, 'conta-fixa')"
   >
   </app-TableParcela>
 
   <!-- 2º Tabela: Lançamentos -->
   <app-TableParcela
-    titulo="Lançamentos"
+    titulo="Parcela - Lançamentos"
     tipo="lancamento"
     [parcelas]="parcelasLancamentos"
     (onPagar)="pagarLancamento($event)"
     (onValor)="ValorLancamento($event)"
+    (onUploadComprovante)="UploadComprovantePagamento($event, 'lancamento')"
   >
   </app-TableParcela>
 </div>

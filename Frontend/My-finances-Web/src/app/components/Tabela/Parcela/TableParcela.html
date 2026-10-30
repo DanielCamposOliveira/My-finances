@@ -185,15 +185,27 @@
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
 
-              <!-- Botao de Visualizar Pagamentos / Histórico -->
+              <!-- Botao de Upload de Comprovante (PDF) -->
               <button
                 mat-icon-button
                 class="btn-icon-acao btn-payments"
-                title="Ver Pagamentos / Comprovantes"
-                (click)="navegarParaPayments(element)"
+                title="Fazer Upload do Comprovante"
+                (click)="fileInput.click()"
               >
-                <i class="fa-solid fa-receipt"></i>
+                <i
+                  class="fa-solid"
+                  [ngClass]="element.proofPayment ? 'fa-cloud-arrow-down' : 'fa-upload'"
+                ></i>
               </button>
+
+              <!-- Input invisível de upload de PDF -->
+              <input
+                #fileInput
+                type="file"
+                accept="application/pdf"
+                style="display: none"
+                (change)="onFileChange($event, fileInput, element)"
+              />
 
               <!-- Checkbox para somar valores -->
               <input

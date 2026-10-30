@@ -135,7 +135,7 @@ private initForm(): void {
         tagIds: formValues.tagIds
       }
       
-      this.lancamentosService.Lancamento(payload).subscribe({
+      this.lancamentosService.CreateLancamento(payload).subscribe({
         next: () => {
           this.abrirSnackBar('Lançamento cadastrado com sucesso!', 3, 'fa-solid fa-circle-check', 'sucesso');
           this.voltar();
@@ -161,7 +161,7 @@ private initForm(): void {
         tagIds:formValues.tagIds
       };
     
-      this.contaFixaService.ContaFixaGen(payload).subscribe({
+      this.contaFixaService.CreateContaFixaGen(payload).subscribe({
         next: () => {
           this.abrirSnackBar('Conta Fixa cadastrada com sucesso!', 3, 'fa-solid fa-circle-check', 'sucesso');
           this.voltar();

@@ -2,25 +2,17 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 
-
-
 import { TableParcela } from '../../components/Tabela/Parcela/TableParcela';
 
 import { LancamentosService } from '../../service/Lancamentos/lancamentos-service';
 import { ContaFixaService } from '../../service/ContaFixa/conta-fixa-service';
-import { TagService } from '../../service/Tag/tag-service';
-import { CategoriaService } from '../../service/Categoria/categoria-service';
+import { UploadService } from '../../service/Upload/upload-service';
 
-import { LancamentoStatusParcelaModel, LancamentoValorParcelaModel } from '../../models/lancamentos.model';
-import { ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel } from '../../models/contaFixa.model';
-
+import { LancamentoStatusParcelaModel, LancamentoValorParcelaModel, LancamentoProofPaymentParcelaModel } from '../../models/lancamentos.model';
+import { ContaFixaStatusParcelaModel, ContaFixaValorParcelaModel, ContaFixaProofPaymentParcelaModel } from '../../models/contaFixa.model';
 import { StatusParcelaEnum } from '../../enums/status-parcela-enum';
 import { returnParcela } from '../../models/parcela.model';
 
-import { Tag } from '../../models/tag.model';
-import { Categoria } from '../../models/categoria.model';
-
-import { erase, error } from 'highcharts';
  
 @Component({
   selector: 'app-parcela',
@@ -33,9 +25,9 @@ export class parcelaPage implements OnInit {
 
   private lancamentosService = inject(LancamentosService);
   private contaFixaService = inject(ContaFixaService);
-  private categoriaService = inject(CategoriaService);
-  private tagService = inject(TagService);
 
+  // Injeção de dependência do serviço de upload
+  constructor(private uploadService: UploadService) { }
 
   private cdr = inject(ChangeDetectorRef);
 
@@ -43,57 +35,33 @@ export class parcelaPage implements OnInit {
   parcelasLancamentos: returnParcela[] = [];
   parcelasContaFixa: returnParcela[] = [];
 
-  tag: Tag[] = [];
-  categoria: Categoria[] = [];
-
   
   ngOnInit(): void {
     this.obterLancamentos();
     this.obterContasFixas();
-    //this.obterTag();
-    //this.obterCategoria();
   }
 
   obterLancamentos(): void {
-    this.lancamentosService.Parcelas().subscribe({
+    this.lancamentosService.ListParcelas().subscribe({
       next: (resposta) => {
         this.parcelasLancamentos = [...resposta];
-        this.cdr.markForCheck();  
+        this.cdr.markForCheck();
       },
       error: (err) => console.error('Erro ao carregar parcelas de lançamentos:', err)
     });
   }
 
   obterContasFixas(): void {
-    this.contaFixaService.Parcelas().subscribe({
+    this.contaFixaService.ListParcelas().subscribe({
       next: (resposta) => {
         this.parcelasContaFixa = [...resposta];
-        this.cdr.markForCheck();       
+        this.cdr.markForCheck();
       },
       error: (err) => console.error('Erro ao carregar parcelas de contas fixas:', err)
     });
   }
 
-  /*
-  obterTag(): void {
-    this.tagService.GetTag().subscribe({
-      next: (resposta) => {
-        this.tag = [...resposta];
-      },
-      error: (erro) => console.log("Tag Erro:", erro)
-    });
-  }
 
-  obterCategoria(): void {
-    this.categoriaService.getCategoria().subscribe({
-      next: (resposta) => {
-        this.categoria = [...resposta];
-      },
-      error: (Error) => console.log("Categoria Erro:", error)
-    });
-  }
-
-  */
 
   // Atualiza o valor\status 
   pagarLancamento(parcela: returnParcela): void {
@@ -102,7 +70,7 @@ export class parcelaPage implements OnInit {
       status: StatusParcelaEnum.Pago
     };
 
-    this.lancamentosService.Status(payload).subscribe({
+    this.lancamentosService.UpdateStatus(payload).subscribe({
       next: () => {
         this.obterLancamentos();
       },
@@ -116,7 +84,7 @@ export class parcelaPage implements OnInit {
       status: StatusParcelaEnum.Pago
     };
 
-    this.contaFixaService.Status(payload).subscribe({
+    this.contaFixaService.UpdateStatus(payload).subscribe({
       next: () => {
         this.obterContasFixas();
       },
@@ -130,7 +98,7 @@ export class parcelaPage implements OnInit {
       parcelaId: parcela.parcelaId,
       valorParcela: parcela.valorParcela
     };
-    this.contaFixaService.Valor(payload).subscribe({
+    this.contaFixaService.UpdateValor(payload).subscribe({
       next: () => {
         this.obterContasFixas();
       },
@@ -144,12 +112,89 @@ export class parcelaPage implements OnInit {
       parcelaId: parcela.parcelaId,
       valorParcela: parcela.valorParcela
     };
-    this.lancamentosService.Valor(payload).subscribe({
+    this.lancamentosService.UpdateValor(payload).subscribe({
       next: () => {
         this.obterLancamentos();
       },
       error: (err) => console.error('Erro ao altera o valor da parcela de conta fixa:', err)
     });
   }
+
+ 
+
+  UploadComprovantePagamento( dados: { file: File; parcela: returnParcela }, origem: 'conta-fixa' | 'lancamento' ): void {
+    const { file, parcela } = dados;
+
+    if (!file) return;
+
+    // 1. Solicita a permissão/URL de upload para a API
+    this.uploadService.obterUrlUpload().subscribe({
+      next: async (permissao) => {
+        try {
+          // 2. Envia o arquivo em paralelo passando o arquivo, URL e a callback de progresso
+          const resultado = await this.uploadService.uploadParalelo( file, permissao.url, (progresso) => {
+              //console.log(`Progresso: ${progresso.percentual}%`);
+            }
+          );
+       
+          // Trata o desfecho positivo reportado pelo serviço
+          if (resultado.sucesso && resultado.token) {
+            // Roteamento de acordo com a origem
+            if (origem === 'conta-fixa') {
+              this.atualizarComprovanteContaFixa(parcela.id, resultado.token);
+            } else {
+              this.atualizarComprovanteLancamento(parcela.id, resultado.token);
+            }
+          }
+        } catch (error) {
+          console.error('Erro no upload paralelo:', error);
+        }
+      },
+      error: (err) => console.error('Erro ao obter URL:', err)
+    });
+  }
+
+
+
+  // Métodos auxiliares para cada serviço:
+  private atualizarComprovanteContaFixa(parcelaId: number, token: string): void {
+    
+    const payload: ContaFixaProofPaymentParcelaModel ={
+      parcelaId: parcelaId,
+      proofPayment : token      
+    }
+    this.contaFixaService.UpdateProofPayment(payload).subscribe({
+      next: () => {
+        this.obterContasFixas();
+      },
+      error: (err) => {
+        console.error('Ocorreu um erro ao tentar salvar o Comprovante de Pagamento:', err)
+      }
+    });
+    
+  }
+
+  private atualizarComprovanteLancamento(parcelaId: number, token: string): void {
+   
+    const payload: LancamentoProofPaymentParcelaModel ={
+      parcelaId: parcelaId,
+      proofPayment : token      
+    }
+
+    
+    this.lancamentosService.UpdateProofPayment(payload).subscribe({
+      next: () => {
+        this.obterLancamentos();
+      },
+      error: (err) => {
+        console.error('Ocorreu um erro ao tentar salvar o Comprovante de Pagamento:', err)
+      }
+    });
+  }
+
+
+
+
+
 
 }

@@ -46,3 +46,10 @@ export interface LancamentoResponseList
   CategoriaNome: string,
   Tags?: string[]
 }
+
+// interface para atualizar  o ProofPayment da Conta Fixa
+export interface LancamentoProofPaymentParcelaModel
+{
+  parcelaId: number;
+  proofPayment: string;
+}

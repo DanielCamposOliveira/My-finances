@@ -64,7 +64,12 @@ export class TableParcela implements OnInit, OnChanges {
   
   @Output() onPagar = new EventEmitter<returnParcela>();
   @Output() onValor = new EventEmitter<ContaFixaValorParcelaModel>();
+  @Output() onUploadComprovante = new EventEmitter<{ file: File; parcela: returnParcela }>();
 
+
+
+  // Configuração do formulário
+  //selectedFile: File | null = null;
 
   readonly statusParcelaFiltroEnum = StatusParcelaFiltroEnum;
   readonly StatusParcelaEnum = StatusParcelaEnum;
@@ -111,6 +116,8 @@ export class TableParcela implements OnInit, OnChanges {
     if (changes['parcelas'] && this.parcelas) {
       this.atualizarDataSource(this.parcelas);
     }
+    
+    
   }
 
   private atualizarDataSource(dados: returnParcela[]): void {
@@ -120,7 +127,7 @@ export class TableParcela implements OnInit, OnChanges {
     this.cdr.markForCheck();
   }
 
-private configurarFiltro(): void {
+  private configurarFiltro(): void {
     this.dataSource.filterPredicate = (data: returnParcela, filter: string) => {
       if (!filter) return true;
 
@@ -152,8 +159,8 @@ private configurarFiltro(): void {
           
           // Verifica se a data é válida e compara o mês e o ano
           if (!isNaN(dataParcela.getTime())) {
-            matchMes = 
-              dataParcela.getMonth() === hoje.getMonth() && 
+            matchMes =
+              dataParcela.getMonth() === hoje.getMonth() &&
               dataParcela.getFullYear() === hoje.getFullYear();
           } else {
             matchMes = false;
@@ -180,7 +187,7 @@ private configurarFiltro(): void {
 
 
   // Receber o evento do select 
-onStatusChange(event: Event): void {
+  onStatusChange(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
 
     if (value === 'mes_atual') {
@@ -247,6 +254,8 @@ onStatusChange(event: Event): void {
     });
   }
 
+  // Captura o evento nativo de seleção de arquivo via janela de navegação (input de arquivo)
+
 
   // Chama o componente SnackBar
   abrirSnackBar(
@@ -277,7 +286,7 @@ onStatusChange(event: Event): void {
     
     // Adiciona o ID do item ao conjunto se marcado, ou remove se desmarcado
     if (checked) {
-      this.itensSelecionados.add(element.id);      
+      this.itensSelecionados.add(element.id);
     } else {
       this.itensSelecionados.delete(element.id);
     }
@@ -293,7 +302,7 @@ onStatusChange(event: Event): void {
       .filter(p => this.itensSelecionados.has(p.id)
         &&
         p.atribuicao === AtribuicaoEnum.Despesa
-    ) // Filtra apenas os itens cujos IDs estão selecionados
+      ) // Filtra apenas os itens cujos IDs estão selecionados
       .reduce((acc, curr) => acc + Number(curr.valorParcela || 0), 0); // Soma os valores de cada parcela
   
     // Força a detecção de mudanças para atualizar a tela imediatamente
@@ -344,11 +353,20 @@ onStatusChange(event: Event): void {
   }
 
 
-// Método de navegação para a tela de pagamentos:
-  navegarParaPayments(element: returnParcela): void {
-    // Usamos o dependence_id (ID da ContaFixa ou Lançamento pai) ou element.id conforme sua regra de negócio
-    const idAlvo = element.dependence_id ?? element.id;
-    this.router.navigate(['/payments', this.tipo, idAlvo]);
+
+
+  // Adicione ou ajuste no TableParcela.ts:
+  onFileChange(event: Event, inputRef: HTMLInputElement, parcela: returnParcela): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      const file = target.files[0];
+    
+      // Emite o arquivo junto com a parcela correspondente
+      this.onUploadComprovante.emit({ file, parcela });
+
+      inputRef.value = '';
+    }
+
   }
 
 }

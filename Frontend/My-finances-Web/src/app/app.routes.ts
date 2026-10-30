@@ -55,11 +55,6 @@ export const routes: Routes = [
         data: { tipo: 'contafixa' } // <-- Identificador do contexto
       },
       {
-          path: 'upload',
-        loadComponent: () => import('./pages/upload/upload.page').then(m => m.UploadPage),
-        data: { tipo: 'Upload' } // <-- Identificador do contexto
-      },
-      {
           path: 'payments/:tipo/:id',
           loadComponent: () => import('./pages/payments/payments.page').then(m => m.PaymentsPage)
       }

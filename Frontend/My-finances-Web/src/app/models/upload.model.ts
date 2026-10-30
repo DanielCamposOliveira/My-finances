@@ -15,4 +15,5 @@ export interface UploadFinalResult {
   sucesso: boolean;
   nameFile?: string;
   completed?: boolean;
+  token?: string;
 }

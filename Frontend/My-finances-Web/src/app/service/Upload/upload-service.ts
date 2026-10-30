@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, firstValueFrom, from } from 'rxjs';
 import SparkMD5 from 'spark-md5';
 import { PermissaoUploadResponse, ChunkProgress, UploadFinalResult } from '../../models/upload.model';
+import { environment } from '../../../environments/environment';
 
 // Decorator que registra o serviço como singleton disponível em toda a aplicação (root)
 @Injectable({
@@ -14,19 +15,20 @@ export class UploadService {
     private readonly chunkSize = 5 * 1024 * 1024;  // Tamanho de cada parte (5 MB em bytes)
     private readonly concurrencyLimit = 8;         // Máximo de requisições de upload simultâneas
     private readonly maxRetriesPerChunk = 3;       // Quantidade máxima de tentativas para cada pedaço
-
+    private readonly EndPoint = `${environment.apiUrl}`;
     constructor(private http: HttpClient) { }
 
     // btém a URL base de upload da API
     // Faz uma requisição GET simples para recuperar o endpoint correto de envio
     obterUrlUpload(): Observable<PermissaoUploadResponse> {
-        return this.http.get<PermissaoUploadResponse>('http://localhost:5000/api/v1/Arquivos/upload');
+        const Url = `${this.EndPoint}/Arquivos/upload`;
+        return this.http.get<PermissaoUploadResponse>(Url);
     }
 
 
     //Executa o upload paralelo com retries e cálculo de integridade MD5
     //formatado para o DTO UploadChunkDTO
-    uploadParalelo( file: File, targetUrl: string, onProgress: (progress: ChunkProgress) => void ): Promise<UploadFinalResult> {
+    uploadParalelo(file: File, targetUrl: string, onProgress: (progress: ChunkProgress) => void): Promise<UploadFinalResult> {
            
         // Calcula o número total de pedaços necessários para cobrir todo o arquivo
         const totalChunks = Math.ceil(file.size / this.chunkSize);
@@ -45,7 +47,8 @@ export class UploadService {
         // Flags para controlar encerramento imediato em caso de erro fatal e armazenar o nome gerado pelo servidor
         let erroCriticoDisparado = false;
         let finalNameFile: string | undefined;
-
+        let finalToken: string | undefined;
+        
         return new Promise(async (resolve, reject) => {
 
             // Função de trabalho assíncrona ("worker") que consome itens da fila recursivamente
@@ -84,9 +87,10 @@ export class UploadService {
                     formData.append('chunkMd5', chunkMd5);
                     formData.append('File', chunkBlob, file.name);
 
+                    // Envio do pedaço para a API externa
                     // Envia a requisição HTTP POST e converte o Observable do HttpClient em Promise
                     const response = await firstValueFrom(
-                        this.http.post<{ completed?: boolean; nameFile?: string }>(targetUrl, formData)
+                        this.http.post<{ completed?: boolean; nameFile?: string; token?: string }>(targetUrl, formData)
                     );
 
                     // Marca este chunk como enviado e confirmado
@@ -102,8 +106,10 @@ export class UploadService {
                     });
                 
                     // Captura o retorno final quando o upload é concluído
-                    if (response?.completed && response.nameFile) {
-                        finalNameFile = response.nameFile;
+                    if (response?.completed) {
+                        if (response.token)
+                            finalToken = response.token;
+
                     }
 
                     // Processa o próximo chunk disponível na fila
@@ -135,7 +141,14 @@ export class UploadService {
 
                 // Valida se todos os pedaços foram concluídos com sucesso antes de resolver
                 const sucesso = chunksConfirmados.every(Boolean);
-                resolve({ sucesso, nameFile: finalNameFile, completed: sucesso });
+                       
+                resolve({
+                    sucesso,
+                    nameFile: finalNameFile,
+                    completed: sucesso,
+                    token: finalToken
+                });
+                
             } catch (err) {
                 reject(err);
             }

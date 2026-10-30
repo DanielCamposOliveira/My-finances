@@ -39,7 +39,7 @@ export class ContaPage implements OnInit {
   }
 
   obterContasFixas(): void {
-    this.contaFixaService.ContaFixas().subscribe({
+    this.contaFixaService.ListContaFixas().subscribe({
       next: (resposta) => {
         this.ContaFixas = [...resposta];               
         this.cdr.markForCheck();
@@ -49,7 +49,7 @@ export class ContaPage implements OnInit {
   }
 
     obterLancamentos(): void {
-    this.lancamentosService.Lancamentos().subscribe({
+    this.lancamentosService.ListLancamentos().subscribe({
       next: (resposta) => {
         this.Lancamentos = [...resposta];  
         this.cdr.markForCheck();
@@ -67,7 +67,7 @@ export class ContaPage implements OnInit {
         status: ativo
       };
   
-      this.contaFixaService.ContaFixasStatus(payload).subscribe({
+      this.contaFixaService.UpdateContaFixasStatus(payload).subscribe({
         next: () => {
           this.obterContasFixas();
         },
