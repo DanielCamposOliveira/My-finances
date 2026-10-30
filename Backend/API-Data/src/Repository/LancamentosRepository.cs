@@ -96,7 +96,8 @@ public class LancamentosRepository : ILancamentosRepository
                     DataVencimento = p.DataVencimento,
                     Status = p.Status,
                     Atribuicao = p.Lancamento.Categoria.Atribuicao,
-                    NumeroParcela = p.NumeroParcela
+                    NumeroParcela = p.NumeroParcela,
+                    ProofPayment = p.ProofPayment
                 })
                 .ToListAsync();
         }

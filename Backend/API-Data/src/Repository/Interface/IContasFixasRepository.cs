@@ -31,8 +31,7 @@ namespace API_Data.src.Repository.Interface
         public Task<ContaFixa?> ObterContaFixaPorIdAsync(int Id, string userId);
 
         public Task<bool> AtualizarStatusContaFixaAsync(ContaFixa conta);
-
-
+          
 
         public Task<ContaFixaParcela> ObterParcelaAsync(int id);
         public Task<bool> ChecarContaFixa(int id, string userId);

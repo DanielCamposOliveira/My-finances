@@ -32,4 +32,9 @@ namespace API_Data.src.DTOs.Lancamento
         public required int ParcelaId { get; init; }
         public required decimal ValorParcela { get; init; }
     }
+
+    public record ParcelasResponseDonwload
+    {
+        public required string url { get; init; }
+    }
 }

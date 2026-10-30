@@ -1,19 +1,21 @@
 ﻿using API_Data.src.DTOs.Lancamento;
+using API_Data.src.DTOs.Result;
 using API_Data.src.Enum;
 using API_Data.src.Model;
 using API_Data.src.Repository.Interface;
 using API_Data.src.Services.Interface;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace API_Data.src.Services;
 
 public class LancamentosService : ILancamentosService
 {
     private readonly ILancamentosRepository _repository;
+    private readonly IArquivosService _ArquivosService;
 
-    public LancamentosService(ILancamentosRepository repository)
+    public LancamentosService(ILancamentosRepository repository, IArquivosService arquivosService   )
     {
         _repository = repository;
+        _ArquivosService = arquivosService;
     }
 
     ////Lista todos as parcelas dos lançamentos
@@ -137,6 +139,7 @@ public class LancamentosService : ILancamentosService
                     descricao = parcela.Lancamento.Descricao,
                     dependence_id = parcela.LancamentoId,
                     Atribuicao = parcela.Lancamento.Categoria.Atribuicao,
+                    ProofPayment = parcela.ProofPayment
                 });
             }
         }
@@ -297,7 +300,15 @@ public class LancamentosService : ILancamentosService
         }
 
         // verifica se a parcela esta paga antes de adicionar um comprovante de pagamento
-        if(parcela.Status != StatusParcela.Pago)
+        //if(parcela.Status != StatusParcela.Pago)
+        //{
+        //    return Results.Problem(
+        //        "Parcela não esta Pago",
+        //         statusCode: StatusCodes.Status409Conflict
+        //        );
+        //}
+
+        if (parcela.ProofPayment != null)
         {
             return Results.Problem(
                 "Parcela não esta Pago",
@@ -364,4 +375,62 @@ public class LancamentosService : ILancamentosService
         return Results.Created();
     }
 
+
+
+    public async Task<IResult> ObterPaymentLancamentoParcela(int ParcelaId, string userId)
+    {
+
+        // Busca Parcela do Lancamento
+        var parcela = await _repository.BuscaLancamentoParcelasync(ParcelaId);
+        if (parcela == null)
+        {
+            return Results.Problem(
+                "Parcela não encontrada !",
+                statusCode: StatusCodes.Status404NotFound
+                );
+        }
+
+        // Busca Lancamento
+        var _lancamento = await _repository.BuscaLancamentoasync(parcela.LancamentoId);
+        if (_lancamento == null)
+        {
+            return Results.Problem(
+                "Lancamento não encontrada !",
+                statusCode: StatusCodes.Status404NotFound
+                );
+        }
+
+        // verifica se o Lancamento é do Usuario
+        if (_lancamento.UserId != userId)
+        {
+            return Results.Problem(
+                "Parcela não Pertence ao usuario !",
+                 statusCode: StatusCodes.Status403Forbidden
+                );
+        }
+
+
+
+        if (parcela.ProofPayment == null)
+        {
+            return Results.Problem(
+                "Parcela não contem comprovante de pagamento",
+                 statusCode: StatusCodes.Status409Conflict
+                );
+        }
+
+
+        OperationResult dados = await _ArquivosService.Download(parcela.ProofPayment);
+
+        if (dados.Success == false )
+        {
+            return Results.Problem(
+                "Parcela não contem comprovante de pagamento",
+                 statusCode: StatusCodes.Status404NotFound
+                );
+        }
+
+
+        return Results.Ok(dados.Message);
+    }
 }

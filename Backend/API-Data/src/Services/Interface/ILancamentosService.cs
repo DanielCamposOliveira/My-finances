@@ -23,6 +23,8 @@ namespace API_Data.src.Services.Interface
 
         public Task<IResult> ListaTodosLancamentosPagosAsync(int LancamentoId, string userId);
 
+        public Task<IResult> ObterPaymentLancamentoParcela(int ParcelaId, string userId);
+
 
     }
 }

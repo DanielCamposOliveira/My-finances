@@ -1,5 +1,6 @@
 ﻿
 using API_Data.src.DTOs.ContasFixas;
+using API_Data.src.DTOs.Result;
 using API_Data.src.Enum;
 using API_Data.src.Model;
 using API_Data.src.Repository.Interface;
@@ -10,10 +11,12 @@ namespace API_Data.src.Services
     public class ContasFixasService : IContasFixasService
     {
         private readonly IContasFixasRepository _repository;
+        private readonly IArquivosService _ArquivosService;
 
-        public ContasFixasService(IContasFixasRepository repository)
+        public ContasFixasService(IContasFixasRepository repository, IArquivosService arquivosService)
         {
             _repository = repository;
+            _ArquivosService = arquivosService;
         }
 
         // ### Cria conta fixa
@@ -134,7 +137,8 @@ namespace API_Data.src.Services
                     DiaVencimento = _conta.DiaVencimento,
                     CategoriaId = _conta.CategoriaId,      
                     Ativo = _conta.Ativo,
-                    TagIds = _conta.Tags.Select(t => t.Id).ToList()   
+                    TagIds = _conta.Tags.Select(t => t.Id).ToList()
+                   
                 });
             }
             return Results.Ok(contasResponse);
@@ -173,7 +177,8 @@ namespace API_Data.src.Services
                         DataVencimento = parcela.DataVencimento,                       
                         Status = parcela.Status,
                         Atribuicao = parcela.ContaFixa.Categoria.Atribuicao,
-                        NumeroParcela = parcela.NumeroParcela
+                        NumeroParcela = parcela.NumeroParcela,
+                        ProofPayment = parcela.ProofPayment
                     });
                 }
             }
@@ -293,7 +298,14 @@ namespace API_Data.src.Services
             }
 
             // verifica se a parcela esta paga antes de adicionar um comprovante de pagamento
-            if (parcela.Status != StatusParcela.Pago)
+            //if (parcela.Status != StatusParcela.Pago)
+            //{
+            //    return Results.Problem(
+            //        "Parcela não esta Pago",
+            //         statusCode: StatusCodes.Status409Conflict
+            //        );
+            //}
+            if (parcela.ProofPayment != null)
             {
                 return Results.Problem(
                     "Parcela não esta Pago",
@@ -391,7 +403,48 @@ namespace API_Data.src.Services
         }
 
 
+        public async Task<IResult> ObterPaymentLancamentoParcela(int ParcelaId, string userId)
+        {
+            // obtem a parcela
+            var parcela = await _repository.ObterParcelaAsync(ParcelaId);
+            if (parcela == null)
+            {
+                return Results.Problem(
+                 "Parcela não encontrada",
+                 statusCode: StatusCodes.Status404NotFound
+                 );
+            }
 
+            // verifica se a conta pertence ao usuario
+            bool checkConta = await _repository.ChecarContaFixa(parcela.ContaFixaId, userId);
+            if (!checkConta)
+            {
+                return Results.Problem(
+                   "Parcela não pertence ao usuario",
+                   statusCode: StatusCodes.Status403Forbidden
+                   );
+            }
+
+            if (parcela.ProofPayment == null)
+            {
+                return Results.Problem(
+                    "Parcela não contem comprovante de pagamento",
+                     statusCode: StatusCodes.Status409Conflict
+                    );
+            }
+
+            OperationResult dados = await _ArquivosService.Download(parcela.ProofPayment);
+
+            if (dados.Success == false)
+            {
+                return Results.Problem(
+                    "Parcela não contem comprovante de pagamento",
+                     statusCode: StatusCodes.Status404NotFound
+                    );
+            }
+
+            return Results.Ok(dados.Message);
+        }
 
 
 
