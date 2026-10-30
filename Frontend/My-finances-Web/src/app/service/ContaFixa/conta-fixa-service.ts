@@ -39,6 +39,10 @@ export class ContaFixaService {
     return this.http.patch<void>(Url, Dados);
   }
 
+    ObterProofPayment(id: number | string): Observable<void> {
+    const Url = `${this.EndPoint_ContaFixa}/parcela/download/ProofPayment/${id}`;
+    return this.http.get<void>(Url);
+  }
 
   //Lista todas as parcelas de todos os Lancamentos
   ListParcelas(): Observable<returnParcela[]> {

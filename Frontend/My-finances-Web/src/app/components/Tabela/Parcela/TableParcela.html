@@ -186,11 +186,17 @@
               </button>
 
               <!-- Botao de Upload de Comprovante (PDF) -->
+              <!-- Botao de Comprovante -->
               <button
                 mat-icon-button
                 class="btn-icon-acao btn-payments"
-                title="Fazer Upload do Comprovante"
-                (click)="fileInput.click()"
+                [ngClass]="element.proofPayment ? 'btn-pdf' : 'btn-upload'"
+                [title]="
+                  element.proofPayment
+                    ? 'Visualizar Comprovante (PDF)'
+                    : 'Fazer Upload do Comprovante'
+                "
+                (click)="element.proofPayment ? baixarComprovante(element) : fileInput.click()"
               >
                 <i
                   class="fa-solid"

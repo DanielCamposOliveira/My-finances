@@ -32,6 +32,11 @@ export class LancamentosService {
     return this.http.patch<void>(Url, Dados);
   }
     
+  ObterProofPayment(id: number | string): Observable<void> {
+    const Url = `${this.EndPoint_Lancamento}/parcela/download/ProofPayment/${id}`;
+    return this.http.get<void>(Url);
+  }
+
   // Obtem todas as parcelas
   ListParcelas(): Observable<returnParcela[]> {
     const url = `${this.EndPoint_Lancamento}/parcela`;
@@ -64,5 +69,6 @@ export class LancamentosService {
     return this.http.post<void>(url, Dados);
   }
 
+  
 
 }

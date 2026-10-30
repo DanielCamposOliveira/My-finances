@@ -147,7 +147,7 @@ export class parcelaPage implements OnInit {
             }
           }
         } catch (error) {
-          console.error('Erro no upload paralelo:', error);
+          console.error('Ocorreu um Erro ao tentar fazer o upload do comprovante:', error);
         }
       },
       error: (err) => console.error('Erro ao obter URL:', err)
@@ -192,7 +192,24 @@ export class parcelaPage implements OnInit {
     });
   }
 
+visualizarComprovante(parcela: returnParcela, origem: 'conta-fixa' | 'lancamento'): void {
+  const service$ = origem === 'conta-fixa'
+    ? this.contaFixaService.ObterProofPayment(parcela.id)
+    : this.lancamentosService.ObterProofPayment(parcela.id);
 
+  service$.subscribe({
+    next: (resposta: { url: string } | any) => {
+      const link = typeof resposta === 'string' ? resposta : resposta?.url;
+
+      if (link) {
+        window.open(link, '_blank');
+      } else {
+        console.warn('URL do comprovante não encontrada na resposta.');
+      }
+    },
+    error: (err) => console.error('Erro ao obter comprovante:', err)
+  });
+}
 
 
 

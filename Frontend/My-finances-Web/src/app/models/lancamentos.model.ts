@@ -53,3 +53,4 @@ export interface LancamentoProofPaymentParcelaModel
   parcelaId: number;
   proofPayment: string;
 }
+

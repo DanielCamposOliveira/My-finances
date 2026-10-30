@@ -65,9 +65,7 @@ export class TableParcela implements OnInit, OnChanges {
   @Output() onPagar = new EventEmitter<returnParcela>();
   @Output() onValor = new EventEmitter<ContaFixaValorParcelaModel>();
   @Output() onUploadComprovante = new EventEmitter<{ file: File; parcela: returnParcela }>();
-
-
-
+  @Output() onDownloadComprovante = new EventEmitter<returnParcela>();
   // Configuração do formulário
   //selectedFile: File | null = null;
 
@@ -121,6 +119,7 @@ export class TableParcela implements OnInit, OnChanges {
   }
 
   private atualizarDataSource(dados: returnParcela[]): void {
+   
     this.dataSource = new MatTableDataSource<returnParcela>(dados);
     this.configurarFiltro();
     this.atualizarFiltro();
@@ -355,7 +354,7 @@ export class TableParcela implements OnInit, OnChanges {
 
 
 
-  // Adicione ou ajuste no TableParcela.ts:
+  // chama a função onUploadComprovante e envia o arquivo
   onFileChange(event: Event, inputRef: HTMLInputElement, parcela: returnParcela): void {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
@@ -368,5 +367,11 @@ export class TableParcela implements OnInit, OnChanges {
     }
 
   }
+
+ 
+  baixarComprovante(element: returnParcela): void {
+  this.onDownloadComprovante.emit(element);
+}
+  
 
 }

@@ -132,7 +132,7 @@ applyFilter(event: Event): void {
 
   // Ação dinâmica do botão de comprovante
   gerenciarComprovante(element: returnParcela): void {
-    if (element.ProofPayment) {
+    if (element.proofPayment) {
       this.onVisualizarComprovante.emit(element);
     } else {
       this.onUploadComprovante.emit(element);

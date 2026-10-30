@@ -7,6 +7,7 @@
     (onPagar)="pagarContaFixa($event)"
     (onValor)="ValorContaFixa($event)"
     (onUploadComprovante)="UploadComprovantePagamento($event, 'conta-fixa')"
+    (onDownloadComprovante)="visualizarComprovante($event, 'conta-fixa')"
   >
   </app-TableParcela>
 
@@ -18,6 +19,7 @@
     (onPagar)="pagarLancamento($event)"
     (onValor)="ValorLancamento($event)"
     (onUploadComprovante)="UploadComprovantePagamento($event, 'lancamento')"
+    (onDownloadComprovante)="visualizarComprovante($event, 'lancamento')"
   >
   </app-TableParcela>
 </div>
