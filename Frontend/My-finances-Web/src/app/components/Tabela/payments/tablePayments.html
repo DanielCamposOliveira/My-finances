@@ -135,23 +135,33 @@
         </th>
         <td mat-cell *matCellDef="let element">
           <div class="acoes-wrapper">
-            <!-- Botão condicional: Upload ou PDF -->
+            <!-- Botao de Upload de Comprovante (PDF) -->
+            <!-- Botao de Comprovante -->
             <button
               mat-icon-button
-              class="btn-icon-acao"
+              class="btn-icon-acao btn-payments"
               [ngClass]="element.proofPayment ? 'btn-pdf' : 'btn-upload'"
               [title]="
                 element.proofPayment
                   ? 'Visualizar Comprovante (PDF)'
                   : 'Fazer Upload do Comprovante'
               "
-              (click)="gerenciarComprovante(element)"
+              (click)="element.proofPayment ? DownloadComprovante(element) : fileInput.click()"
             >
               <i
                 class="fa-solid"
                 [ngClass]="element.proofPayment ? 'fa-cloud-arrow-down' : 'fa-upload'"
               ></i>
             </button>
+
+            <!-- Input invisível de upload de PDF -->
+            <input
+              #fileInput
+              type="file"
+              accept="application/pdf"
+              style="display: none"
+              (change)="UploadComprovante($event, fileInput, element)"
+            />
           </div>
         </td>
       </ng-container>

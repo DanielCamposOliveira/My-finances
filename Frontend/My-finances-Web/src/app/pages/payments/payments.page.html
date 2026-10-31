@@ -1,4 +1,10 @@
 <div class="container">
-  <app-tablePayments titulo="Comprovantes de Pagamento" [parcelas]="parcelasPagas">
+  <app-tablePayments
+    titulo="Comprovantes de Pagamento"
+    [parcelas]="parcelasPagas"
+    [tipoOrigem]="tipoOrigem"
+    (onUploadComprovante)="UploadComprovante($event, tipoOrigem)"
+    (onDownloadComprovante)="DownloadComprovante($event)"
+  >
   </app-tablePayments>
 </div>
