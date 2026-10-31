@@ -1,5 +1,4 @@
-﻿using API_Data.src.DTOs.Lancamento;
-using API_Data.src.DTOs.Result;
+﻿using API_Data.src.DTOs.Result;
 using API_Data.src.Services.Interface;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -10,14 +9,14 @@ namespace API_Data.src.Services
     {
         private readonly HttpClient _httpClient;
 
-
+        private readonly ILogger<ArquivosService> _logger;
         private readonly string ExternalApi_Key;
         private readonly string ExternalApi_Protocolo;
         private readonly string ExternalApi_Host;
         private readonly string ExternalApi_Port;
 
 
-        public ArquivosService(HttpClient httpClient, IConfiguration configuration)
+        public ArquivosService(HttpClient httpClient, IConfiguration configuration, ILogger<ArquivosService> logger)
         {
             _httpClient = httpClient;
         
@@ -27,7 +26,7 @@ namespace API_Data.src.Services
             ExternalApi_Host = configuration.GetValue<string>("ExternalApi:BaseUrl");
             ExternalApi_Port = configuration.GetValue<string>("ExternalApi:Port");
 
-            Console.WriteLine($"[DEBUG] Chave lida do appsettings: '{ExternalApi_Key}'");
+            _logger = logger;     
         }
 
         public async Task<IResult> Download_Old(string token)
@@ -124,6 +123,8 @@ namespace API_Data.src.Services
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
 
+                    _logger.LogWarning($"Erro na API externa. Status: {(int)response.StatusCode}, detalhe: {errorContent}");
+
                     return new OperationResult
                     {
                         Success = false,
@@ -178,6 +179,8 @@ namespace API_Data.src.Services
             }
             catch (Exception ex)
             {
+                _logger.LogWarning($"Erro interno ao processar o download:  {ex.Message}");
+
                 return new OperationResult
                 {
                     Success = false,
@@ -187,7 +190,7 @@ namespace API_Data.src.Services
         }
 
         public async Task<IResult> Upload()
-        {
+        {        
             try
             {
                              
@@ -214,6 +217,9 @@ namespace API_Data.src.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
+                    
+                    _logger.LogWarning($"Erro na API externa: {errorContent} - StatusCode: {(int)response.StatusCode}");
+
                     return Results.BadRequest(new { mensagem = "Erro na API externa.", status = (int)response.StatusCode, detalhe = errorContent });
                 }
 
@@ -247,7 +253,8 @@ namespace API_Data.src.Services
             }
             catch (Exception ex)
             {
-                return Results.Problem($"Erro interno ao processar o download: {ex.Message}");
+                _logger.LogWarning($"Erro na API externa: {ex.Message}");
+                return Results.Problem($"Erro interno ao processar o Upload: {ex.Message}");
             }
         }
     }

@@ -55,8 +55,7 @@ namespace API_Data.src.Endpoints
             .WithName("Lista todo os Lancamento")
             .WithSummary("Lista todo os Lancamento")
             .WithDescription("Lista todas as parcelas de todos os Lancamentos")
-            .Produces<List<LancamentoResponse>>(StatusCodes.Status200OK)
-            .RequireAuthorization().RequireRateLimiting("IpLimitPolicy");
+            .Produces<List<LancamentoResponse>>(StatusCodes.Status200OK);
 
 
             // ==========================================

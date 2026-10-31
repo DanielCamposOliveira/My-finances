@@ -22,48 +22,7 @@ namespace Cloud_API.src.Background.BackgroundLocal
         {
             // Roda em segundo plano para não travar o Startup da API
             _ = Task.Run(async () => await CarregarRegistrosGradualmenteAsync(cancellationToken));
-            return Task.CompletedTask;
-
-            //_logger.LogInformation("[BackgroundServiceLocal] - Iniciando carregamento dos dados do banco para a memória...");
-
-            //try
-            //{
-            //    // 1. Cria um escopo para carregar os dados do banco com segurança
-            //    using (var scope = _scopeFactory.CreateScope())
-            //    {
-            //        // Aqui você resolve o seu DbContext ou repositório do banco relacional
-            //        // Exemplo usando um AppDbContext diretamente ou um repositório:
-            //        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-            //        // Busca todos os registros ativos do banco de dados
-            //        var registrosDoBanco = await dbContext.StorageRegistry
-            //            .Where(d => d.Ativo)
-            //            .ToListAsync(cancellationToken);
-
-            //        // Adiciona cada registro no dicionário em memória
-            //        foreach (var item in registrosDoBanco)
-            //        {
-            //            // Usamos o NameArchived (ou outra chave de sua preferência, ex: token) como chave do dicionário
-            //            _bancoDadosMemoria.BancoDadosMemoria[item.NameArchived] = item;
-            //        }
-
-            //        _logger.LogInformation($"[BackgroundServiceLocal] - {registrosDoBanco.Count} registros carregados para a memória com sucesso.");
-            //    }
-
-            //    // 2. Inicializa o agendador (BackDataScheduler) caso queira rodar alguma rotina periódica
-            //    _scheduler = new BackDataScheduler(async () =>
-            //    {
-            //        // Ação periódica (ex: salvar alterações pendentes, logs, etc.)
-            //        _logger.LogInformation("[BackDataScheduler] - Executando rotina periódica...");
-            //        await Task.CompletedTask;
-            //    }, TimeSpan.FromMinutes(10)); // Intervalo de exemplo
-
-            //    _scheduler.Iniciar();
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError(ex, "[BackgroundServiceLocal] - Erro crítico ao carregar os dados iniciais.");
-            //}
+            return Task.CompletedTask;   
         }
 
         private async Task CarregarRegistrosGradualmenteAsync(CancellationToken cancellationToken)

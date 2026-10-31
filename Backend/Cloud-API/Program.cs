@@ -21,12 +21,10 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Console.WriteLine($"Servidor rodando em ");
-
+Console.WriteLine("Servidor rodando em ");
 
 // Configura a Injeção de Dependência para o EF Core usar o SQLite
 builder.Services.AddDbContext<AppDbContext>();
-
 
 // Adiciona o serviço de cache em memória nativo do .NET
 builder.Services.AddMemoryCache();
@@ -35,11 +33,10 @@ builder.Services.AddAntiforgery();
 // ============================================================
 // 1. CONFIGURAÇÃO DE AUTENTICAÇÃO NATIVA (API KEY)
 // ============================================================
+builder.Services.AddAuthentication("ApiKeyScheme")
+    .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKeyScheme", null);
 
-builder.Services.AddAuthentication("ApiKeyScheme").AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKeyScheme", null);
-
-builder.Services.AddAuthorization(); // Habilita o suporte a [Authorize] / RequireAuthorization()
-
+builder.Services.AddAuthorization();
 
 // ============================================================
 // INJEÇÃO DE DEPENDÊNCIA
@@ -47,7 +44,8 @@ builder.Services.AddAuthorization(); // Habilita o suporte a [Authorize] / Requi
 builder.Services.AddHostedService<TaskBackground>();
 builder.Services.AddHostedService<BackgroundServiceLocal>();
 
-builder.Services.AddSingleton<Hashids>(provider => new Hashids(builder.Configuration.GetSection("config:SaltSecret").Value, 7));
+builder.Services.AddSingleton<Hashids>(provider =>
+    new Hashids(builder.Configuration.GetSection("config:SaltSecret").Value, 7));
 builder.Services.AddSingleton<SnowflakeGenerator>();
 builder.Services.AddSingleton<CacheDownloadRepository>();
 builder.Services.AddSingleton<CacheUploadRepository>();
@@ -56,25 +54,22 @@ builder.Services.AddSingleton<ChunkRepository>();
 
 builder.Services.AddSingleton<IFilaDeTrabalho, FilaDeTrabalho>();
 
-
 builder.Services.AddScoped<IUrlService, UrlService>();
 
 builder.Services.AddScoped<IUploadService, UploadService>();
-builder.Services.AddScoped<IUploadProcess ,UploadProcess>();
+builder.Services.AddScoped<IUploadProcess, UploadProcess>();
 
-builder.Services.AddScoped<IDownloadService ,DownloadService>();
+builder.Services.AddScoped<IDownloadService, DownloadService>();
 builder.Services.AddScoped<IDownloadProcess, DownloadProcess>();
 
 builder.Services.AddScoped<IStorageService, StorageService>();
 builder.Services.AddScoped<IStorageProcess, StorageProcess>();
 
-builder.Services.AddScoped<IConsultaService,ConsultaService>();
+builder.Services.AddScoped<IConsultaService, ConsultaService>();
 
 builder.Services.AddScoped<IDataBaseRepository, DataBaseRepository>();
 
-
 builder.Services.AddTransient<IGeneratorName, GeneratorName>();
-
 
 // ============================================================
 // SWAGGER
@@ -90,34 +85,33 @@ builder.Services.AddSwaggerGen(options =>
     });
 
     // Define como o Swagger deve descrever a autenticação por Key
-    options.AddSecurityDefinition("ApiKey", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
     {
         Description = "Insira sua chave API no cabeçalho. Nome: X-Api-Key",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        In = ParameterLocation.Header,
         Name = "X-Api-Key",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.ApiKey,
         Scheme = "ApiKeyScheme"
     });
 
     // Define que todas as rotas (exceto as do Swagger) exigem a autenticação por Key
-    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            new OpenApiSecurityScheme
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                Reference = new OpenApiReference
                 {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Type = ReferenceType.SecurityScheme,
                     Id = "ApiKey"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
-
 });
 
-// Configura o IIS para permitir uploads de arquivos grandes, removendo o limite de tamanho do corpo da requisição
+// Configura o IIS/Kestrel para permitir uploads de ficheiros grandes
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = long.MaxValue;
@@ -128,55 +122,42 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("DesenvolvimentoTotal", policy =>
     {
-        policy
-        .AllowAnyOrigin()
-        .AllowAnyHeader()
-        .AllowAnyMethod();
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
-
 
 // ============================================================
 // CONSTRÓI A APLICAÇÃO
 // ============================================================
-
 var app = builder.Build();
 
-// 2. Ativação do Middleware no pipeline
 if (!app.Environment.IsDevelopment())
 {
-    // HSTS não funciona em localhost por padrão (e nem deve)
     app.UseHsts();
 }
 
-
 // ============================================================
-// SWAGGER
+// SWAGGER MIDDLEWARE
 // ============================================================
-
 app.UseSwagger();
-app.UseSwaggerUI();
 
-// Configura o Swagger UI para usar a definição de API v1
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Info Host API v1"); // Garante que o endpoint do Swagger UI aponte para a sua definição v1
-    c.RoutePrefix = string.Empty;
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API-Data v1");
+    c.RoutePrefix = string.Empty; // Interface abre diretamente na raiz: http://localhost:<porta>/
 });
 
-
 // ============================================================
-// MIDDLEWARE
+// MIDDLEWARE PIPELINE
 // ============================================================
-// 1º -  ForwardedHeaders e RateLimiter (executa antes do CORS e Autenticação)
-
-app.UseCors("DesenvolvimentoTotal"); // Deve ficar entre o UseRouting e o UseAuthorization
+app.UseCors("DesenvolvimentoTotal");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAntiforgery();
-
 
 // ============================================================
 // ENDPOINTS
@@ -186,6 +167,5 @@ app.MapDonwloadEndpoints();
 app.MapUrlEndpoints();
 app.MapStorageEndpoint();
 app.MapConsultaEndpoints();
-
 
 app.Run();

@@ -1,4 +1,3 @@
-<Solution>
-  <Project Path="../Cloud-API/Cloud-API.csproj" />
+<Solution>  
   <Project Path="API-Data.csproj" />
 </Solution>
